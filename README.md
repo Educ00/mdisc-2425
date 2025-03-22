@@ -80,3 +80,4 @@ Run the following command on the project root folder. You can use IntelliJ to ru
 ```
 java -jar target/project-template-1.0-SNAPSHOT-jar-with-dependencies.jar
 ```
+
