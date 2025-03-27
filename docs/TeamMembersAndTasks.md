@@ -4,12 +4,12 @@
 
 The team is formed by the students identified in the following table.
 
-| Student Number | Name              |
-|----------------|-------------------|
-| **1XXXXXX**    | Name of student 1 |
-| **1XXXXXX**    | Name of student 2 |
-| **1XXXXXX**    | Name of student 3 |
-| **1XXXXXX**    | Name of student 4 |
+| Student Number | Name             |
+|----------------|------------------|
+| **1230553**    | Rafael Faria     |
+| **1230955**    | Luis Merencio    |
+| **1211199**    | Eduardo Carreiro |
+| **1200941**    | José Teixeira    |
 
 # 2. Task Distribution ###
 
@@ -33,8 +33,12 @@ At last, remember that each User Story does not stand alone... it needs to be in
 | [Use Case Diagram (UCD)](system-documentation/global-artifacts/01.requirements-engineering/use-case-diagram.md)                | all                                  | all      | all      |
 | [Supplementary Specification](system-documentation/global-artifacts/01.requirements-engineering/suplementary-specification.md) | all                                  | all      | all      |
 | [Domain Model](system-documentation/global-artifacts/01.requirements-engineering/domain-model.md)                              | all                                  | all      | all      |
-| US01 (SDP Activities)                                                                                                          | [1XXXXXX](system-documentation/US01) |          |          |
-| US02 (SDP Activities)                                                                                                          | [1XXXXXX](system-documentation/US02) |          |          |
-| US03 (SDP Activities)                                                                                                          | [1XXXXXX](system-documentation/US03) |          |          |
-| ...                                                                                                                            | ...                                  | ...      | ...      |
-| ...                                                                                                                            | ...                                  | ...      | ...      |
+| US01 (Create a Map)                                                                                                            | [1230955](system-documentation/US01) |          |          |
+| US03 (Add a city in a Position)                                                                                                | [1230955](system-documentation/US03) |          |          |
+| US04 (Create a Scenario)                                                                                                       | [1230955](system-documentation/US04) |          |          |
+| US05 (Build a Station)                                                                                                         | [1230553](system-documentation/US05) |          |          |
+| US06 (Upgrade a Selected Station)                                                                                              | [1230553](system-documentation/US06) |          |          |
+| US07 (List all Stations)                                                                                                       | [1230553](system-documentation/US07) |          |          |
+| US09 (Buy a Locomotive)                                                                                                        |                                      |          |          |
+| US10 (Assign a train to a route)                                                                                               |                                      |          |          |
+| US12 (Create a Simulator)                                                                                                      |                                      |          |          |
