@@ -14,7 +14,12 @@ However, be aware, this is a pedagogical simplification. On further projects and
 
 | UC/US | Description                                   |                   
 |:------|:----------------------------------------------|
-| US001 | [Short name for US001](../../US001/README.md) |
-| ...   | ...                                           |
-| US006 | [Create a Task](../../US06/US006-README.md)  |
-| ...   | ...                                           |
+| US01  | Create a Map                                  |
+| US03  | Add a city                                    |
+| US04  | Create a Scenario                             |
+| US05  | Build a Station                               |
+| US06  | Upgrade a Station                             |
+| US07  | List all Stations                             |
+| US09  | Buy a Locomotive                              |
+| US10  | Assign a train to a route                     |
+| US12  | Create a Simulator                            |
