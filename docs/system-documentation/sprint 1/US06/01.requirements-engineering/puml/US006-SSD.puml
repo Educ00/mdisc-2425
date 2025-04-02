@@ -5,32 +5,26 @@ skinparam shadowing false
 
 autonumber
 
-actor "Organization\nEmployee" as Employee
+actor "Player" as Player
 participant ":System" as System
 
-activate Employee
+activate Player
 
-    Employee -> System : asks to create a new task
+    Player -> System : requests to upgrade a station
     activate System
 
-        System --> Employee : shows task category list and asks to select one
+        System --> Player : shows stations available for upgrade
     deactivate System
 
-    Employee -> System : selects a task category
+    Player -> System : selects a station
     activate System
 
-        System --> Employee : requests data (i.e. reference, designation, informal\ndescription, technical description, duration, cost)
+        System --> Player : requests confirmation
     deactivate System
 
-    Employee -> System : types requested data
+    Player -> System : confirms upgrade
     activate System
 
-        System --> Employee : shows all data and requests confirmation
-    deactivate System
-
-    Employee -> System : confirms data
-    activate System
-
-        System --> Employee : displays operation success
+        System --> Player : displays upgrade success
     deactivate System
 @enduml

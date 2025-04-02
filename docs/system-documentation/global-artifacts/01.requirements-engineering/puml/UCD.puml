@@ -15,24 +15,30 @@ actor "Product Owner" as PO
 
 
     usecase "UC1- Create a Map" as UC1
+    usecase "UC2 - Add an Industry" as UC2
     usecase "UC3- Add a city" as UC3
     usecase "UC4- Create a Scenario" as UC4
     usecase "UC5- Build a Station" as UC5
     usecase "UC6- Upgrade a Station" as UC6
     usecase "UC7- List all Stations" as UC7
+    usecase "UC8- Build a Railway line" as UC8
     usecase "UC9- Buy a Locomotive" as UC9
     usecase "UC10- Assign a train to a route" as UC10
+    usecase "UC11- List all Trains" as UC11
     usecase "UC12- Create a Simulator" as UC12
 
 E --> UC1
+E --> UC2
 E --> UC3
 E --> UC4
 
 P --> UC5
 P --> UC6
 P --> UC7
+P --> UC8
 P --> UC9
 P --> UC10
+P --> UC11
 
 PO --> UC12
 
