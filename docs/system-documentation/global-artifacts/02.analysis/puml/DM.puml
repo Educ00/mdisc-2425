@@ -26,6 +26,7 @@ Y coordinates
 
 class Industry{
 type
+name
 }
 
 class Resource{
@@ -48,7 +49,8 @@ class Editor{
 }
 
 class Player{
-
+username
+budget
 }
 
 class Simulator{
@@ -56,7 +58,8 @@ status
 }
 
 class RailwayNetwork{
-
+id
+name
 }
 
 class Station{
@@ -68,15 +71,20 @@ status
 }
 
 class Train{
-
+type
+id
+name
 }
 
 class Route{
-
+id
+name
 }
 
 class Cargo{
 deliverValue
+quantity
+type
 }
 
 class RailwayLine{
@@ -95,13 +103,12 @@ fuelCost
 maintenancePerYear
 acquisitionPrice
 cost
+id
 }
 
 class Carriage{
-
-}
-
-class CargoType{
+id
+name
 type
 }
 
