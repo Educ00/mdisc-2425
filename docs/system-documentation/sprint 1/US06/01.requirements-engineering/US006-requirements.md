@@ -1,4 +1,4 @@
-# US006 - Create a Task
+# US006 - Upgrade a Station
 
 ## 1. Requirements Engineering
 
