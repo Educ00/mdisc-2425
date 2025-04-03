@@ -14,7 +14,7 @@ To identify domain conceptual classes, start by making a list of candidate conce
 
 ---
 
-**Transaction Line Itemss**
+**Transaction Line Items**
 
 * 
 
@@ -34,13 +34,15 @@ To identify domain conceptual classes, start by making a list of candidate conce
 
 **Roles of People or Organizations**
 
-* 
-
+* Product Owner
+* Editor
+* Player
 ---
 
 **Places**
 
-* 
+* City
+* Location
 
 ---
 
@@ -52,31 +54,46 @@ To identify domain conceptual classes, start by making a list of candidate conce
 
 **Physical Objects**
 
-* 
+* Train
+* Carriage
+* Locomotive
+* Railway Line
 
 ---
 
 **Descriptions of Things**
 
-* 
+* ScenarioEditor
 
 ---
 
 **Catalogs**
 
-* 
+* IndustryType
+* ResourceType
+* CargoType
 
 ---
 
 **Containers**
 
-* 
+* Map
+* Train
+* Industry
+* City
+* Carriage
+* Railway Network
+* Scenario
 
 ---
 
 **Elements of Containers**
 
-* 
+* Cargo
+* Resource
+* Route
+* Locomotive
+* Carriage
 
 ---
 

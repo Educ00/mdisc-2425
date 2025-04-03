@@ -80,7 +80,6 @@ class Route{
 }
 
 class Cargo{
-type
 deliverValue
 }
 
@@ -103,7 +102,11 @@ cost
 }
 
 class Carriage{
-cargoType
+
+}
+
+class CargoType{
+type
 }
 
 
