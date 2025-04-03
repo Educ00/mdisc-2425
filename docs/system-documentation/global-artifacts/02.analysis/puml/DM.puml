@@ -33,14 +33,10 @@ name
 type
 }
 
-class ScenarioEditor{
+class Scenario{
     timeRestrictions
     technologicalRestrictions
     historicalRestrictions
-}
-
-class Scenario{
-
 }
 
 class ProductOwner{
@@ -109,18 +105,47 @@ class CargoType{
 type
 }
 
+class UpgradeBuilding{
+type
+}
+
 
 Editor "1" --- "1..*" Map : creates >
 Editor "1" --- "1..*" Scenario: creates >
 Editor "1" --- "1..*" Industry : adds >
 Editor "1" --- "1..*" City : adds >
 Player "1" --- "1..*" Station : builds / upgrades / lists >
-Player "1" --- "1" RailwayLine : builds >
+Player "1" --- "1..*" RailwayLine : builds >
 Player "1" --- "1..*" Locomotive : buys >
-Player "1" --- "1..*" Train : assigns / lists >
+Player "1" --- "1..*" Train : assigns / lists / acquires >
 ProductOwner "1" --- "1" Simulator : creates >
-Map "1" --- "1..*" City : contains >
-
-
+Map "1" --- "0..*" City : contains >
+Map "1" --- "0..*" RailwayNetwork : contains >
+Map "1" --- "1..*" Scenario : can be used in >
+' Scenario "1" --- "1" Map : uses >
+Map "1" --- "0..*" Station : contains >
+Map "1" --- "0..*" Industry : contains >
+City "1" --- "1" Location : bears a >
+Industry "1" --- "1" Location : bears a >
+Station "1" --- "1" Location : bears a >
+City "1" --- "0..*" Station : contains >
+Industry "1" --- "1" Location : bears a >
+City "1" --- "0..*" Industry : contains >
+Industry "1" --- "0..*" Resource : generates / transforms / imports / exports >
+Simulator "1" --- "1" RailwayNetwork : creates >
+RailwayNetwork "1" --- "1..*" Station : is composed of >
+Station "1" --- "1..*" City : serves >
+Station "1" --- "0..*" Industry : serves >
+RailwayNetwork "1" --- "1..*" RailwayLine : is composed of >
+RailwayNetwork "1" --- "1" Route : has >
+Cargo "1..*" --- "1" Station : available to be collected at >
+Cargo "1" --- "1" CargoType : has >
+City "1" --- "0..*" Cargo : generates / transforms >
+Industry "1" --- "0..*" Cargo : generates / transforms >
+Station "1" --- "1..*" UpgradeBuilding : can be upgraded with >
+Train "1" --- "1..*" Locomotive : is composed of >
+Train "1" --- "1..*" Carriage : is composed of >
+Carriage "1" --- "1" Cargo : transports >
+Route "1" --- "1..*" Station : is a list of >
 
 @enduml
