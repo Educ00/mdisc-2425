@@ -141,10 +141,43 @@ An association is a relationship between instances of objects that indicates a r
 - etc.
 
 
-| Concept (A) 		|  Association   	|  Concept (B) |
-|----------	   		|:-------------:		|------:       |
-| C1  	| verb1    		 	| C2  |
-| ...  	| ...    		 	| ...  |
+| Concept (A)    |             Association              |     Concept (B) |
+|----------------|:------------------------------------:|----------------:|
+| Editor         |               creates                |             Map |
+| Editor         |               creates                |        Scenario |
+| Editor         |                 adds                 |        Industry |
+| Editor         |                 adds                 |            City |
+| Player         |        builds/upgrades/lists         |         Station |
+| Player         |                builds                |     RailwayLine |
+| Player         |                 buys                 |      Locomotive |
+| Player         |            assigns/lists             |           Train |
+| ProductOwner   |               creates                |       Simulator |
+| Map            |               contains               |            City |
+| Map            |               contains               |  RailwayNetwork |
+| Map            |            can be used in            |        Scenario |
+| Map            |               contains               |         Station |
+| Map            |               contains               |        Industry |
+| City           |               bears a                |        Location |
+| Industry       |               bears a                |        Location |
+| Station        |               bears a                |        Location |
+| City           |               contains               |         Station |
+| City           |               contains               |        Industry |
+| Industry       | generates/transforms/imports/exports |        Resource |
+| Simulator      |               creates                |  RailwayNetwork |
+| RailwayNetwork |            is composed of            |         Station |
+| Station        |                serves                |            City |
+| Station        |                serves                |        Industry |
+| RailwayNetwork |            is composed of            |     RailwayLine |
+| RailwayNetwork |                 has                  |           Route |
+| Cargo          |     available to be collected at     |         Station |
+| Cargo          |                 has                  |       CargoType |
+| City           |         generates/transforms         |           Cargo |
+| Industry       |         generates/transforms         |           Cargo |
+| Station        |         can be upgraded with         | UpgradeBuilding |
+| Train          |            is composed of            |      Locomotive |
+| Train          |            is composed of            |        Carriage |
+| Carriage       |              transports              |           Cargo |
+| Route          |             is a list of             |         Station |
 
 
 
