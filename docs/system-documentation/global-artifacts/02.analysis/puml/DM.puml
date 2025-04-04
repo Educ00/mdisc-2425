@@ -96,8 +96,7 @@ type
 
 Map "1" --- "0..*" City : contains >
 Map "1" --- "0..*" RailwayNetwork : contains >
-Map "1" --- "1..*" Scenario : can be used in >
-' Scenario "1" --- "1" Map : uses >
+Scenario "1" --- "1" Map : uses >
 Map "1" --- "0..*" Station : contains >
 Map "1" --- "0..*" Industry : contains >
 City "1" --- "1" Location : bears a >
