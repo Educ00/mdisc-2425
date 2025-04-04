@@ -26,7 +26,6 @@ Y coordinates
 
 class Industry{
 type
-name
 }
 
 class Resource{
@@ -40,26 +39,11 @@ class Scenario{
     historicalRestrictions
 }
 
-class ProductOwner{
-
-}
-
-class Editor{
-
-}
-
-class Player{
-username
-budget
-}
-
 class Simulator{
 status
 }
 
 class RailwayNetwork{
-id
-name
 }
 
 class Station{
@@ -71,19 +55,16 @@ status
 }
 
 class Train{
-type
-id
-name
 }
 
 class Route{
-id
-name
 }
 
 class Cargo{
 deliverValue
-quantity
+}
+
+class CargoType{
 type
 }
 
@@ -103,13 +84,9 @@ fuelCost
 maintenancePerYear
 acquisitionPrice
 cost
-id
 }
 
 class Carriage{
-id
-name
-type
 }
 
 class UpgradeBuilding{
@@ -117,15 +94,6 @@ type
 }
 
 
-Editor "1" --- "1..*" Map : creates >
-Editor "1" --- "1..*" Scenario: creates >
-Editor "1" --- "1..*" Industry : adds >
-Editor "1" --- "1..*" City : adds >
-Player "1" --- "1..*" Station : builds / upgrades / lists >
-Player "1" --- "1..*" RailwayLine : builds >
-Player "1" --- "1..*" Locomotive : buys >
-Player "1" --- "1..*" Train : assigns / lists / acquires >
-ProductOwner "1" --- "1" Simulator : creates >
 Map "1" --- "0..*" City : contains >
 Map "1" --- "0..*" RailwayNetwork : contains >
 Map "1" --- "1..*" Scenario : can be used in >
@@ -152,7 +120,8 @@ Industry "1" --- "0..*" Cargo : generates / transforms >
 Station "1" --- "1..*" UpgradeBuilding : can be upgraded with >
 Train "1" --- "1..*" Locomotive : is composed of >
 Train "1" --- "1..*" Carriage : is composed of >
-Carriage "1" --- "1" Cargo : transports >
+Carriage "1" --- "1" CargoType : transports >
+Cargo "1" --- "1" CargoType : has >
 Route "1" --- "1..*" Station : is a list of >
 
 @enduml
