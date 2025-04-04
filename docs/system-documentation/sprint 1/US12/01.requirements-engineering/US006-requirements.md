@@ -4,55 +4,57 @@
 
 ### 1.1. User Story Description
 
-As an organization employee, I want to create a new task in order to be further published.
+As a Product Owner, I want to create a simulator that generates cargoes at current stations automatically, considering the cities and industries that the railway network serves. The simulator should provide options for start/pause.
 
 ### 1.2. Customer Specifications and Clarifications 
 
 **From the specifications document:**
 
->	Each task is characterized by having a unique reference per organization, a designation, an informal and a technical description, an estimated duration and cost, as well as a task category. 
+>	The simulator must identify all existing stations in the railway network, determine the supply and demand cargoes based on nearby cities and industries, and generate the corresponding cargoes at those stations.
 
->	As long as it is not published, access to the task is exclusive to the employees of the respective organization. 
+>	Only stations associated with valid cities and industries are eligible for cargo generation.
+
+>   The simulation operation includes start and pause functionalities and should provide feedback on the simulation status.
 
 **From the client clarifications:**
 
-> **Question:** Which is the unit of measurement used to estimate duration?
->
-> **Answer:** Duration is estimated in days.
 
-> **Question:** Monetary data is expressed in any particular currency?
->
-> **Answer:** Monetary data (e.g. estimated cost of a task) is indicated in POT (virtual currency internal to the platform).
 
 ### 1.3. Acceptance Criteria
 
-* **AC1:** All required fields must be filled in.
-* **AC2:** The task reference must have at least 5 alphanumeric characters.
-* **AC3:** When creating a task with an existing reference, the system must reject such operation and the user must be able to modify the typed reference.
+* **AC1**: A scenario must be selected from the list of available scenarios before the simulation can be created.
+
+* **AC2**: The system must automatically generate cargoes at stations based on the validated supply/demand of nearby cities and industries.
+
+* **AC3**: The simulation must include "start" and "pause" options, with feedback on the current state.
+
 
 ### 1.4. Found out Dependencies
 
-* There is a dependency on "US003 - Create a task category" as there must be at least one task category to classify the task being created.
+* There is a dependency on having stations, cities, and industries already defined in the selected scenario.
+
+* Requires validated data models for cities, industries, and station coverage logic.
 
 ### 1.5 Input and Output Data
 
 **Input Data:**
 
+* Selected scenario;
+* Simulation control command (start/pause)
+
 * Typed data:
-    * a reference
-    * a designation 
-    * an informal description
-    * a technical description
-    * an estimated duration
-    * an estimated cost
+    * Control command (start or pause);
 	
 * Selected data:
-    * a task category 
+    * A scenario from the available scenario list; 
 
 **Output Data:**
 
-* List of existing task categories
-* (In)Success of the operation
+* List of available scenarios
+
+* Confirmation of cargo generation logic (pre-execution summary)
+
+* Simulation execution status (started/paused)
 
 ### 1.6. System Sequence Diagram (SSD)
 
@@ -60,6 +62,4 @@ As an organization employee, I want to create a new task in order to be further 
 
 **_Other alternatives might exist._**
 
-### 1.7 Other Relevant Remarks
 
-* The created task stays in a "not published" state in order to distinguish from "published" tasks.
