@@ -17,13 +17,32 @@ As a Player, I want to build a station (can be a depot, a station, or a terminal
 
 **From the client clarifications:**
 
-> **Question:** 
+> **Question:** What is the input data for the user story 5? Is there any input besides the type of the station?
 >
-> **Answer:** 
+> **Answer:** Position; Station type (Terminal, Station or Depot) and, in the case of the station, the center must be filled in. If the proposed is not accepted an alternative one must be entered.
+> 
+> **Question:** If overbuilding occurs, the program stops running and the game ends or simply gives an error message and asks again for the station construction place?
+> 
+> **Answer:** Overbuilding in the Editor is possible, the existing building is replaced for the new one;
+> 
+> **Question:** Should users have options to select different station types (Depot, Station, Terminal) based on the game rules?
+> 
+> **Answer:** No, a player can build depots, stations and terminal as far he have available budget and there no overbuilding.
+> 
+> **Question:** Is the budget the only concern to build a station, or does the player also needs to have other specific resources, like steel, etc.? Are resources included on the budget, or the budget represent only the player's monetary value?
+> 
+> **Answer:**
+just the budget in a generic currency.
 
 ### 1.3. Acceptance Criteria
 
 * **AC1:** Overbuilding is not possible (i.e., a station cannot be built on top of another station).
+* **AC2:** The system must allow the player to select the type of station (Depot, Station, Terminal) and its location on the map.
+* **AC3:** For stations, the player must select the center (NE, SE, NW, SW). 
+* **AC4:** Overbuilding is allowed in the Editor, where the existing building is replaced by the new one.
+* **AC5:** The system must propose a name for the station based on the closest city and the station type.
+* **AC6:** The budget is the only concern for building a station, and it is represented in a generic currency. No other specific resources are required.
+
 
 ### 1.4. Found out Dependencies
 
