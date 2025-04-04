@@ -5,32 +5,30 @@ skinparam shadowing false
 
 autonumber
 
-actor "Organization\nEmployee" as Employee
+actor "Product Owner" as Employee
 participant ":System" as System
 
 activate Employee
 
-    Employee -> System : asks to create a new task
+    Employee -> System : requests to create a new simulation
     activate System
 
-        System --> Employee : shows task category list and asks to select one
+        System --> Employee : displays list of available scenarios\nand asks to select one
     deactivate System
 
-    Employee -> System : selects a task category
+    Employee -> System : selects a scenario
     activate System
 
-        System --> Employee : requests data (i.e. reference, designation, informal\ndescription, technical description, duration, cost)
-    deactivate System
-
-    Employee -> System : types requested data
-    activate System
-
-        System --> Employee : shows all data and requests confirmation
+        System -> System : identifies all existing stations\nin the railway network
+        System -> System : verifies cities and industries\nassociated with each station
+        System -> System : generates cargo based on\nsupply and demand rules
+        System --> Employee : shows generated data and\nrequests confirmation
     deactivate System
 
     Employee -> System : confirms data
     activate System
 
-        System --> Employee : displays operation success
+        System --> Employee : starts simulation and\nconfirms operation success
     deactivate System
+
 @enduml
