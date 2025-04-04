@@ -52,6 +52,8 @@ type
 economic radius
 cost
 status
+supply
+demand
 }
 
 class Train{
@@ -62,6 +64,7 @@ class Route{
 
 class Cargo{
 deliverValue
+status
 }
 
 class CargoType{
@@ -70,8 +73,8 @@ type
 
 class RailwayLine{
 length
-lineType
-electrified
+type
+electrification
 }
 
 class Locomotive{
@@ -91,6 +94,7 @@ class Carriage{
 
 class UpgradeBuilding{
 type
+availabilityDate
 }
 
 
