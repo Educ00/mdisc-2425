@@ -1,0 +1,41 @@
+@startuml
+
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+hide methods
+
+title Domain Model - US07
+
+class Station {
+    name
+    type
+    economic radius
+    cost
+    status
+    supply
+    demand
+}
+
+class UpgradeBuilding {
+    type
+    availabilityDate
+}
+
+
+class Player {
+    budget
+}
+
+class Cargo{
+deliverValue
+status
+}
+
+Station "1" ---- "1..*" UpgradeBuilding : upgraded with >
+Player "1" ---- "1..*" Station : lists >
+Cargo "1..*" ---- "1" Station : is collected at >
+
+@enduml

@@ -1,0 +1,27 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Player" as Player
+participant ":System" as System
+
+activate Player
+
+    Player -> System : list all stations
+    activate System
+
+        System --> Player : displays all stations
+    deactivate System
+
+    Player -> System : selects a station
+    activate System
+
+        System --> Player : display station's details (name, supply / demand) and cargo status
+    deactivate System
+
+deactivate Player
+
+@enduml
