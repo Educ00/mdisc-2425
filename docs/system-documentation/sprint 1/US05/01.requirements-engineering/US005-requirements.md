@@ -39,10 +39,9 @@ just the budget in a generic currency.
 * **AC1:** Overbuilding is not possible (i.e., a station cannot be built on top of another station).
 * **AC2:** The system must allow the player to select the type of station (Depot, Station, Terminal) and its location on the map.
 * **AC3:** For stations, the player must select the center (NE, SE, NW, SW). 
-* **AC4:** Overbuilding is allowed in the Editor, where the existing building is replaced by the new one.
-* **AC5:** The system must propose a name for the station based on the closest city and the station type.
-* **AC6:** The budget is the only concern for building a station, and it is represented in a generic currency. No other specific resources are required.
-
+* **AC4:** The system must propose a name for the station based on the closest city and the station type.
+* **AC5:** If the player rejects the proposed name, the system must allow the player to enter an alternative name.
+* **AC6:** The system must register the alternative name provided by the player.
 
 ### 1.4. Found out Dependencies
 
