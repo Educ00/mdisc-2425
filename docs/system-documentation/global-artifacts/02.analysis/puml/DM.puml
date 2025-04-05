@@ -63,7 +63,6 @@ name
 type
 economic radius
 cost
-status
 supply
 demand
 }

@@ -29,7 +29,6 @@ class Station {
     type
     economic radius
     cost
-    status
     supply
     demand
 }
