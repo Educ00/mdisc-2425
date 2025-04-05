@@ -39,7 +39,7 @@ activate Player
     Player -> System : confirms station name
     activate System
 
-        System --> Player : displays all data (station name, location, and center) and requests final confirmation
+        System --> Player : displays station's name, location, and center and requests final confirmation
     deactivate System
 
     Player -> System : confirms all data

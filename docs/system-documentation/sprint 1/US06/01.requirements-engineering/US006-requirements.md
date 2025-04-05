@@ -4,55 +4,81 @@
 
 ### 1.1. User Story Description
 
-As an organization employee, I want to create a new task in order to be further published.
+As a Player, I want to upgrade a selected station with a building.
+Each type of station improvement has a date from which it is available.
+Some equipments are mutually exclusive (e.g., small and grand hotel)
+and some equipments/buildings replace others (the telegraph was initially used to facilitate the operation of trains at stations, and was later
+replaced by the telephone, so after the advent of telephone, telegraph
+is no more available).
+
 
 ### 1.2. Customer Specifications and Clarifications 
 
 **From the specifications document:**
 
->	Each task is characterized by having a unique reference per organization, a designation, an informal and a technical description, an estimated duration and cost, as well as a task category. 
-
->	As long as it is not published, access to the task is exclusive to the employees of the respective organization. 
+> Each type of station improvement has a date from which it is available.
+> Some equipments are mutually exclusive (e.g., small and grand hotel).
+> Some equipments/buildings replace others (the telegraph was initially used to facilitate the operation of trains at stations, and was later replaced by the telephone, so after the advent of telephone, telegraph is no more available).
 
 **From the client clarifications:**
 
-> **Question:** Which is the unit of measurement used to estimate duration?
+> **Question:** Is there a limit on the number of buildings a station can be upgraded with?
 >
-> **Answer:** Duration is estimated in days.
+> **Answer:** No.
 
-> **Question:** Monetary data is expressed in any particular currency?
+> **Question:** Does the upgrade from telegraph to telephone occur automatically once a certain year is reached?
 >
-> **Answer:** Monetary data (e.g. estimated cost of a task) is indicated in POT (virtual currency internal to the platform).
+> **Answer:** There are no automatic updates; When a new building is available, the player can buy it and then the previous building is replaced.
+
+> **Question:** In the statement, the example of the small hotel and large hotel is given as mutually exclusive equipment. Does this mean that all upgrades of the same type are always mutually exclusive? Or, for example, is it possible to have more than one unit of liquid storage at the same station?
+>
+> **Answer:** There are mutually exclusive buildings such as a small restaurant and a large restaurant.
+
+> **Question:** Additionally, I would like to confirm if it is possible to have multiple buildings of different types at the same station. For example, can we have a small café, a large hotel, and a post office simultaneously?
+>
+> **Answer:** There are buildings that, once they exist, make it impossible to construct the previous one. For example, the telegraph was replaced by the telephone. Stations that have a telegraph will continue to have it functioning until a telephone is built to replace the telegraph. From the moment the telephone exists, it is no longer possible to construct a telegraph.
+
+> **Question:** If allowed, is there a maximum limit to the number of buildings at each station?
+>
+> **Answer:** Multiple identical buildings cannot exist (for example, you cannot have 3 grain silos).
+
+> **Question:** If this limit exists, does it vary according to the type of station (Depot, Station, or Terminal)?
+>
+> **Answer:** All combinations, as long as they respect the previously mentioned restrictions, are possible.
 
 ### 1.3. Acceptance Criteria
 
-* **AC1:** All required fields must be filled in.
-* **AC2:** The task reference must have at least 5 alphanumeric characters.
-* **AC3:** When creating a task with an existing reference, the system must reject such operation and the user must be able to modify the typed reference.
+* **AC1:** The system must show a list of stations available for upgrade.
+* **AC2:** The system must show valid upgrade buildings for the selected station based on the current date.
+* **AC3:** The system must prevent mutually exclusive upgrades from being applied simultaneously.
+* **AC4:** The system must allow the player to replace old building with a new one, bearing in mind that there are no automatic updates.
 
 ### 1.4. Found out Dependencies
 
-* There is a dependency on "US003 - Create a task category" as there must be at least one task category to classify the task being created.
+* **US01:** As an Editor, I want to create a map with a size and a name.
+  - It's necessary to have a map to build and upgrade a station.
+
+* **US03:** As an Editor, I want to add a city in a position XY of the selected map, with a name and a positive number of house blocks.
+  - The station name should be based on the closest city.
+
+* **US04:** As an Editor, I want to create a scenario for a selected map.
+  - The station should be built and upgraded in a scenario.
+
+* **US05:** As a Player, I want to build a station (can be a depot, a station, or a terminal) with a location in the current map.
+  - It's necessary to have an existing station to upgrade.
 
 ### 1.5 Input and Output Data
 
 **Input Data:**
 
-* Typed data:
-    * a reference
-    * a designation 
-    * an informal description
-    * a technical description
-    * an estimated duration
-    * an estimated cost
-	
 * Selected data:
-    * a task category 
+  * a station
+  * an upgrade building
 
 **Output Data:**
 
-* List of existing task categories
-* (In)Success of the operation
+* Station's upgrade preview
+* Success of the operation
 
 ### 1.6. System Sequence Diagram (SSD)
 
@@ -62,4 +88,4 @@ As an organization employee, I want to create a new task in order to be further 
 
 ### 1.7 Other Relevant Remarks
 
-* The created task stays in a "not published" state in order to distinguish from "published" tasks.
+* N/A
