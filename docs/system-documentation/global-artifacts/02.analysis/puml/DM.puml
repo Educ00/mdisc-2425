@@ -110,6 +110,13 @@ type
 availabilityDate
 }
 
+class Editor{
+}
+
+class Player{
+budget
+}
+
 
 Map "1" ---- "0..*" City : contains >
 Map "1" ---- "0..*" RailwayNetwork : contains >
@@ -133,7 +140,7 @@ RailwayNetwork "1" ---- "1..*" Station : is composed of >
 Station "1" ---- "1..*" City : serves >
 Station "1" ---- "0..*" Industry : serves >
 RailwayNetwork "1" ---- "1..*" RailwayLine : is composed of >
-RailwayNetwork "1" ---- "1..*" Trains : is composed of >
+RailwayNetwork "1" ---- "1..*" Train : is composed of >
 Train "1" ---- "1..*" Cargo : transports >
 RailwayNetwork "1" ---- "1" Route : has >
 Cargo "1..*" ---- "1" Station : is collected at >
@@ -145,5 +152,18 @@ Train "1" ---- "1..*" Carriage : is composed of >
 Carriage "1" ---- "1" CargoType : transports >
 Train "1" ---- "1..*" Station : passes through >
 Route "1" ---- "1..*" Station : is a list of >
+Editor "1" ---- "1..*" Map : creates >
+Editor "1" ---- "1..*" Industry : adds >
+Editor "1" ---- "1..*" City : adds >
+Editor "1" ---- "1..*" Scenario : creates >
+Player "1" ---- "1..*" Station : builds >
+Player "1" ---- "1..*" Station : upgrades >
+Player "1" ---- "1..*" Station : lists >
+Player "1" ---- "1..*" RailwayLine : builds >
+Player "1" ---- "1..*" Locomotive : buys >
+Player "1" ---- "1..*" Train : assigns >
+Player "1" ---- "1..*" Train : lists >
+Player "1" ---- "1..*" Simulation : creates >
+
 
 @enduml

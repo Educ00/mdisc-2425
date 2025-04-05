@@ -141,43 +141,54 @@ An association is a relationship between instances of objects that indicates a r
 - etc.
 
 
-| Concept (A)    |             Association              |     Concept (B) |
-|----------------|:------------------------------------:|----------------:|
-| Editor         |               creates                |             Map |
-| Editor         |               creates                |        Scenario |
-| Editor         |                 adds                 |        Industry |
-| Editor         |                 adds                 |            City |
-| Player         |        builds/upgrades/lists         |         Station |
-| Player         |                builds                |     RailwayLine |
-| Player         |                 buys                 |      Locomotive |
-| Player         |            assigns/lists             |           Train |
-| ProductOwner   |               creates                |       Simulator |
-| Map            |               contains               |            City |
-| Map            |               contains               |  RailwayNetwork |
-| Map            |            can be used in            |        Scenario |
-| Map            |               contains               |         Station |
-| Map            |               contains               |        Industry |
-| City           |               bears a                |        Location |
-| Industry       |               bears a                |        Location |
-| Station        |               bears a                |        Location |
-| City           |               contains               |         Station |
-| City           |               contains               |        Industry |
-| Industry       | generates/transforms/imports/exports |        Resource |
-| Simulator      |               creates                |  RailwayNetwork |
-| RailwayNetwork |            is composed of            |         Station |
-| Station        |                serves                |            City |
-| Station        |                serves                |        Industry |
-| RailwayNetwork |            is composed of            |     RailwayLine |
-| RailwayNetwork |                 has                  |           Route |
-| Cargo          |     available to be collected at     |         Station |
-| Cargo          |                 has                  |       CargoType |
-| City           |         generates/transforms         |           Cargo |
-| Industry       |         generates/transforms         |           Cargo |
-| Station        |         can be upgraded with         | UpgradeBuilding |
-| Train          |            is composed of            |      Locomotive |
-| Train          |            is composed of            |        Carriage |
-| Carriage       |              transports              |           Cargo |
-| Route          |             is a list of             |         Station |
+| Concept (A)    |   Association   |              Concept (B) |
+|----------------|:---------------:|-------------------------:|
+| Map            |    contains     |                     City |
+| Map            |    contains     |           RailwayNetwork |
+| Scenario       |      uses       |                      Map |
+| Map            |    contains     |                  Station |
+| Map            |    contains     |                 Industry |
+| City           |     bears a     |                 Location |
+| Industry       |     bears a     |                 Location |
+| Station        |     bears a     |                 Location |
+| City           |  is served by   |                  Station |
+| City           |    contains     |                 Industry |
+| Industry       |    generates    |                 Resource |
+| Industry       |   transforms    |                 Resource |
+| Industry       |     imports     |                 Resource |
+| Industry       |     exports     |                 Resource |
+| Scenario       |    includes     |          TimeRestriction |
+| Scenario       |    contains     | TechnologicalRestriction |
+| Scenario       |    comprises    |    HistoricalRestriction |
+| Simulator      |     creates     |           RailwayNetwork |
+| RailwayNetwork | is composed of  |                  Station |
+| Station        |     serves      |                     City |
+| Station        |     serves      |                 Industry |
+| RailwayNetwork | is composed of  |              RailwayLine |
+| RailwayNetwork | is composed of  |                    Train |
+| Train          |   transports    |                    Cargo |
+| RailwayNetwork |       has       |                    Route |
+| Cargo          | is collected at |                  Station |
+| Cargo          |       has       |                CargoType |
+| Station        |  upgraded with  |          UpgradeBuilding |
+| RailwayLine    |    connects     |                  Station |
+| Train          | is composed of  |               Locomotive |
+| Train          | is composed of  |                 Carriage |
+| Carriage       |   transports    |                CargoType |
+| Train          | passes through  |                  Station |
+| Route          |  is a list of   |                  Station |
+| Editor         |     creates     |                      Map |
+| Editor         |      adds       |                 Industry |
+| Editor         |      adds       |                     City |
+| Editor         |     creates     |                 Scenario |
+| Player         |     builds      |                  Station |
+| Player         |    upgrades     |                  Station |
+| Player         |      lists      |                  Station |
+| Player         |     builds      |              RailwayLine |
+| Player         |      buys       |               Locomotive |
+| Player         |     assigns     |                    Train |
+| Player         |      lists      |                    Train |
+| Player         |     creates     |               Simulation |
 
 
 
