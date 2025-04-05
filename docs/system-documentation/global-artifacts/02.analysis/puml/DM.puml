@@ -34,9 +34,21 @@ type
 }
 
 class Scenario{
-    timeRestrictions
-    technologicalRestrictions
-    historicalRestrictions
+}
+
+class TimeRestriction{
+    startDate
+    endDate
+}
+
+class TechnologicalRestriction{
+    availableLocomotives
+    availableIndustries
+}
+
+class HistoricalRestriction{
+    name
+    effects
 }
 
 class Simulator{
@@ -87,6 +99,7 @@ fuelCost
 maintenancePerYear
 acquisitionPrice
 cost
+serialNumber
 }
 
 class Carriage{
@@ -98,33 +111,39 @@ availabilityDate
 }
 
 
-Map "1" --- "0..*" City : contains >
-Map "1" --- "0..*" RailwayNetwork : contains >
-Scenario "1" --- "1" Map : uses >
-Map "1" --- "0..*" Station : contains >
-Map "1" --- "0..*" Industry : contains >
-City "1" --- "1" Location : bears a >
-Industry "1" --- "1" Location : bears a >
-Station "1" --- "1" Location : bears a >
-City "1" --- "0..*" Station : contains >
-Industry "1" --- "1" Location : bears a >
-City "1" --- "0..*" Industry : contains >
-Industry "1" --- "0..*" Resource : generates / transforms / imports / exports >
-Simulator "1" --- "1" RailwayNetwork : creates >
-RailwayNetwork "1" --- "1..*" Station : is composed of >
-Station "1" --- "1..*" City : serves >
-Station "1" --- "0..*" Industry : serves >
-RailwayNetwork "1" --- "1..*" RailwayLine : is composed of >
-RailwayNetwork "1" --- "1" Route : has >
-Cargo "1..*" --- "1" Station : available to be collected at >
-Cargo "1" --- "1" CargoType : has >
-City "1" --- "0..*" Cargo : generates / transforms >
-Industry "1" --- "0..*" Cargo : generates / transforms >
-Station "1" --- "1..*" UpgradeBuilding : can be upgraded with >
-Train "1" --- "1..*" Locomotive : is composed of >
-Train "1" --- "1..*" Carriage : is composed of >
-Carriage "1" --- "1" CargoType : transports >
-Cargo "1" --- "1" CargoType : has >
-Route "1" --- "1..*" Station : is a list of >
+Map "1" ---- "0..*" City : contains >
+Map "1" ---- "0..*" RailwayNetwork : contains >
+Scenario "1" ---- "1" Map : uses >
+Map "1" ---- "0..*" Station : contains >
+Map "1" ---- "0..*" Industry : contains >
+City "1" ---- "1" Location : bears >
+Industry "1" ---- "1" Location : bears >
+Station "1" ---- "1" Location : bears >
+City "1" ---- "0..*" Station : is served by >
+City "1" ---- "0..*" Industry : contains >
+Industry "1" ---- "0..*" Resource : generates >
+Industry "1" ---- "0..*" Resource : transforms >
+Industry "1" ---- "0..*" Resource : imports >
+Industry "1" ---- "0..*" Resource : exports >
+Scenario "1" ---- "1" TimeRestriction : includes >
+Scenario "1" ---- "1..*" TechnologicalRestriction : contains >
+Scenario "1" ---- "1..*" HistoricalRestriction : comprises >
+Simulator "1" ---- "1" RailwayNetwork : creates >
+RailwayNetwork "1" ---- "1..*" Station : is composed of >
+Station "1" ---- "1..*" City : serves >
+Station "1" ---- "0..*" Industry : serves >
+RailwayNetwork "1" ---- "1..*" RailwayLine : is composed of >
+RailwayNetwork "1" ---- "1..*" Trains : is composed of >
+Train "1" ---- "1..*" Cargo : transports >
+RailwayNetwork "1" ---- "1" Route : has >
+Cargo "1..*" ---- "1" Station : is collected at >
+Cargo "1" ---- "1" CargoType : has >
+Station "1" ---- "1..*" UpgradeBuilding : upgraded with >
+RailwayLine "1" ---- "1..*" Station : connects >
+Train "1" ---- "1..*" Locomotive : is composed of >
+Train "1" ---- "1..*" Carriage : is composed of >
+Carriage "1" ---- "1" CargoType : transports >
+Train "1" ---- "1..*" Station : passes through >
+Route "1" ---- "1..*" Station : is a list of >
 
 @enduml
