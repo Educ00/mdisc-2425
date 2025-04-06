@@ -12,19 +12,23 @@ activate Player
 
     Player -> System : requests to upgrade a station
     activate System
-
-        System --> Player : shows stations available for upgrade
+        System --> Player : shows list of stations available for upgrade
     deactivate System
 
     Player -> System : selects a station
     activate System
+        System --> Player : shows valid upgrade buildings for that station based on the current date
+    deactivate System
 
-        System --> Player : requests confirmation
+
+    Player -> System : selects building to upgrade station
+    activate System
+        System --> Player : shows station's upgrade preview and asks for confirmation
     deactivate System
 
     Player -> System : confirms upgrade
     activate System
-
-        System --> Player : displays upgrade success
+        System --> Player : displays success message
     deactivate System
+
 @enduml

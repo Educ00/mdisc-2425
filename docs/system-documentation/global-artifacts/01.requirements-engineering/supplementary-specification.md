@@ -6,6 +6,29 @@ _Specifies functionalities that:
 &nbsp; &nbsp; (i) are common across several US/UC;
 &nbsp; &nbsp; (ii) are not related to US/UC, namely: Audit, Reporting and Security._
 
+## (i)
+
+### Map and Scenario Configuration (US01, US02, US03, US04)
+- Create maps with defined dimensions and names.
+- Place elements such as cities and industries at specific coordinates.
+- Validate city and industry names and ensure values are positive.
+- Develop scenarios with rules for industry generation, port operations, and available locomotion types.
+
+### Station and Railway Network Configuration (US05, US06, US07, US08)
+- Construct various types of stations (Depot, Terminal, Station).
+- Automatically assign names to stations based on the nearest city.
+- Upgrade stations with buildings that have specific availability constraints.
+- List and select stations with details about buildings and cargo demand/supply.
+- Build railway lines by selecting stations from a registered list.
+
+### Train and Locomotive Configuration (US09, US10, US11)
+- Purchase locomotives based on scenario and date constraints.
+- Assign locomotives to routes, ensuring only valid stations and cargoes are included.
+- List all trains, grouped by locomotive type and sorted alphabetically.
+- Display train details, including current cargoes.
+
+
+## (ii)
 - Validation of business rules must be respected when recording and updating data.
 - All those who wish to use the application must be authenticated with a password of seven alphanumeric characters, including three capital letters and two digits.
 
@@ -54,7 +77,7 @@ _Specifies or constraints the code or construction of a system such
 such as: mandatory standards/patterns, implementation languages,
 database integrity, resource limits, operating system._
 
-- (No specific requirements provided)
+- The development team must implement unit tests for all methods, except for the methods that implement Input/Output operations. Unit tests should be implemented using the JUnit 5 framework. The JaCoCo plugin should be used to generate the coverage report.
 
 ### Interface Constraints
 

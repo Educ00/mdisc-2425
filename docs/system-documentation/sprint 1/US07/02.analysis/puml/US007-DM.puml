@@ -7,7 +7,7 @@ skinparam classAttributeIconSize 0
 hide circle
 hide methods
 
-title Domain Model - US06
+title Domain Model - US07
 
 class Station {
     name
@@ -23,11 +23,18 @@ class UpgradeBuilding {
     availabilityDate
 }
 
+
 class Player {
     budget
 }
 
+class Cargo{
+deliverValue
+status
+}
+
 Station "1" ---- "1..*" UpgradeBuilding : upgraded with >
-Player "1" ---- "1..*" Station : upgrades >
+Player "1" ---- "1..*" Station : lists >
+Cargo "1..*" ---- "1" Station : is collected at >
 
 @enduml

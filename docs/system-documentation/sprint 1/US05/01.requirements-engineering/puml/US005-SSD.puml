@@ -36,15 +36,39 @@ activate Player
         System --> Player : proposes station name
     deactivate System
 
-    Player -> System : confirms station name
-    activate System
+    alt if player accepts proposed name
+        Player -> System : confirms station name
+        activate System
 
-        System --> Player : displays all data (station name, location, and center) and requests final confirmation
-    deactivate System
+            System --> Player : displays station's name, location, and center and requests final confirmation
+        deactivate System
 
-    Player -> System : confirms all data
-    activate System
+        Player -> System : confirms all data
+        activate System
 
-        System --> Player : displays operation success
-    deactivate System
+            System --> Player : displays operation success
+        deactivate System
+
+    else if player rejects proposed name
+
+        Player -> System : rejects proposed name
+        activate System
+
+            System --> Player : requests alternative name
+        deactivate System
+
+        Player -> System : provides alternative name
+        activate System
+
+            System --> Player : displays station's name, location, and center and requests final confirmation
+        deactivate System
+
+        Player -> System : confirms all data
+        activate System
+
+            System --> Player : displays operation success
+        deactivate System
+    end
+
+deactivate Player
 @enduml
