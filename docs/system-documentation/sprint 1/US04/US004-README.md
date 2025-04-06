@@ -2,7 +2,7 @@
 
 [Requirements Engineering](01.requirements-engineering/US004-requirements)
 
-[Analysis](02.analysis/US006-analysis.md)
+[Analysis](02.analysis/US004-analysis)
 
 [Design](03.design/US006-design.md)
 

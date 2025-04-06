@@ -104,6 +104,9 @@ serialNumber
 class Carriage{
 }
 
+class ProductOwner{
+}
+
 class UpgradeBuilding{
 type
 availabilityDate
@@ -139,6 +142,8 @@ RailwayNetwork "1" ---- "1..*" Station : is composed of >
 Station "1" ---- "1..*" City : serves >
 Station "1" ---- "0..*" Industry : serves >
 RailwayNetwork "1" ---- "1..*" RailwayLine : is composed of >
+ProductOwner "1" ---- "1..1" Simulator : creates >
+Simulator "1" ---- "1..*" Cargo : generates >
 RailwayNetwork "1" ---- "1..*" Train : is composed of >
 Train "1" ---- "1..*" Cargo : transports >
 RailwayNetwork "1" ---- "1" Route : has >
