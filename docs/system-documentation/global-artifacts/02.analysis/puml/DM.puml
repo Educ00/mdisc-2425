@@ -135,6 +135,7 @@ Scenario "1" ---- "1" TimeRestriction : includes >
 Scenario "1" ---- "1..*" TechnologicalRestriction : contains >
 Scenario "1" ---- "1..*" HistoricalRestriction : comprises >
 Simulator "1" ---- "1" RailwayNetwork : creates >
+Simulator "1" ---- "1" Cargo : generates >
 RailwayNetwork "1" ---- "1..*" Station : is composed of >
 Station "1" ---- "1..*" City : serves >
 Station "1" ---- "0..*" Industry : serves >

@@ -10,6 +10,7 @@ The team is formed by the students identified in the following table.
 | **1230955**    | Luis Merencio    |
 | **1211199**    | Eduardo Carreiro |
 | **1200941**    | José Teixeira    |
+| **1212151**    | Diogo Santos     |
 
 # 2. Task Distribution ###
 
@@ -41,7 +42,7 @@ At last, remember that each User Story does not stand alone... it needs to be in
 | US06 (Upgrade a Station)                                                                                                       | [1230553](system-documentation/sprint 1/US06/US006-README.md) |          |          |
 | US07 (List all Stations)                                                                                                       | [1230553](system-documentation/sprint 1/US07/US007-README.md) |          |          |
 | US08 (Build a Railway Line)                                                                                                    | N/A                                                           |          |          |
-| US09 (Buy a Locomotive)                                                                                                        | [1230553](system-documentation/sprint 1/US09/US009-README.md) |          |          |
-| US10 (Assign a train to a route)                                                                                               | [1230553](system-documentation/sprint 1/US10/US010-README.md) |          |          |
+| US09 (Buy a Locomotive)                                                                                                        | [1212151](system-documentation/sprint 1/US09/US009-README.md) |          |          |
+| US10 (Assign a train to a route)                                                                                               | [1212151](system-documentation/sprint 1/US10/US010-README.md) |          |          |
 | US11 (List all Trains)                                                                                                         | N/A                                                           |          |          |
 | US12 (Create a Simulator)                                                                                                      | [1230955](system-documentation/sprint 1/US12/US012-README.md) |          |          |
