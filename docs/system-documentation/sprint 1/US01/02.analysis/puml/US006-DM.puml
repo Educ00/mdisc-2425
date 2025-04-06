@@ -10,41 +10,16 @@ skinparam classAttributeIconSize 0
 hide circle
 hide methods
 
-'title Domain Model
+title Domain Model - US01
 
-class Organization {
-    name
-    vatNumber
-    website
-    phoneNumber
-    email
+class Editor{
 }
 
-class Task {
-    reference
-    description
-    informalDescription
-    technicalDescription
-    duration
-    cost
+class Map {
+size
+name
 }
 
-class TaskCategory {
-    description
-}
-
-class Employee {
-    name
-    email
-    position
-    phone
-}
-
-Organization "1" - "*" Employee : has
-Organization "1" - "*" Task: owns
-
-Employee "1" -- "*" Task : creates
-
-Task "*" - "1" TaskCategory: cataloged as
+Editor "1" ---- "1..*" Map : creates >
 
 @enduml
