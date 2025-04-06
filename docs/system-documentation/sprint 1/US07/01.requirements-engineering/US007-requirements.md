@@ -37,15 +37,6 @@ When the user selects an existing station, does it automatically show all the as
 
 ### 1.4. Found out Dependencies
 
-* **US01:** As an Editor, I want to create a map with a size and a name.
-  - It's necessary to have a map to contain stations.
-
-* **US03:** As an Editor, I want to add a city in a position XY of the selected map, with a name and a positive number of house blocks.
-  - The station name should be based on the closest city.
-
-* **US04:** As an Editor, I want to create a scenario for a selected map.
-  - The station should be part of a scenario.
-
 * **US05:** As a Player, I want to build a station (can be a depot, a station, or a terminal) with a location in the current map.
   - It's necessary to have existing stations to list and view their details.
 
