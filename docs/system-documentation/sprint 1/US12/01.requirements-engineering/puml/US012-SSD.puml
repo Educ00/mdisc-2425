@@ -5,30 +5,28 @@ skinparam shadowing false
 
 autonumber
 
-actor "Player" as Employee
+actor "Player" as PO
 participant ":System" as System
 
-activate Employee
+activate PO
 
-    Employee -> System : requests to create a new simulation
+    PO -> System : asks to create a simulator
     activate System
 
-        System --> Employee : displays list of available scenarios\nand asks to select one
+        System --> PO : requests data (cities, industries, stations)
     deactivate System
 
-    Employee -> System : selects a scenario
+    PO -> System : types requested data
     activate System
 
-        System -> System : identifies all existing stations\nin the railway network
-        System -> System : verifies cities and industries\nassociated with each station
-        System -> System : generates cargo based on\nsupply and demand rules
-        System --> Employee : shows generated data and\nrequests confirmation
+        System --> PO : shows all data and requests confirmation
     deactivate System
 
-    Employee -> System : confirms data
+    PO -> System : confirms data
     activate System
 
-        System --> Employee : starts simulation and\nconfirms operation success
+        System --> PO : displays operation success
     deactivate System
+deactivate PO
 
 @enduml
