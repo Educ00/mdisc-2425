@@ -15,13 +15,7 @@ As an Editor, I want to create a map with a size and a name.
 
 **From the client clarifications:**
 
-> **Question:** Which is the unit of measurement used to estimate duration?
 
-> **Answer:** Duration is estimated in days.
-
-> **Question:** Monetary data is expressed in any particular currency?
-
-> **Answer:** Monetary data (e.g. estimated cost of a task) is indicated in POT (virtual currency internal to the platform).
 
 ### 1.3. Acceptance Criteria
 

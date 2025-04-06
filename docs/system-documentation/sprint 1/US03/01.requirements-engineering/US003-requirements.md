@@ -12,7 +12,7 @@ As an Editor, I want to add a city in a position XY of the selected map, with a 
 
 >	A city bears a name, a location (with XY coordinates on the map), and a set of blocks that represent housing.
 
-> Cities generate and consume passengers and mail, but they also consume final products (e.g., food, textiles, cars).
+>  Cities generate and consume passengers and mail, but they also consume final products (e.g., food, textiles, cars).
 
 **From the client clarifications:**
 
