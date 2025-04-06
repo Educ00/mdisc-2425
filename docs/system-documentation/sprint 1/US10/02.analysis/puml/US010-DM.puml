@@ -1,0 +1,56 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+'left to right direction
+
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+'title Domain Model
+
+class Cargo{
+deliverValue
+status
+}
+
+class CargoType{
+type
+}
+
+class RailwayNetwork{
+}
+
+class Station{
+name
+type
+economic radius
+cost
+supply
+demand
+}
+
+class Train{
+}
+
+class Route{
+}
+
+RailwayNetwork "1" ---- "1..*" Station : is composed of >
+RailwayNetwork "1" ---- "1..*" RailwayLine : is composed of >
+RailwayNetwork "1" ---- "1..*" Train : is composed of >
+Train "1" ---- "1..*" Cargo : transports >
+RailwayNetwork "1" ---- "1" Route : has >
+Cargo "1..*" ---- "1" Station : is collected at >
+Cargo "1" ---- "1" CargoType : has >
+RailwayLine "1" ---- "1..*" Station : connects >
+Train "1" ---- "1..*" Locomotive : is composed of >
+Train "1" ---- "1..*" Carriage : is composed of >
+Carriage "1" ---- "1" CargoType : transports >
+Train "1" ---- "1..*" Station : passes through >
+Route "1" ---- "1..*" Station : is a list of >
+
+@enduml
