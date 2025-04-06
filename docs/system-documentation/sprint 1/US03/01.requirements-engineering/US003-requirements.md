@@ -50,6 +50,3 @@ As an Editor, I want to add a city in a position XY of the selected map, with a 
 
 **_Other alternatives might exist._**
 
-### 1.7 Other Relevant Remarks
-
-* The created task stays in a "not published" state in order to distinguish from "published" tasks.

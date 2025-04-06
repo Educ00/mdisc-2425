@@ -47,6 +47,3 @@ As an Editor, I want to create a map with a size and a name.
 
 **_Other alternatives might exist._**
 
-### 1.7 Other Relevant Remarks
-
-* The created task stays in a "not published" state in order to distinguish from "published" tasks.

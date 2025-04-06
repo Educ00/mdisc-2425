@@ -1,0 +1,67 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+
+
+skinparam classAttributeIconSize 0
+
+hide circle
+hide methods
+
+title Domain Model - US04
+
+class Editor{
+}
+
+class Scenario{
+}
+
+class Map {
+size
+name
+}
+
+class Cargo{
+deliverValue
+status
+}
+
+
+class Locomotive{
+type
+power
+acceleration
+topSpeed
+startYearOfOperation
+fuelCost
+maintenancePerYear
+acquisitionPrice
+cost
+serialNumber
+}
+
+
+
+class RailwayNetwork{
+}
+
+class Train{
+}
+
+
+
+Editor "1" ---- "1..*" Scenario : creates >
+
+Scenario "1" ---- "1" Map : uses >
+
+Map "1" ---- "0..*" RailwayNetwork : contains >
+
+RailwayNetwork "1" ---- "1..*" Train : is composed of >
+
+Train "1" ---- "1..*" Cargo : transports >
+
+Train "1" ---- "1..*" Locomotive : is composed of >
+
+@enduml
