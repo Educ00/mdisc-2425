@@ -5,7 +5,7 @@ skinparam shadowing false
 
 autonumber
 
-actor "Player" as PO
+actor "Product Owner" as PO
 participant ":System" as System
 
 activate PO
