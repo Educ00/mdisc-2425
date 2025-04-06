@@ -22,7 +22,7 @@ To identify domain conceptual classes, start by making a list of candidate conce
 
 **Product/Service related to a Transaction or Transaction Line Item**
 
-* 
+* Locomotive
 
 ---
 
@@ -123,7 +123,7 @@ To identify domain conceptual classes, start by making a list of candidate conce
 
 **Documents mentioned/used to perform some work/**
 
-* 
+* "Applying UML and Patterns: An Introduction to Object-Oriented Analysis and Design and Iterative Development".
 
 ---
 

@@ -104,9 +104,6 @@ serialNumber
 class Carriage{
 }
 
-class ProductOwner{
-}
-
 class UpgradeBuilding{
 type
 availabilityDate
@@ -138,12 +135,11 @@ Scenario "1" ---- "1" TimeRestriction : includes >
 Scenario "1" ---- "1..*" TechnologicalRestriction : contains >
 Scenario "1" ---- "1..*" HistoricalRestriction : comprises >
 Simulator "1" ---- "1" RailwayNetwork : creates >
+Simulator "1" ---- "1" Cargo : generates >
 RailwayNetwork "1" ---- "1..*" Station : is composed of >
 Station "1" ---- "1..*" City : serves >
 Station "1" ---- "0..*" Industry : serves >
 RailwayNetwork "1" ---- "1..*" RailwayLine : is composed of >
-ProductOwner "1" ---- "1..1" Simulator : creates >
-Simulator "1" ---- "1..*" Cargo : generates >
 RailwayNetwork "1" ---- "1..*" Train : is composed of >
 Train "1" ---- "1..*" Cargo : transports >
 RailwayNetwork "1" ---- "1" Route : has >
@@ -167,7 +163,7 @@ Player "1" ---- "1..*" RailwayLine : builds >
 Player "1" ---- "1..*" Locomotive : buys >
 Player "1" ---- "1..*" Train : assigns >
 Player "1" ---- "1..*" Train : lists >
-Player "1" ---- "1..*" Simulation : creates >
+Player "1" ---- "1..*" Simulator : creates >
 
 
 @enduml
