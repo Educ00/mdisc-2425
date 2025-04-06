@@ -99,7 +99,7 @@ To identify domain conceptual classes, start by making a list of candidate conce
 
 **Organizations**
 
-* 
+* Product Owner
 
 ---
 

@@ -10,7 +10,7 @@ participant ":System" as System
 
 activate Player
 
-    Player -> System : list all stations
+    Player -> System : requests to list all stations to select one
     activate System
 
         System --> Player : displays all stations
