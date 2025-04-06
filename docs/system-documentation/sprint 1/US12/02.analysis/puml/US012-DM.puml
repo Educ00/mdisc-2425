@@ -35,11 +35,10 @@ class Industry{
 type
 }
 
-class Player{
-budget
+class ProductOwner{
 }
 
-Player "1" ---- "1..1" Simulator : creates >
+ProductOwner "1" ---- "1" Simulator : creates >
 Simulator "1" ---- "1..*" Cargo : generates >
 Cargo "1..*" ---- "1" Station : is collected at >
 Station "1" ---- "1..*" City : serves >

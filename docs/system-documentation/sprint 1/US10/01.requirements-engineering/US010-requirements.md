@@ -1,4 +1,4 @@
-# US010 - Assign a Train to a Route with Cargo Pick-ups
+# US010 - Assign a Train to a Route
 
 ## 1. Requirements Engineering
 
