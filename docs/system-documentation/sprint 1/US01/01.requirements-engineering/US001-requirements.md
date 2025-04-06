@@ -45,5 +45,5 @@ As an Editor, I want to create a map with a size and a name.
 
 ![System Sequence Diagram](svg/US001-SSD.svg)
 
-**_Other alternatives might exist._**
+
 

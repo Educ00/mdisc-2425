@@ -48,5 +48,5 @@ As an Editor, I want to add a city in a position XY of the selected map, with a 
 
 ![System Sequence Diagram](svg/US003-SSD.svg)
 
-**_Other alternatives might exist._**
+
 

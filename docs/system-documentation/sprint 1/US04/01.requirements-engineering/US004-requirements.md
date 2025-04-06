@@ -53,8 +53,5 @@ As an Editor, I want to create a scenario for a selected map.
 
 ![System Sequence Diagram](svg/US004-SSD.svg)
 
-**_Other alternatives might exist._**
 
-### 1.7 Other Relevant Remarks
 
-* The created task stays in a "not published" state in order to distinguish from "published" tasks.
