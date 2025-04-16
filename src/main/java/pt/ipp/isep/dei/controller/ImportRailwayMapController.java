@@ -25,6 +25,8 @@ public class ImportRailwayMapController {
     }
 
     public boolean importFile(String filepath) {
+        // TODO: implementar o parser para o ficheiro que ainda nos vão dar
+        // para já, só criei umas stations e connections de teste
         Set<Station> stationSet = new HashSet<>();
         Station station1 = new Station("Station1", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0 );
         Station station2 = new Station("Station2", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0 );
