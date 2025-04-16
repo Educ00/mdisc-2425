@@ -35,12 +35,15 @@ public class RailwayRepository {
         return true;
     }
 
-    public void displayGraph() {
-        this.graph.setAttribute("ui.quality");
-        this.graph.setAttribute("ui.antialias");
-        Viewer viewer = this.graph.display();
+    public void displayGraph(Graph customGraph) {
+        customGraph.setAttribute("ui.quality");
+        customGraph.setAttribute("ui.antialias");
+        Viewer viewer = customGraph.display();
         viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.HIDE_ONLY);
-        //viewer.enableAutoLayout();
+    }
+
+    public void displayGraph() {
+        displayGraph(this.graph);
     }
     public Node addNode(String name) {
         Node node = this.graph.addNode(name);
