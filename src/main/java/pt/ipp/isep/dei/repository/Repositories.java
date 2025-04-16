@@ -12,6 +12,9 @@ public class Repositories {
     private final TaskCategoryRepository taskCategoryRepository;
     private final AuthenticationRepository authenticationRepository;
     private final RailwayRepository railwayRepository;
+    private final StationRepository stationRepository;
+
+    private final ConnectionRepository connectionRepository;
 
     /**
      * The Singleton's constructor should always be private to prevent direct construction calls with the new operator.
@@ -21,6 +24,8 @@ public class Repositories {
         taskCategoryRepository = new TaskCategoryRepository();
         authenticationRepository = new AuthenticationRepository();
         railwayRepository = new RailwayRepository();
+        stationRepository = new StationRepository();
+        connectionRepository = new ConnectionRepository();
     }
 
     /**
@@ -51,5 +56,13 @@ public class Repositories {
 
     public RailwayRepository getRailwayRepository() {
         return railwayRepository;
+    }
+
+    public StationRepository getStationRepository() {
+        return stationRepository;
+    }
+
+    public ConnectionRepository getConnectionRepository() {
+        return connectionRepository;
     }
 }

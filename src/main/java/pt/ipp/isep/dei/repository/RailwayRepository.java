@@ -5,32 +5,49 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.view.Viewer;
+import pt.ipp.isep.dei.domain.Connection;
+import pt.ipp.isep.dei.domain.Station;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class RailwayRepository {
-    private final Graph graph;
+    private final Graph railway;
 
     public RailwayRepository() {
         System.setProperty("org.graphstream.ui", "swing");
-        this.graph = new SingleGraph("Railway");
+        this.railway = new SingleGraph("Railway");
     }
 
     public boolean importFile(String filepath) {
         // TODO: Implementar a logica para importar do ficheiro
         // para já, criamos um grafo de teste atoa.
-        Node node1 = addNode("Node1");
-        Node node2 = addNode("Node2");
-        Node node3 = addNode("Node3");
-        Node node4 = addNode("Node4");
-        Node node5 = addNode("Node5");
-        Edge edge1 = addEdge("1-2", node1, node2);
-        Edge edge2 = addEdge("2-3", node2, node3);
-        Edge edge3 = addEdge("3-4", node3, node4);
-        Edge edge5 = addEdge("4-5", node4, node5);
-        Edge edge6 = addEdge("2-5", node2, node5);
-        Edge edge7 = addEdge("5-2", node5, node2);
+        Station station1 = new Station("Station1", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0 );
+        Station station2 = new Station("Station2", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0 );
+        Station station3 = new Station("Station3", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0 );
+        Station station4 = new Station("Station4", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0 );
+        Station station5 = new Station("Station5", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0 );
+
+        Node node1 = addNode(station1);
+        Node node2 = addNode(station2);
+        Node node3 = addNode(station3);
+        Node node4 = addNode(station4);
+        Node node5 = addNode(station5);
+
+
+        Connection connection1 = new Connection(1, station1, station2);
+        Connection connection2 = new Connection(1, station2, station3);
+        Connection connection3 = new Connection(1, station3, station4);
+        Connection connection4 = new Connection(1, station4, station5);
+        Connection connection5 = new Connection(1, station2, station5);
+        Connection connection6 = new Connection(1, station5, station2);
+
+        Edge edge1 = addEdge(connection1);
+        Edge edge2 = addEdge(connection2);
+        Edge edge3 = addEdge(connection3);
+        Edge edge5 = addEdge(connection4);
+        Edge edge6 = addEdge(connection5);
+        Edge edge7 = addEdge(connection6);
 
         return true;
     }
@@ -43,66 +60,80 @@ public class RailwayRepository {
     }
 
     public void displayGraph() {
-        displayGraph(this.graph);
+        displayGraph(this.railway);
     }
-    public Node addNode(String name) {
-        Node node = this.graph.addNode(name);
-        node.setAttribute("ui.label", name);
+    public Node addNode(Station station) {
+        Node node = this.railway.addNode(station.getName());
+        node.setAttribute("ui.label", station.getName());
+        node.setAttribute("station", station);
         node.setAttribute("ui.style", "size: 20px; fill-color: #3366ff;");
         return node;
     }
 
-    public Edge addEdge(String value, Node node1, Node node2) {
-        Edge edge = this.graph.addEdge(value, node1, node2, true);
-        edge.setAttribute("ui.label", value);
+    public Edge addEdge(Connection connection) {
+        Edge edge = this.railway.addEdge(connection.getName(), connection.getOrigin().getName(), connection.getTarget().getName(), true);
+        edge.setAttribute("ui.label", connection.getLenght());
+        edge.setAttribute("connection", connection);
         return edge;
     }
 
     public Node getNode(int id) {
-        return this.graph.getNode(id);
+        return this.railway.getNode(id);
     }
 
     public Node getNode(String value) {
-        return this.graph.getNode(value);
+        return this.railway.getNode(value);
     }
 
     public Edge getEdge(int id) {
-        return this.graph.getEdge(id);
+        return this.railway.getEdge(id);
     }
 
     public Edge getEdge(String value) {
-        return this.graph.getEdge(value);
+        return this.railway.getEdge(value);
     }
 
     public Node removeNode(int index) {
-        return this.graph.removeNode(index);
+        return this.railway.removeNode(index);
     }
 
     public Node removeNode(String name) {
-        return this.graph.removeNode(name);
+        return this.railway.removeNode(name);
     }
 
     public Node removeNode(Node node) {
-        return this.graph.removeNode(node);
+        return this.railway.removeNode(node);
     }
 
     public Edge removeEdge(int index) {
-        return this.graph.removeEdge(index);
+        return this.railway.removeEdge(index);
     }
 
     public Edge removeEdge(String from, String to) {
-        return this.graph.removeEdge(from, to);
+        return this.railway.removeEdge(from, to);
     }
 
     public Edge removeEdge(Edge edge) {
-        return this.graph.removeEdge(edge);
+        return this.railway.removeEdge(edge);
     }
 
     public Set<Node> getAllNodes() {
-        return this.graph.nodes().collect(Collectors.toSet());
+        return this.railway.nodes().collect(Collectors.toSet());
+    }
+
+    public Station getStation(Node node) {
+        return (Station) node.getAttribute("station");
+    }
+
+    public Connection getConnection(Edge edge) {
+        return (Connection) edge.getAttribute("connection");
+    }
+
+    public double getLenght(Edge edge) {
+        return (double) edge.getAttribute("ui.label");
     }
 
     public Set<Edge> getAllEdges() {
-        return this.graph.edges().collect(Collectors.toSet());
+        return this.railway.edges().collect(Collectors.toSet());
     }
 }
