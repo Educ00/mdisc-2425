@@ -42,4 +42,12 @@ public class StationRepository {
     public Set<Station> getAllStations() {
         return new HashSet<>(this.stationSet);
     }
+
+    public boolean isEmpty(){
+        return this.stationSet.isEmpty();
+    }
+
+    public void clearAll() {
+        this.stationSet.clear();
+    }
 }

@@ -53,36 +53,21 @@ public class ImportRailwayMapController {
         System.out.println("Reading stations file...");
         Path path = Paths.get(stationsFilepath);
         List<Station> stationList = new ArrayList<>();
-        try (BufferedReader reader = Files.newBufferedReader(path)){
+
+        try (BufferedReader reader = Files.newBufferedReader(path)) {
             String line;
-            while ((line = reader.readLine()) != null){
-                String[] lineArr = line.split(";");
-                if (lineArr.length != 1) {
-                    throw new IllegalArgumentException("Invalid entry for station: " + line);
+
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+
+                if (line.contains(";")) {
+                    String[] stations = line.split(";");
+                    for (String station : stations) {
+                        processStation(station.trim(), stationList);
+                    }
+                } else {
+                    processStation(line, stationList);
                 }
-                lineArr = line.split("_");
-
-                String stationPrefix = lineArr[0].toUpperCase();
-                // estou a guardar a linha toda, se quisermos tirar o prefixo é so fazer String stationName = line[1]
-                // mas se fizermos isso temos de ajustar a parte onde lemos o ficheiro das railways para ler da mesma forma
-                String stationName = line;
-
-                StationType stationType;
-                switch (stationPrefix) {
-                    case "S":
-                        stationType = StationType.Station;
-                        break;
-                    case "D":
-                        stationType = StationType.Depot;
-                        break;
-                    case "T":
-                        stationType = StationType.Terminal;
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Invalid station name format: " + stationName + " on this line: " + line);
-                }
-
-                stationList.add(new Station(stationType, stationName));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -157,6 +142,12 @@ public class ImportRailwayMapController {
         }
         System.out.println("Done!");
 
+        if (!this.stationRepository.isEmpty() || !this.railwayRepository.isEmpty() || !this.mapRepository.isEmpty()) {
+            this.railwayRepository.clearAll();
+            this.stationRepository.clearAll();
+            this.mapRepository.clearAll();
+        }
+
         System.out.println("Adding stations...");
         for (Station station : stationList) {
             this.stationRepository.addStation(station);
@@ -167,8 +158,34 @@ public class ImportRailwayMapController {
             this.railwayRepository.addRailway(railway);
         }
         System.out.println("Done!");
-
         this.mapRepository.addGraph(this.stationRepository.getAllStations(), this.railwayRepository.getAllRailways());
         return true;
+    }
+
+    private void processStation(String line, List<Station> stationList) {
+        String[] parts = line.split("_");
+        if (parts.length < 2) {
+            throw new IllegalArgumentException("Invalid station entry: " + line);
+        }
+
+        String stationPrefix = parts[0].toUpperCase();
+        String stationName = line.trim();
+
+        StationType stationType;
+        switch (stationPrefix) {
+            case "S":
+                stationType = StationType.Station;
+                break;
+            case "D":
+                stationType = StationType.Depot;
+                break;
+            case "T":
+                stationType = StationType.Terminal;
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid station prefix: " + stationPrefix + " in entry: " + stationName);
+        }
+
+        stationList.add(new Station(stationType, stationName));
     }
 }

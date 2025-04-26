@@ -37,6 +37,13 @@ public class MapRepository {
     public void displayCustomGraph(Graph graph) {
         graph.setAttribute("ui.quality");
         graph.setAttribute("ui.antialias");
+        //graph.setAttribute("layout.repulsion", Integer.MAX_VALUE);
+        graph.setAttribute("layout.force", 0.26);
+        graph.setAttribute("layout.quality", 4);
+        graph.setAttribute("layout.stabilization-limit", 0.9);
+
+        graph.setAutoCreate(true);
+        graph.setStrict(false);
         Viewer viewer = graph.display();
         viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.HIDE_ONLY);
     }
@@ -48,19 +55,20 @@ public class MapRepository {
         Node node = this.railwayGraph.addNode(station.getName());
         node.setAttribute("ui.label", station.getName());
         node.setAttribute("station", station);
-        String color = "fill-color: ";
-        switch (station.getStationType()){
+        String colorHex = "";
+        switch (station.getStationType()) {
             case Station:
-                color += "#eb4034;"; // vermelho
+                colorHex = "#eb4034"; // vermelho
                 break;
             case Depot:
-                color += "#0e3fe3;"; // azull
+                colorHex = "#0e3fe3"; // azul
                 break;
             case Terminal:
-                color += "#0ee311;"; // verde
+                colorHex = "#0ee311"; // verde
                 break;
         }
-        node.setAttribute("ui.style", "size: 20px;" + color);
+        node.setAttribute("ui.style", "size: 20px; text-size: 12px; text-offset: 0px, -5px; fill-color: " + colorHex + ";");
+        node.setAttribute("layout.weight", 40);
         return node;
     }
 
@@ -68,18 +76,20 @@ public class MapRepository {
         Edge edge = this.railwayGraph.addEdge(railway.getName(), railway.getOrigin().getName(), railway.getTarget().getName(), true);
         edge.setAttribute("ui.label", railway.getLength());
         edge.setAttribute("railway", railway);
-        String color = "fill-color: ";
-        switch (railway.getRailwayType()){
+        String colorHex = "";
+        switch (railway.getRailwayType()) {
             case Non_Electrified:
-                color += "#e3830e;"; // laranja
+                colorHex = "#e3830e"; // laranja
                 break;
             case Electrified:
-                color += "#c30ee3;"; // roxo
+                colorHex = "#c30ee3"; // roxo
                 break;
         }
-        edge.setAttribute("ui.style", color);
+        edge.setAttribute("ui.style", "fill-color: " + colorHex + "; size: 2px; text-color: " + colorHex + "; text-size: 12px;");
+        edge.setAttribute("layout.weight", 1.7);
         return edge;
     }
+
 
     public Node getNode(int id) {
         return this.railwayGraph.getNode(id);
@@ -133,11 +143,19 @@ public class MapRepository {
         return (Railway) edge.getAttribute("railway");
     }
 
-    public double getLenght(Edge edge) {
+    public double getLength(Edge edge) {
         return (double) edge.getAttribute("ui.label");
     }
 
     public Set<Edge> getAllEdges() {
         return this.railwayGraph.edges().collect(Collectors.toSet());
+    }
+
+    public void clearAll() {
+        this.railwayGraph.clear();
+    }
+
+    public boolean isEmpty() {
+        return this.railwayGraph.getNodeCount() == 0 && this.railwayGraph.getEdgeCount() == 0;
     }
 }

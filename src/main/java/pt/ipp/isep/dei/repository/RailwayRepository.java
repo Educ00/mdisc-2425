@@ -42,4 +42,12 @@ public class RailwayRepository {
     public Set<Railway> getAllRailways() {
         return new HashSet<>(this.railwaySet);
     }
+
+    public boolean isEmpty() {
+        return this.railwaySet.isEmpty();
+    }
+
+    public void clearAll() {
+        this.railwaySet.clear();
+    }
 }
