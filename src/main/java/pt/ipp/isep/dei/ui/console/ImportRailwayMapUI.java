@@ -19,25 +19,32 @@ public class ImportRailwayMapUI implements Runnable {
     public void run() {
         System.out.println("\n\n--- Import Railway Map ------------------------");
 
-        String filepath = "";
+        String stationsFilepath = "";
+        String railwaysFilepath = "";
         do {
-            filepath = Utils.readLineFromConsole("File Path (Neste momento não faz nada, cria um grafo de teste): ");
+            stationsFilepath = Utils.readLineFromConsole("Stations File Path: ");
+            railwaysFilepath = Utils.readLineFromConsole("Railways FIle Path: ");
             try {
-                Path path = Paths.get(filepath);
-                if (Files.exists(path) && Files.isRegularFile(path)) {
-                    System.out.println("Inválid File path!");
-                    filepath = "";
+                Path path = Paths.get(stationsFilepath);
+                if (!Files.exists(path) || !Files.isRegularFile(path)) {
+                    System.out.println("Invalid File path: " + stationsFilepath);
+                    stationsFilepath = "";
+                }
+                path = Paths.get(railwaysFilepath);
+                if (!Files.exists(path) || !Files.isRegularFile(path)) {
+                    System.out.println("Invalid File path: " + railwaysFilepath);
+                    railwaysFilepath = "";
                 }
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
-        } while (filepath == null || filepath.isEmpty() || filepath.isBlank());
+        } while (stationsFilepath == null || stationsFilepath.isEmpty() || stationsFilepath.isBlank() || railwaysFilepath == null || railwaysFilepath.isEmpty() || railwaysFilepath.isBlank());
 
-        boolean result = this.controller.importFile(filepath);
+        boolean result = this.controller.importFile(stationsFilepath, railwaysFilepath);
         if (result) {
-            System.out.println("File imported!");
+            System.out.println("Files imported!");
         } else {
-            System.out.println("File not imported!");
+            System.out.println("Files not imported!");
         }
     }
 }

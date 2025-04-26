@@ -3,6 +3,7 @@ package pt.ipp.isep.dei.domain;
 import java.util.Objects;
 
 public class Station {
+    private StationType stationType;
     private String name;
     private int year;
     private int month;
@@ -20,7 +21,28 @@ public class Station {
     private int revenues;
     private int expenses;
 
-    public Station(String name, int year, int month, int arrivals, int iron, int coal, int steel, int vegetables, int cereals, int wool, int coffee, int cattle, int passengers, int mail, int revenues, int expenses) {
+    public Station(StationType stationType, String name) {
+        this.stationType = stationType;
+        this.name = name;
+        this.year = 0;
+        this.month = 0;
+        this.arrivals = 0;
+        this.iron = 0;
+        this.coal = 0;
+        this.steel = 0;
+        this.vegetables = 0;
+        this.cereals = 0;
+        this.wool = 0;
+        this.coffee = 0;
+        this.cattle = 0;
+        this.passengers = 0;
+        this.mail = 0;
+        this.revenues = 0;
+        this.expenses = 0;
+    }
+
+    public Station(StationType stationType, String name, int year, int month, int arrivals, int iron, int coal, int steel, int vegetables, int cereals, int wool, int coffee, int cattle, int passengers, int mail, int revenues, int expenses) {
+        this.stationType = stationType;
         this.name = name;
         this.year = year;
         this.month = month;
@@ -37,6 +59,10 @@ public class Station {
         this.mail = mail;
         this.revenues = revenues;
         this.expenses = expenses;
+    }
+
+    public StationType getStationType() {
+        return stationType;
     }
 
     public String getName() {
@@ -101,70 +127,6 @@ public class Station {
 
     public int getExpenses() {
         return expenses;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setYear(int year) {
-        this.year = year;
-    }
-
-    public void setMonth(int month) {
-        this.month = month;
-    }
-
-    public void setArrivals(int arrivals) {
-        this.arrivals = arrivals;
-    }
-
-    public void setIron(int iron) {
-        this.iron = iron;
-    }
-
-    public void setCoal(int coal) {
-        this.coal = coal;
-    }
-
-    public void setSteel(int steel) {
-        this.steel = steel;
-    }
-
-    public void setVegetables(int vegetables) {
-        this.vegetables = vegetables;
-    }
-
-    public void setCereals(int cereals) {
-        this.cereals = cereals;
-    }
-
-    public void setWool(int wool) {
-        this.wool = wool;
-    }
-
-    public void setCoffee(int coffee) {
-        this.coffee = coffee;
-    }
-
-    public void setCattle(int cattle) {
-        this.cattle = cattle;
-    }
-
-    public void setPassengers(int passengers) {
-        this.passengers = passengers;
-    }
-
-    public void setMail(int mail) {
-        this.mail = mail;
-    }
-
-    public void setRevenues(int revenues) {
-        this.revenues = revenues;
-    }
-
-    public void setExpenses(int expenses) {
-        this.expenses = expenses;
     }
 
     // Considera que uma station é diferente pelo nome.

@@ -1,106 +1,45 @@
 package pt.ipp.isep.dei.repository;
 
-import org.graphstream.graph.Edge;
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.SingleGraph;
-import org.graphstream.ui.view.Viewer;
-import pt.ipp.isep.dei.domain.Connection;
-import pt.ipp.isep.dei.domain.Station;
+import pt.ipp.isep.dei.domain.Railway;
 
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class RailwayRepository {
-    private final Graph railway;
+    private final Set<Railway> railwaySet;
 
     public RailwayRepository() {
-        System.setProperty("org.graphstream.ui", "swing");
-        this.railway = new SingleGraph("Railway");
+        this.railwaySet = new HashSet<>();
     }
 
-    public void displayGraph(Graph customGraph) {
-        customGraph.setAttribute("ui.quality");
-        customGraph.setAttribute("ui.antialias");
-        Viewer viewer = customGraph.display();
-        viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.HIDE_ONLY);
+    public boolean addRailway(Railway railway) {
+        return this.railwaySet.add(railway);
     }
 
-    public void displayGraph() {
-        displayGraph(this.railway);
-    }
-    public Node addNode(Station station) {
-        Node node = this.railway.addNode(station.getName());
-        node.setAttribute("ui.label", station.getName());
-        node.setAttribute("station", station);
-        node.setAttribute("ui.style", "size: 20px; fill-color: #3366ff;");
-        return node;
+    public boolean removeRailway(Railway railway) {
+        return this.railwaySet.remove(railway);
     }
 
-    public Edge addEdge(Connection connection) {
-        Edge edge = this.railway.addEdge(connection.getName(), connection.getOrigin().getName(), connection.getTarget().getName(), true);
-        edge.setAttribute("ui.label", connection.getLenght());
-        edge.setAttribute("connection", connection);
-        return edge;
+    public boolean existsRailway(Railway railway) {
+        return this.railwaySet.contains(railway);
     }
 
-    public Node getNode(int id) {
-        return this.railway.getNode(id);
+    public Optional<Railway> getRailway(String name) {
+        for (Railway railway : railwaySet) {
+            if (railway.getName().equals(name)){
+                return Optional.of(railway);
+            }
+        }
+        return Optional.empty();
     }
 
-    public Node getNode(String value) {
-        return this.railway.getNode(value);
+    public boolean replaceAllRailway(Set<Railway> connectionsSet) {
+        this.railwaySet.clear();
+        return this.railwaySet.addAll(connectionsSet);
     }
 
-    public Edge getEdge(int id) {
-        return this.railway.getEdge(id);
-    }
-
-    public Edge getEdge(String value) {
-        return this.railway.getEdge(value);
-    }
-
-    public Node removeNode(int index) {
-        return this.railway.removeNode(index);
-    }
-
-    public Node removeNode(String name) {
-        return this.railway.removeNode(name);
-    }
-
-    public Node removeNode(Node node) {
-        return this.railway.removeNode(node);
-    }
-
-    public Edge removeEdge(int index) {
-        return this.railway.removeEdge(index);
-    }
-
-    public Edge removeEdge(String from, String to) {
-        return this.railway.removeEdge(from, to);
-    }
-
-    public Edge removeEdge(Edge edge) {
-        return this.railway.removeEdge(edge);
-    }
-
-    public Set<Node> getAllNodes() {
-        return this.railway.nodes().collect(Collectors.toSet());
-    }
-
-    public Station getStation(Node node) {
-        return (Station) node.getAttribute("station");
-    }
-
-    public Connection getConnection(Edge edge) {
-        return (Connection) edge.getAttribute("connection");
-    }
-
-    public double getLenght(Edge edge) {
-        return (double) edge.getAttribute("ui.label");
-    }
-
-    public Set<Edge> getAllEdges() {
-        return this.railway.edges().collect(Collectors.toSet());
+    public Set<Railway> getAllRailways() {
+        return new HashSet<>(this.railwaySet);
     }
 }

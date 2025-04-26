@@ -1,21 +1,21 @@
 package pt.ipp.isep.dei.controller;
 
-import pt.ipp.isep.dei.repository.RailwayRepository;
+import pt.ipp.isep.dei.repository.MapRepository;
 import pt.ipp.isep.dei.repository.Repositories;
 
 public class ShowRailwayMapController {
-    private RailwayRepository railwayRepository;
+    private MapRepository mapRepository;
 
     public ShowRailwayMapController() {
-        this.railwayRepository = getRailwayRepository();
+        this.mapRepository = getMapRepository();
     }
-    private RailwayRepository getRailwayRepository() {
-        if (railwayRepository == null) {
-            this.railwayRepository = Repositories.getInstance().getRailwayRepository();
+    private MapRepository getMapRepository() {
+        if (mapRepository == null) {
+            this.mapRepository = Repositories.getInstance().getMapRepository();
         }
-        return this.railwayRepository;
+        return this.mapRepository;
     }
     public void showRailwayMap() {
-        this.railwayRepository.displayGraph();
+        this.mapRepository.displayGraph();
     }
 }
