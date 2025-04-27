@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class MapRepository {
-    private Graph railwayGraph;
+    private final Graph railwayGraph;
 
     public MapRepository() {
         System.setProperty("org.graphstream.ui", "swing");
