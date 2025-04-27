@@ -23,7 +23,7 @@ public class ImportRailwayMapUI implements Runnable {
         String railwaysFilepath = "";
         do {
             stationsFilepath = Utils.readLineFromConsole("Stations File Path: ");
-            railwaysFilepath = Utils.readLineFromConsole("Railways FIle Path: ");
+            railwaysFilepath = Utils.readLineFromConsole("Railways File Path: ");
             try {
                 Path path = Paths.get(stationsFilepath);
                 if (!Files.exists(path) || !Files.isRegularFile(path)) {
