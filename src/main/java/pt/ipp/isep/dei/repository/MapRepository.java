@@ -123,7 +123,7 @@ public class MapRepository {
         return this.railwayGraph.getNodeCount() == 0 && this.railwayGraph.getEdgeCount() == 0;
     }
 
-    public List<Railway> Dijisktra(Train train, Station origin, Station target) {
+    public List<Railway> Dijkstra(Train train, Station origin, Station target) {
         Graph tempGraph = Graphs.clone(this.railwayGraph);
 
         // Se for elétrico excluimos todas as linhas não eletricas da copia do grafo

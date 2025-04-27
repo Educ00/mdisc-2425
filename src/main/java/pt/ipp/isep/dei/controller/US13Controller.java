@@ -56,6 +56,6 @@ public class US13Controller {
     }
 
     public List<Railway> checkRouteForTrain(Train chosenTrain, Station originStation, Station targetStation) {
-        return this.mapRepository.Dijisktra(chosenTrain, originStation, targetStation);
+        return this.mapRepository.Dijkstra(chosenTrain, originStation, targetStation);
     }
 }
