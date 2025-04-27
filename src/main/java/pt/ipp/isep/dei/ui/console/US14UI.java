@@ -5,7 +5,6 @@ import pt.ipp.isep.dei.domain.Railway;
 import pt.ipp.isep.dei.domain.Station;
 import pt.ipp.isep.dei.ui.console.utils.Utils;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -19,42 +18,12 @@ public class US14UI implements Runnable {
 
     @Override
     public void run() {
-        int option;
+        if (this.controller.isMapEmpty()) {
+            System.out.println("You need to import a map first!");
+        } else {
+            handleMaintenanceRoute();
+        }
 
-        do {
-            System.out.println("\n\n--- US 14 ------------------------");
-            System.out.println("1. Import Railway Map");
-            System.out.println("2. Show Railway Map");
-            System.out.println("3. Find Maintenance Route");
-            System.out.println("0. Exit");
-
-            option = Utils.readIntegerFromConsole("Choose an option: ");
-
-            switch (option) {
-                case 1:
-                    new ImportRailwayMapUI().run();
-                    break;
-                case 2:
-                    if (this.controller.isMapEmpty()) {
-                        System.out.println("You need to import a map first!");
-                    } else {
-                        new ShowRailwayMapUI().run();
-                    }
-                    break;
-                case 3:
-                    if (this.controller.isMapEmpty()) {
-                        System.out.println("You need to import a map first!");
-                    } else {
-                        handleMaintenanceRoute();
-                    }
-                    break;
-                case 0:
-                    System.out.println("Exiting...");
-                    break;
-                default:
-                    System.out.println("Invalid option. Please try again.");
-            }
-        } while (option != 0);
     }
 
     private void handleMaintenanceRoute() {
@@ -113,4 +82,5 @@ public class US14UI implements Runnable {
             controller.showRailwayMap();
         }
     }
+
 }
