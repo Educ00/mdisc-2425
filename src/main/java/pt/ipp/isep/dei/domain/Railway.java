@@ -55,6 +55,8 @@ public class Railway {
         return "Railway{" +
                 "name='" + name + '\'' +
                 ", target=" + target +
+                ", origin=" + origin +
+                ", length=" + length +
                 ", railwayType=" + railwayType +
                 '}';
     }
