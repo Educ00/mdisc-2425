@@ -16,7 +16,7 @@ public class MapRepository {
 
     public MapRepository() {
         System.setProperty("org.graphstream.ui", "swing");
-        this.railwayGraph = new SingleGraph("Railway");
+        this.railwayGraph = new SingleGraph("Railway", false, false, 128, 1024);
     }
 
     public boolean addGraph(Iterable<Station> stations, Iterable<Railway> railways) {
