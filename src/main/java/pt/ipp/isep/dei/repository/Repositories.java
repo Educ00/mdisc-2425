@@ -15,6 +15,8 @@ public class Repositories {
     private final StationRepository stationRepository;
     private final RailwayRepository railwayRepository;
 
+    private final TrainRepository trainRepository;
+
     /**
      * The Singleton's constructor should always be private to prevent direct construction calls with the new operator.
      */
@@ -25,6 +27,7 @@ public class Repositories {
         mapRepository = new MapRepository();
         stationRepository = new StationRepository();
         railwayRepository = new RailwayRepository();
+        trainRepository = new TrainRepository();
     }
 
     /**
@@ -63,5 +66,9 @@ public class Repositories {
 
     public RailwayRepository getRailwayRepository() {
         return railwayRepository;
+    }
+
+    public TrainRepository getTrainRepository() {
+        return trainRepository;
     }
 }

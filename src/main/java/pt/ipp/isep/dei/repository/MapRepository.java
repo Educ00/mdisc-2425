@@ -3,16 +3,16 @@ package pt.ipp.isep.dei.repository;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.Graphs;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.view.Viewer;
-import pt.ipp.isep.dei.domain.Railway;
-import pt.ipp.isep.dei.domain.Station;
+import pt.ipp.isep.dei.domain.*;
 
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MapRepository {
-    private final Graph railwayGraph;
+    private Graph railwayGraph;
 
     public MapRepository() {
         System.setProperty("org.graphstream.ui", "swing");
@@ -20,9 +20,9 @@ public class MapRepository {
     }
 
     public boolean addGraph(Iterable<Station> stations, Iterable<Railway> railways) {
-        if (this.railwayGraph.getNodeCount() != 0){
+        if (!this.isEmpty()){
             System.out.println("A eliminar grafo antigo...");
-            this.railwayGraph.clear();
+            this.clearAll();
             System.out.println("Done!");
         }
         for (Station station : stations) {
@@ -45,11 +45,11 @@ public class MapRepository {
         graph.setAutoCreate(true);
         graph.setStrict(false);
         Viewer viewer = graph.display();
-        viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.HIDE_ONLY);
+        viewer.setCloseFramePolicy(Viewer.CloseFramePolicy.CLOSE_VIEWER);
     }
 
     public void displayGraph() {
-        displayCustomGraph(this.railwayGraph);
+        displayCustomGraph(Graphs.clone(this.railwayGraph));
     }
     public Node addNode(Station station) {
         Node node = this.railwayGraph.addNode(station.getName());
@@ -91,48 +91,20 @@ public class MapRepository {
     }
 
 
-    public Node getNode(int id) {
+    public Node getNode(String id) {
         return this.railwayGraph.getNode(id);
     }
 
-    public Node getNode(String value) {
-        return this.railwayGraph.getNode(value);
+    public Node getNode(Station station) {
+        return this.getNode(station.getName());
     }
 
-    public Edge getEdge(int id) {
+    public Edge getEdge(String id) {
         return this.railwayGraph.getEdge(id);
     }
 
-    public Edge getEdge(String value) {
-        return this.railwayGraph.getEdge(value);
-    }
-
-    public Node removeNode(int index) {
-        return this.railwayGraph.removeNode(index);
-    }
-
-    public Node removeNode(String name) {
-        return this.railwayGraph.removeNode(name);
-    }
-
-    public Node removeNode(Node node) {
-        return this.railwayGraph.removeNode(node);
-    }
-
-    public Edge removeEdge(int index) {
-        return this.railwayGraph.removeEdge(index);
-    }
-
-    public Edge removeEdge(String from, String to) {
-        return this.railwayGraph.removeEdge(from, to);
-    }
-
-    public Edge removeEdge(Edge edge) {
-        return this.railwayGraph.removeEdge(edge);
-    }
-
-    public Set<Node> getAllNodes() {
-        return this.railwayGraph.nodes().collect(Collectors.toSet());
+    public Edge getEdge(Railway railway) {
+        return this.getEdge(railway.getName());
     }
 
     public Station getStation(Node node) {
@@ -143,19 +115,114 @@ public class MapRepository {
         return (Railway) edge.getAttribute("railway");
     }
 
-    public double getLength(Edge edge) {
-        return (double) edge.getAttribute("ui.label");
-    }
-
-    public Set<Edge> getAllEdges() {
-        return this.railwayGraph.edges().collect(Collectors.toSet());
-    }
-
     public void clearAll() {
         this.railwayGraph.clear();
     }
 
     public boolean isEmpty() {
         return this.railwayGraph.getNodeCount() == 0 && this.railwayGraph.getEdgeCount() == 0;
+    }
+
+    public List<Railway> Dijisktra(Train train, Station origin, Station target) {
+        Graph tempGraph = Graphs.clone(this.railwayGraph);
+
+        // Se for elétrico excluimos todas as linhas não eletricas da copia do grafo
+        if (train.getType().equals(TrainType.Electric)) {
+            List<Edge> edgesToRemove = tempGraph.edges()
+                    .filter(edge -> {
+                        Railway railway = (Railway) edge.getAttribute("railway");
+                        return railway.getRailwayType().equals(RailwayType.Non_Electrified);
+                    })
+                    .collect(Collectors.toList());
+            edgesToRemove.forEach(tempGraph::removeEdge);
+        }
+
+        // Remove nós sem arestas
+        List<Node> nodesToRemove = tempGraph.nodes()
+                .filter(node -> node.edges().count() == 0)
+                .collect(Collectors.toList());
+        nodesToRemove.forEach(tempGraph::removeNode);
+
+        this.displayCustomGraph(tempGraph);
+
+        // Verifica se as estações existem no grafo copiado
+        // se não existirem, depois de remover os vertices sem arestas, quer dizer que não se consegue chegar lá
+        // ou então, foi passada uma estação invalida (acho que é impossivel mas pode acontecer)
+        Node originNode = tempGraph.getNode(origin.getName());
+        if (originNode == null) {
+            return new ArrayList<>();
+        }
+        Node targetNode = tempGraph.getNode(target.getName());
+        if (targetNode == null) {
+            return new ArrayList<>();
+        }
+
+        // Inicializa estruturas de dados
+        Map<Node, Double> distances = new HashMap<>();
+        Map<Node, Node> predecessors = new HashMap<>();
+        PriorityQueue<Node> priorityQueue = new PriorityQueue<>(Comparator.comparingDouble(distances::get));
+        Set<Node> visited = new HashSet<>();
+
+        // Configura distâncias iniciais para o valor máximo
+        for (Node node : tempGraph.nodes().collect(Collectors.toList())) {
+            distances.put(node, Double.MAX_VALUE);
+        }
+        distances.put(originNode, 0.0);
+        priorityQueue.add(originNode);
+
+        // Executa o algoritmo de Dijkstra
+        while (!priorityQueue.isEmpty()) {
+            // vamos buscar o primeiro node da priority queue
+            Node currentNode = priorityQueue.poll();
+            if (!visited.add(currentNode)) {
+                continue;
+            }
+
+            // Verifica as arestas adjacentes
+            // Para cada aresta:
+            for (Edge edge : currentNode.leavingEdges().collect(Collectors.toList())) {
+                // vamos buscar o objeto Railway to edge -> para termos acesso à distancia etc
+                Railway railway = this.getRailway(edge);
+
+                // vamos buscar o node de destino do edge
+                Node neighbor = edge.getTargetNode();
+
+                // se já foi visitado não fazemos mais nada e processamos o proximo edge/node de destino
+                if (visited.contains(neighbor)) {
+                    continue;
+                }
+
+                // calculamos a nova distancia
+                double newDistance = distances.get(currentNode) + railway.getLength();
+
+                // se for menor
+                if (newDistance < distances.get(neighbor)) {
+                    // atualizamos a distancia
+                    distances.put(neighbor, newDistance);
+                    // adicionamos os nodes
+                    predecessors.put(neighbor, currentNode);
+                    // adicionamos o node novo na priority queue
+                    priorityQueue.add(neighbor);
+                }
+            }
+        }
+
+        // Reconstrói o caminho
+        List<Railway> path = new ArrayList<>();
+        // Começamos na Estação de chegada e vamos para tras
+        Node step = targetNode;
+        while (predecessors.containsKey(step)) {
+            // vamos buscar o node anterior
+            Node previous = predecessors.get(step);
+            // vamos buscar a aresta
+            Edge edge = previous.getEdgeToward(step);
+            // vamos buscar o objeto railway
+            path.add(this.getRailway(edge));
+            step = previous;
+        }
+
+        // Inverte o caminho para a ordem correta
+        Collections.reverse(path);
+        return path;
     }
 }

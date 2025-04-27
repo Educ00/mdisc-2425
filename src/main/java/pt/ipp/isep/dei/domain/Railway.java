@@ -49,4 +49,13 @@ public class Railway {
     public int hashCode() {
         return Objects.hash(railwayType, length, origin, target, name);
     }
+
+    @Override
+    public String toString() {
+        return "Railway{" +
+                "name='" + name + '\'' +
+                ", target=" + target +
+                ", railwayType=" + railwayType +
+                '}';
+    }
 }

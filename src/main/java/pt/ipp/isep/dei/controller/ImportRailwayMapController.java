@@ -143,6 +143,7 @@ public class ImportRailwayMapController {
         System.out.println("Done!");
 
         if (!this.stationRepository.isEmpty() || !this.railwayRepository.isEmpty() || !this.mapRepository.isEmpty()) {
+            System.out.println("HEHEHEHEHE");
             this.railwayRepository.clearAll();
             this.stationRepository.clearAll();
             this.mapRepository.clearAll();

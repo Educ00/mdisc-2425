@@ -1,13 +1,8 @@
 package pt.ipp.isep.dei;
 
 import pt.ipp.isep.dei.controller.AuthenticationController;
-import pt.ipp.isep.dei.domain.Employee;
-import pt.ipp.isep.dei.domain.Organization;
-import pt.ipp.isep.dei.domain.TaskCategory;
-import pt.ipp.isep.dei.repository.AuthenticationRepository;
-import pt.ipp.isep.dei.repository.OrganizationRepository;
-import pt.ipp.isep.dei.repository.Repositories;
-import pt.ipp.isep.dei.repository.TaskCategoryRepository;
+import pt.ipp.isep.dei.domain.*;
+import pt.ipp.isep.dei.repository.*;
 
 public class Bootstrap implements Runnable {
 
@@ -16,6 +11,7 @@ public class Bootstrap implements Runnable {
         addTaskCategories();
         addOrganization();
         addUsers();
+        addTrains();
     }
 
     private void addOrganization() {
@@ -55,5 +51,13 @@ public class Bootstrap implements Runnable {
         authenticationRepository.addUserWithRole("Main Administrator", "admin@this.app", "admin", AuthenticationController.ROLE_ADMIN);
         authenticationRepository.addUserWithRole("Employee", "employee@this.app", "pwd", AuthenticationController.ROLE_EMPLOYEE);
         authenticationRepository.addUserWithRole("Player", "player@this.app", "pwd", AuthenticationController.ROLE_PLAYER);
+    }
+
+    private void addTrains() {
+        TrainRepository trainRepository = Repositories.getInstance().getTrainRepository();
+
+        trainRepository.addTrain(new Train("Test_Diesel", TrainType.Diesel));
+        trainRepository.addTrain(new Train("Test_Steam", TrainType.Steam));
+        trainRepository.addTrain(new Train("Test_Electric", TrainType.Electric));
     }
 }

@@ -142,4 +142,12 @@ public class Station {
     public int hashCode() {
         return Objects.hash(name, year, month, arrivals, iron, coal, steel, vegetables, cereals, wool, coffee, cattle, passengers, mail, revenues, expenses);
     }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "stationType=" + stationType +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
