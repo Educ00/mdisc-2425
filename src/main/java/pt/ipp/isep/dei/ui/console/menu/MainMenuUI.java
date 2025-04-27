@@ -2,6 +2,7 @@ package pt.ipp.isep.dei.ui.console.menu;
 
 import pt.ipp.isep.dei.ui.console.DevTeamUI;
 import pt.ipp.isep.dei.ui.console.US13UI;
+import pt.ipp.isep.dei.ui.console.US14UI;
 import pt.ipp.isep.dei.ui.console.authorization.AuthenticationUI;
 import pt.ipp.isep.dei.ui.console.utils.Utils;
 
@@ -18,6 +19,7 @@ public class MainMenuUI implements Runnable {
         options.add(new MenuItem("Do Login", new AuthenticationUI()));
         options.add(new MenuItem("Know the Development Team", new DevTeamUI()));
         options.add(new MenuItem("US13", new US13UI()));
+        options.add(new MenuItem("US14", new US14UI()));
         int option = 0;
         do {
             option = Utils.showAndSelectIndex(options, "\n\n--- MAIN MENU --------------------------");

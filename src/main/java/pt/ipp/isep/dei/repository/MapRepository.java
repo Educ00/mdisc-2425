@@ -51,6 +51,7 @@ public class MapRepository {
     public void displayGraph() {
         displayCustomGraph(Graphs.clone(this.railwayGraph));
     }
+
     public Node addNode(Station station) {
         Node node = this.railwayGraph.addNode(station.getName());
         node.setAttribute("ui.label", station.getName());
@@ -73,7 +74,7 @@ public class MapRepository {
     }
 
     public Edge addEdge(Railway railway) {
-        Edge edge = this.railwayGraph.addEdge(railway.getName(), railway.getOrigin().getName(), railway.getTarget().getName(), true);
+        Edge edge = this.railwayGraph.addEdge(railway.getName(), railway.getOrigin().getName(), railway.getTarget().getName(), false);
         edge.setAttribute("ui.label", railway.getLength());
         edge.setAttribute("railway", railway);
         String colorHex = "";
@@ -180,12 +181,12 @@ public class MapRepository {
 
             // Verifica as arestas adjacentes
             // Para cada aresta:
-            for (Edge edge : currentNode.leavingEdges().collect(Collectors.toList())) {
+            for (Edge edge : currentNode.edges().collect(Collectors.toList())) {
                 // vamos buscar o objeto Railway to edge -> para termos acesso à distancia etc
                 Railway railway = this.getRailway(edge);
 
                 // vamos buscar o node de destino do edge
-                Node neighbor = edge.getTargetNode();
+                Node neighbor = edge.getOpposite(currentNode);
 
                 // se já foi visitado não fazemos mais nada e processamos o proximo edge/node de destino
                 if (visited.contains(neighbor)) {
@@ -215,7 +216,7 @@ public class MapRepository {
             // vamos buscar o node anterior
             Node previous = predecessors.get(step);
             // vamos buscar a aresta
-            Edge edge = previous.getEdgeToward(step);
+            Edge edge = previous.getEdgeBetween(step);
             // vamos buscar o objeto railway
             path.add(this.getRailway(edge));
             step = previous;
