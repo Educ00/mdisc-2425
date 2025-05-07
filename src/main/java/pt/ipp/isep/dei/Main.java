@@ -1,6 +1,6 @@
 package pt.ipp.isep.dei;
 
-import pt.ipp.isep.dei.ui.console.menu.MainMenuUI;
+import pt.ipp.isep.dei.ui.console.menu.PlayerUI;
 
 public class Main {
 
@@ -9,7 +9,7 @@ public class Main {
         bootstrap.run();
 
         try {
-            MainMenuUI menu = new MainMenuUI();
+            PlayerUI menu = new PlayerUI();
             menu.run();
         } catch (Exception e) {
             e.printStackTrace();

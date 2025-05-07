@@ -170,4 +170,11 @@ Player "1" ---- "1..*" Train : lists >
 ProductOwner "1" ---- "1" Simulator : creates >
 
 
+Industry "1" -- "0..*" Cargo : generates >
+Industry "1" -- "0..*" Cargo : transforms >
+City "1" -- "0..*" Cargo : generates >
+City "1" -- "0..*" Cargo : consumes >
+City "1" -- "0..*" Cargo : transforms >
+
+
 @enduml
