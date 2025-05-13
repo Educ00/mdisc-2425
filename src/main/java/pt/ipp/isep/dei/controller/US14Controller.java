@@ -48,16 +48,51 @@ public class US14Controller {
     }
 
     public boolean isEulerianTrailPossible(boolean onlyElectrified) {
-        Map<Station, Integer> degreeMap = buildDegreeMap(onlyElectrified);
+        Map<Station, List<Railway>> graph = buildUndirectedGraph(onlyElectrified);
+        Set<Station> visited = new HashSet<>();
 
+        // Obter um nó com arestas
+        Station start = null;
+        for (Map.Entry<Station, List<Railway>> entry : graph.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                start = entry.getKey();
+                break;
+            }
+        }
+
+        // Se não há nenhuma linha eletrificada, retorna falso
+        if (start == null) return false;
+
+        // Verificar se o grafo é conexo (considerando só os nós com arestas)
+        dfsConnectivityCheck(graph, start, visited);
+
+        for (Map.Entry<Station, List<Railway>> entry : graph.entrySet()) {
+            if (!entry.getValue().isEmpty() && !visited.contains(entry.getKey())) {
+                return false; // grafo não é conexo
+            }
+        }
+
+        // Verificar graus ímpares
         int oddCount = 0;
-        for (int degree : degreeMap.values()) {
-            if (degree % 2 != 0) {
+        for (List<Railway> edges : graph.values()) {
+            if (edges.size() % 2 != 0) {
                 oddCount++;
             }
         }
+
         return oddCount == 0 || oddCount == 2;
     }
+
+    private void dfsConnectivityCheck(Map<Station, List<Railway>> graph, Station current, Set<Station> visited) {
+        visited.add(current);
+        for (Railway railway : graph.get(current)) {
+            Station neighbor = railway.getOrigin().equals(current) ? railway.getTarget() : railway.getOrigin();
+            if (!visited.contains(neighbor)) {
+                dfsConnectivityCheck(graph, neighbor, visited);
+            }
+        }
+    }
+
 
     private Map<Station, Integer> buildDegreeMap(boolean onlyElectrified) {
         Map<Station, Integer> degreeMap = new HashMap<>();
