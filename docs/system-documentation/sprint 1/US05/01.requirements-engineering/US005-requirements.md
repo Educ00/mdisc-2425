@@ -61,12 +61,13 @@ just the budget in a generic currency.
 **Input Data:**
 
 
-* Typed data:
- * location on the map
+Typed data:
+ * Location on the map
 
-* Selected data:
- * station type (Depot, Station, Terminal)
- * center definition for the station (NE, SE, NW, SW) if the station type is "Station"
+
+Selected data:
+ * Station type (Depot, Station, Terminal)
+ * Center definition for the station (NE, SE, NW, SW) if the station type is "Station"
 
 **Output Data:**
 

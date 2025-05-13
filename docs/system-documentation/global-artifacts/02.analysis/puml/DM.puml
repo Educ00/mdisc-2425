@@ -107,6 +107,7 @@ class Carriage{
 class UpgradeBuilding{
 type
 availabilityDate
+exclusivityGroup
 }
 
 class Editor{
