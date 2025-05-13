@@ -125,7 +125,7 @@ public List<Railway> Dijkstra(Train train, Station origin, Station target) {
 
 1. **Preparation of the Graph:**
     - **Cloning the original graph** to avoid mutating it.
-    - **Filtering edges** based on train type (removing non-electrified lines for electric trains).
+    - **Filtering edges** based on train type (i.e. removing non-electrified lines for electric trains).
     - **Removing isolated nodes** with no remaining edges.
 ```java
 Graph tempGraph = Graphs.clone(this.railwayGraph);
