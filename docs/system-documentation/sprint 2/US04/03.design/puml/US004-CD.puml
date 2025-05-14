@@ -1,0 +1,162 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam classAttributeIconSize 0
+
+class CreateScenarioUI {
+    - controller: CreateScenarioController
+    + run()
+}
+
+class CreateScenarioController {
+    + CreateScenarioController()
+    + getAvailableMaps(): List<Map>
+    + createScenario(mapName: String,
+                    name: String,
+                    startYear: int,
+                    endYear: int,
+                    locomotives: List<String>,
+                    industries: List<String>,
+                    imports: List<String>,
+                    exports: List<String>,
+                    transforms: List<String>,
+                    types: List<String>,
+                    events: List<String>,
+                    factors: Map<String, Double>): Scenario
+}
+
+class Repositories {
+    - Repositories()
+    + getInstance(): Repositories
+    + getMapRepository(): MapRepository
+}
+
+class MapRepository {
+    + getMapList(): List<Map>
+    + getMapByName(name: String): Map
+}
+
+class Map {
+    - name: String
+    - scenarios: List<Scenario>
+    + getScenarioList(): List<Scenario>
+    + getName(): String
+    + addScenario(scenario: Scenario): void
+}
+
+class Scenario {
+    - budget: int
+    - timeRestrictions: int
+    - technologicalRestrictions: int
+    - historicalRestrictions: int
+    - stations: List<Station>
+    - trains: List<Train>
+    - railwayLines: List<RailwayLine>
+
+    + getTrainList(): List<Train>
+    + getRailwayLines(): List<RailwayLine>
+    + getTrainByName(name: String): Train
+    + getBudget(): int
+    + getTimeRestriction(): int
+    + getTechnologicalRestrictions(): int
+    + getHistoricalRestrictions(): int
+    + getStationList(): List<Station>
+}
+
+class Station {
+    - type : StationTypes
+    - performance : double
+    - status : String
+    - price : double
+    - center : String
+    - buildings : List<Building>
+
+    + getBuildings(): List<Building>
+    + getType(): String
+    + getPerformance(): double
+    + getStatus(): String
+    + getPrice(): double
+    + getCenter(): String
+}
+
+class RailwayLine {
+    - lineType : String
+    - length : double
+    - startStation: Station
+    - finalStation: Station
+    - isElectrified: boolean
+    - lineStations: List<Station>
+
+    + getLineType() : String
+    + getLength() : double
+    + getStartStation(): Station
+    + getFinalStation(): Station
+    + isElectrified(): boolean
+    + getLineStations(): List<Station>
+}
+
+class Train {
+    - locomotive: Locomotive
+    - cargos: List<Cargo>
+
+    + getLocomotive(): Locomotive
+    + getCargoList(): List<Cargo>
+}
+
+class Locomotive {
+    - name: String
+    - power: float
+    - acceleration: float
+    - topSpeed: float
+    - startYear: int
+    - type: String
+    - cost: float
+    - fuel cost: float
+    - maintenance per year: float
+
+    + getName(): String
+    + getPower(): float
+    + getAcceleration(): float
+    + getTopSpeed(): float
+    + getStartYear(): int
+    + getType(): String
+    + getCost(): float
+    + getFuelCost(): float
+    + getMaintenancePerYear(): float
+}
+
+class Building {
+    - buildingType: String
+    - startYear: int
+    - bonus: double
+    - price: double
+
+    + getBuildingType(): String
+    + getStartYear(): int
+    + getBonus(): double
+    + getPrice(): double
+}
+
+class Cargo {
+    - type: String
+    - value: int
+    + getCargo(): String
+    + getValue(): int
+}
+
+CreateScenarioUI .> CreateScenarioController
+CreateScenarioController ..> Repositories
+CreateScenarioController ..> MapRepository
+CreateScenarioController ..> Map
+CreateScenarioController ..> Scenario
+Scenario --> Station
+Scenario --> Train
+Scenario --> RailwayLine
+Train --> Locomotive
+Train --> Cargo
+Station --> Building
+Repositories --> MapRepository
+MapRepository --> Map
+Map --> Scenario
+@enduml

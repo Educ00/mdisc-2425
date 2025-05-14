@@ -1,0 +1,74 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Editor" as Editor
+participant ":CreateMapUI" as UI
+participant ":CreateMapController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "MapRepository\n:MapRepository" as MAP_REPO
+participant "map\n:Map" as MAP
+activate Editor
+
+Editor -> UI : asks to create a map
+activate UI
+
+UI --> Editor : requests map name and dimensions
+deactivate UI
+
+Editor -> UI : provides map name, width, height
+activate UI
+UI --> CTRL** : create()
+UI -> CTRL : verifyName(mapName)
+activate CTRL
+CTRL -> REPOS : getInstance()
+
+activate REPOS
+REPOS --> CTRL : repositories
+deactivate REPOS
+
+CTRL -> REPOS_SINGLETON : getMapRepository()
+activate REPOS_SINGLETON
+REPOS_SINGLETON --> CTRL : mapRepository
+deactivate REPOS_SINGLETON
+
+CTRL -> MAP_REPO : isNameTaken(mapName)
+activate MAP_REPO
+MAP_REPO --> CTRL : true/false
+deactivate MAP_REPO
+
+CTRL -> CTRL : isNameValid(mapName)
+  alt name invalid or already exists
+                        CTRL -> UI : show error message
+                    else
+                        CTRL -> UI : name is valid
+                    end
+deactivate CTRL
+UI --> Editor : shows map details and requests confirmation
+deactivate UI
+
+Editor -> UI : confirms map creation
+activate UI
+
+UI -> CTRL : createMap(mapName, width, height)
+activate CTRL
+CTRL -> MAP** : create()
+
+CTRL -> MAP : addMap(map)
+activate MAP
+MAP --> CTRL : map
+deactivate MAP
+
+
+
+CTRL --> UI : map
+deactivate CTRL
+
+UI --> Editor : displays map details and operation success
+deactivate UI
+
+deactivate Editor
+@enduml

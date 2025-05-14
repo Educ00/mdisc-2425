@@ -1,0 +1,123 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+autonumber
+
+actor "Editor" as EDITOR
+participant ":CreateScenarioUI" as UI
+participant ":CreateScenarioController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "MapRepository\n:MapRepository" as MAP_REPO
+participant "map\n:Map" as MAP
+participant "scenario\n:Scenario" as SCENARIO
+
+activate EDITOR
+    EDITOR -> UI : asks to create a scenario
+    activate UI
+        UI --> CTRL : create()
+
+        UI -> CTRL : getAvailableMaps()
+        activate CTRL
+            CTRL -> REPOS : getInstance()
+            activate REPOS
+                REPOS --> CTRL : repositories
+            deactivate REPOS
+
+            CTRL -> REPOS_SINGLETON : getMapRepository()
+            activate REPOS_SINGLETON
+                REPOS_SINGLETON --> CTRL : mapRepository
+            deactivate REPOS_SINGLETON
+
+            CTRL -> MAP_REPO : getMapList()
+            activate MAP_REPO
+                MAP_REPO --> CTRL : mapList
+            deactivate MAP_REPO
+
+            CTRL --> UI : mapList
+        deactivate CTRL
+        UI -> EDITOR : shows map list and asks to select one
+    deactivate UI
+
+    EDITOR -> UI : selects a map
+    activate UI
+        UI -> CTRL : getMapDetails(mapName)
+        activate CTRL
+            CTRL -> MAP_REPO : getMapByName(mapName)
+            activate MAP_REPO
+                MAP_REPO --> CTRL : map
+            deactivate MAP_REPO
+            CTRL --> UI : mapDetails
+        deactivate CTRL
+        UI -> EDITOR : shows map details and asks for scenario name
+    deactivate UI
+
+    EDITOR -> UI : enters scenario name
+    activate UI
+        UI -> CTRL : validateScenarioName(mapName, scenarioName)
+        activate CTRL
+            CTRL -> MAP_REPO : getMapByName(mapName)
+            activate MAP_REPO
+                MAP_REPO --> CTRL : map
+            deactivate MAP_REPO
+            CTRL -> MAP : getScenarioList()
+            activate MAP
+                MAP --> CTRL : scenarioList
+            deactivate MAP
+            CTRL -> CTRL : check if scenarioName exists
+            alt name exists
+                CTRL -> UI : show error message
+
+            else
+                CTRL -> UI : name valid
+            end
+        deactivate CTRL
+
+        UI -> EDITOR : asks for time period
+    deactivate UI
+
+    EDITOR -> UI : sets time period
+    activate UI
+        UI -> EDITOR : asks to select technological restrictions
+    deactivate UI
+
+    EDITOR -> UI : selects technological restrictions
+    activate UI
+        UI -> EDITOR : asks to define port behaviors
+    deactivate UI
+
+    EDITOR -> UI : defines port behaviors
+    activate UI
+        UI -> EDITOR : asks to select locomotion types
+    deactivate UI
+
+    EDITOR -> UI : selects locomotion types
+    activate UI
+        UI -> EDITOR : asks to apply historical restrictions
+    deactivate UI
+
+    EDITOR -> UI : applies historical restrictions
+    activate UI
+        UI -> EDITOR : asks to define industry generation factors
+    deactivate UI
+
+    EDITOR -> UI : defines industry generation factors
+    activate UI
+        UI -> EDITOR : shows final summary and asks for confirmation
+    deactivate UI
+
+    EDITOR -> UI : confirms and saves scenario
+    activate UI
+        UI -> CTRL : createScenario(allData)
+        activate CTRL
+            CTRL -> MAP : addScenario(scenario)
+            activate MAP
+                MAP --> CTRL : success
+            deactivate MAP
+            CTRL --> UI : scenarioCreated
+        deactivate CTRL
+        UI -> EDITOR : confirms scenario creation success
+    deactivate UI
+
+deactivate EDITOR
+@enduml

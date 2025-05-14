@@ -1,0 +1,182 @@
+@startuml
+'skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+'hide footbox
+actor "Editor" as Editor
+participant ":AddCityUI" as UI
+participant ":AddCityController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "MapRepository\n:MapRepository" as MAP_REPO
+participant "map\n:Map" as MAP
+participant "city\n:City" as CITY
+
+activate Editor
+
+    Editor -> UI : asks to create a new city
+    activate UI
+
+UI --> CTRL** : create
+
+UI -> CTRL : getMapList()
+    activate CTRL
+CTRL -> REPOS : getInstance()
+activate REPOS
+
+REPOS --> CTRL : Repositories
+deactivate REPOS
+
+CTRL -> REPOS_SINGLETON : getMapRepository()
+activate REPOS_SINGLETON
+
+REPOS_SINGLETON --> CTRL : MapRepository
+deactivate REPOS_SINGLETON
+CTRL -> MAP_REPO : getMapList()
+activate MAP_REPO
+
+    MAP_REPO --> CTRL : maps
+deactivate MAP_REPO
+
+    CTRL --> UI : maps
+deactivate CTRL
+        UI --> Editor : shows map list and requests to select one
+    deactivate UI
+
+        Editor -> UI : selects map
+        activate UI
+
+        UI -> CTRL : getMapByName(mapName)
+activate CTRL
+
+CTRL -> REPOS : getInstance()
+activate REPOS
+
+REPOS --> CTRL : Repositories
+deactivate REPOS
+
+CTRL -> REPOS_SINGLETON : getMapRepository()
+activate REPOS_SINGLETON
+
+REPOS_SINGLETON --> CTRL : MapRepository
+deactivate REPOS_SINGLETON
+CTRL -> MAP_REPO : getMapByName(mapName)
+activate MAP_REPO
+MAP_REPO --> CTRL : map
+deactivate MAP_REPO
+CTRL --> UI : map
+deactivate CTRL
+        UI --> Editor : requests to type city name
+    deactivate UI
+
+    Editor -> UI : types city name
+    activate UI
+
+UI -> CTRL : verifyCityName(map, cityName)
+activate CTRL
+
+CTRL -> MAP : verifyCityName(cityName)
+activate MAP
+MAP -> MAP : cityExists()
+MAP --> CTRL : exists
+deactivate MAP
+CTRL --> UI : exists
+
+deactivate CTRL
+
+        UI --> Editor : requests city location (X,Y coordinates)
+    deactivate UI
+
+    deactivate UI
+    Editor -> UI : types city location (X,Y coordinates)
+    activate UI
+
+    UI  -> CTRL : checkOverbuilding(map, location)
+    activate CTRL
+    ' Verifica se a posição da cidade é válida
+    CTRL -> MAP : checkOverbuilding(map, location)
+    activate MAP
+
+    MAP --> CTRL : isValidLocation
+    deactivate MAP
+
+    CTRL --> UI : isValidLocation
+
+        deactivate CTRL
+
+        UI --> Editor : asks if user wants to assign\n the house blocks manually
+    deactivate UI
+
+    Editor -> UI : types number of house blocks
+group if [answer is yes]
+    activate UI
+
+
+    loop for each house block
+    UI --> Editor : requests location for house block
+    deactivate UI
+        Editor -> UI : types location (X,Y)
+        activate UI
+
+        UI -> CTRL : checkOverbuilding(map, location)
+        activate CTRL
+
+        CTRL -> MAP : checkOverbuilding(map, location)
+        activate MAP
+
+        MAP --> CTRL : isValidLocation
+        deactivate MAP
+ CTRL --> UI : isValidLocation
+        deactivate CTRL
+
+
+    end loop
+'end loop
+
+else if [answer is no]
+UI -> CTRL : assignHouseBlocksAutomatically(map, cityName, numBlocks)
+activate CTRL
+
+CTRL -> CTRL : generateLocationsWithNormalDistribution(cityLocation, numBlocks)
+CTRL -> MAP : checkOverbuilding(map, location)
+activate MAP
+
+MAP --> CTRL : isValidLocation
+deactivate MAP
+
+CTRL --> UI : locations
+deactivate CTRL
+
+end if
+UI --> Editor : shows the city details and asks for confirmation
+    deactivate UI
+
+    Editor -> UI : gives confirmation
+    activate UI
+
+UI -> CTRL : createCity(map, cityName, location, houseBlocks)
+activate CTRL
+
+CTRL -> MAP : createCity(cityName, location, houseBlocks)
+activate MAP
+
+MAP --> CITY** : create
+MAP -> CITY : City(cityName, location, houseBlocks)
+activate CITY
+
+CITY --> MAP : city
+deactivate CITY
+
+MAP -> MAP : addElement(city)
+MAP --> CTRL : city
+deactivate MAP
+
+CTRL --> UI : city
+deactivate CTRL
+
+        UI --> Editor : displays city details and operation success
+    deactivate UI
+@enduml
