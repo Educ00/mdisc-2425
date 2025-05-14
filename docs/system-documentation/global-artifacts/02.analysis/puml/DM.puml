@@ -62,6 +62,7 @@ class Station{
 name
 type
 economic radius
+performance
 cost
 supply
 demand
