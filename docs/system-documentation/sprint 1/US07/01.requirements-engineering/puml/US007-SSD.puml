@@ -19,7 +19,7 @@ activate Player
     Player -> System : selects a station
     activate System
 
-        System --> Player : display station's details (name, type, economic radius, performance, supply / demand)
+        System --> Player : display station's details (name, supply / demand) and cargo status
     deactivate System
 
 deactivate Player

@@ -13,7 +13,6 @@ class Station {
     name
     type
     economic radius
-    performance
     cost
     supply
     demand
@@ -22,7 +21,6 @@ class Station {
 class UpgradeBuilding {
     type
     availabilityDate
-    exclusivtyGroup
 }
 
 

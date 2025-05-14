@@ -19,7 +19,7 @@ activate Player
     Player -> System : selects station type
     activate System
 
-        opt station type is "Station"
+        alt if station type is "Station"
             System --> Player : requests for station's center (NE, SE, NW, SW)
             deactivate System
 
@@ -36,7 +36,7 @@ activate Player
         System --> Player : proposes station name
     deactivate System
 
-    alt player accepts proposed name
+    alt if player accepts proposed name
         Player -> System : confirms station name
         activate System
 
@@ -49,7 +49,7 @@ activate Player
             System --> Player : displays operation success
         deactivate System
 
-     else \t \t player rejects proposed name
+    else if player rejects proposed name
 
         Player -> System : rejects proposed name
         activate System
