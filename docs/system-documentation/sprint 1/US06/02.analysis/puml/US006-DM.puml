@@ -21,6 +21,7 @@ class Station {
 class UpgradeBuilding {
     type
     availabilityDate
+    exclusivityGroup
 }
 
 class Player {
