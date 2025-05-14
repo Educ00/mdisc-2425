@@ -1,232 +1,126 @@
 @startuml
-skinparam monochrome true
-skinparam packageStyle rectangle
-skinparam shadowing false
+                            skinparam monochrome true
+                            skinparam packageStyle rectangle
+                            skinparam shadowing false
 
-autonumber
-
-actor "Player" as PLAYER
-participant ":UpgradeStationUI" as UI
-participant ":UpgradeStationController" as CTRL
-participant "Repositories" as REPOS
-participant "stationRepository\n:StationRepository" as STATION_REPO
-participant "upgradeBuildingRepository\n:UpgradeBuildingRepository" as UPGRADE_BUILDING_REPO
-participant "station\n:Station" as STATION
-participant "scenario\n:Scenario" as SCENARIO
-
-                activate PLAYER
-
-                    PLAYER -> UI : requests to upgrade a station
-                    activate UI
-
-                        UI -> CTRL : getStationsAvailableForUpgrade()
-                        activate CTRL
-
-                            CTRL -> REPOS : getInstance()
-                            activate REPOS
-
-                                REPOS --> CTRL : repositories
-                            deactivate REPOS
-
-                            CTRL -> REPOS : getStationRepository()
-                            activate REPOS
-
-                                REPOS --> CTRL : stationRepository
-                            deactivate REPOS
-
-                            CTRL -> STATION_REPO : getStationsAvailableForUpgrade()
-                            activate STATION_REPO
-                                STATION_REPO --> CTRL : stationList
-                            deactivate STATION_REPO
-
-                            CTRL --> UI : stationList
-                        deactivate CTRL
-
-                        UI --> PLAYER : shows list of stations available for upgrade
-                    deactivate UI
-
-                    PLAYER -> UI : selects a station
-                    activate UI
-
-                        UI -> CTRL : getAvailableUpgradeBuildings(station)
-                        activate CTRL
-
-                            CTRL -> REPOS : getUpgradeBuildingRepository()
-                            activate REPOS
-
-                                REPOS --> CTRL : upgradeBuildingRepository
-                            deactivate REPOS
-
-                            CTRL -> SCENARIO : getCurrentDate()
-                            activate SCENARIO
-
-                                SCENARIO --> CTRL : currentDate
-                            deactivate SCENARIO
-
-                            CTRL -> UPGRADE_BUILDING_REPO : getAvailableUpgradeBuildings(station, currentDate)
-                            activate UPGRADE_BUILDING_REPO
-                                UPGRADE_BUILDING_REPO --> CTRL : upgradeBuildingList
-                            deactivate UPGRADE_BUILDING_REPO
-
-                            CTRL --> UI : upgradeBuildingList
-                        deactivate CTRL
-
-                        UI --> PLAYER : shows valid upgrade buildings for the station
-                    deactivate UI
-
-                    PLAYER -> UI : selects building to upgrade station
-                    activate UI
-
-                        UI --> PLAYER : shows station's upgrade preview and asks for confirmation
-                    deactivate UI
-
-                    PLAYER -> UI : confirms upgrade
-                    activate UI
-
-                        UI -> CTRL : applyUpgrade(station, upgradeBuilding)
-                        activate CTRL
-
-                            CTRL -> STATION : applyUpgrade(upgradeBuilding)
-                            activate STATION
-
-                                STATION --> CTRL : stationUpgraded
-                            deactivate STATION
-
-                            CTRL --> UI : success message
-                        deactivate CTRL
-
-                        UI --> PLAYER : displays success message
-                    deactivate UI
-
-                deactivate PLAYER
-
-                @enduml
-
-
-@startuml
-skinparam monochrome true
-skinparam packageStyle rectangle
-skinparam shadowing false
-
-autonumber
-
-actor "Player" as PLAYER
-participant ":UpgradeStationUI" as UI
-participant ":UpgradeStationController" as CTRL
-participant "Repositories" as REPOS
-participant "stationRepository\n:StationRepository" as STATION_REPO
-participant "upgradeBuildingRepository\n:UpgradeBuildingRepository" as UPGRADE_BUILDING_REPO
-participant "station\n:Station" as STATION
-participant "upgradeBuilding\n:UpgradeBuilding" as UPGRADE_BUILDING
-participant "scenario\n:Scenario" as SCENARIO
-
-activate PLAYER
-
-    PLAYER -> UI : requests to upgrade a station
-    activate UI
-
-        UI -> CTRL : getStationsAvailableForUpgrade()
-        activate CTRL
-
-            CTRL -> REPOS : getInstance()
-            activate REPOS
-
-                REPOS --> CTRL : repositories
-            deactivate REPOS
-
-            CTRL -> REPOS : getStationRepository()
-            activate REPOS
-
-                REPOS --> CTRL : stationRepository
-            deactivate REPOS
-
-            CTRL -> STATION_REPO : getStationsAvailableForUpgrade()
-            activate STATION_REPO
-                STATION_REPO --> CTRL : stationList
-            deactivate STATION_REPO
-
-            CTRL --> UI : stationList
-        deactivate CTRL
-
-        UI --> PLAYER : shows list of stations available for upgrade
-    deactivate UI
-
-    PLAYER -> UI : selects a station
-    activate UI
-
-        UI -> CTRL : getAvailableUpgradeBuildings()
-        activate CTRL
-
-        CTRL -> SCENARIO : getCurrentDate()
-                    activate SCENARIO
-
-                        SCENARIO --> CTRL : currentDate
-                    deactivate SCENARIO
-
-            CTRL -> REPOS : getUpgradeBuildingRepository()
-            activate REPOS
-
-                REPOS --> CTRL : upgradeBuildingRepository
-            deactivate REPOS
-
-            CTRL -> UPGRADE_BUILDING_REPO : getAvailableUpgradeBuildings(currentDate)
-            activate UPGRADE_BUILDING_REPO
-                UPGRADE_BUILDING_REPO --> CTRL : upgradeBuildingList
-            deactivate UPGRADE_BUILDING_REPO
-
-            CTRL --> UI : upgradeBuildingList
-        deactivate CTRL
-
-        UI --> PLAYER : shows valid upgrade buildings for the station
-    deactivate UI
-
-    PLAYER -> UI : selects building to upgrade station
-    activate UI
-
-' Para cima esta bem e revisto, ver o resto a partir daqui
-        UI --> PLAYER : shows station's upgrade preview and asks for confirmation
-    deactivate UI
-
-    PLAYER -> UI : confirms upgrade
-    activate UI
-
-        UI -> CTRL : applyUpgrade(station, upgradeBuilding)
-        activate CTRL
-
-            CTRL -> UPGRADE_BUILDING : getExclusivityGroup()
-            activate UPGRADE_BUILDING
-                UPGRADE_BUILDING --> CTRL : exclusivityGroup
-            deactivate UPGRADE_BUILDING
-
-            CTRL -> STATION : hasBuildingOfSameType(upgradeBuilding)
-            activate STATION
-                STATION --> CTRL : true/false
-            deactivate STATION
-
-            alt building of the same type exists
-                CTRL --> UI : error message (cannot add duplicate building)
-            else
-                CTRL -> STATION : hasBuildingInExclusivityGroup(exclusivityGroup)
-                activate STATION
-                    STATION --> CTRL : true/false
-                deactivate STATION
-
-                alt building in exclusivity group exists
-                    CTRL --> UI : error message (cannot add building in the same exclusivity group)
-                else
-                    CTRL -> STATION : applyUpgrade(upgradeBuilding)
-                    activate STATION
-                        STATION --> CTRL : stationUpgraded
-                    deactivate STATION
-
-                    CTRL --> UI : success message
-                end
-            end
-        deactivate CTRL
-
-        UI --> PLAYER : displays success or error message
-    deactivate UI
-
-deactivate PLAYER
-
-@enduml
+                            autonumber
+
+                            actor "Player" as PLAYER
+                            participant ":UpgradeStationUI" as UI
+                            participant ":UpgradeStationController" as CTRL
+                            participant "Repositories" as REPOS
+                            participant "stationRepository\n:StationRepository" as STATION_REPO
+                            participant "upgradeBuildingRepository\n:UpgradeBuildingRepository" as UPGRADE_BUILDING_REPO
+                            participant "station\n:Station" as STATION
+                            participant "upgradeBuilding\n:UpgradeBuilding" as UPGRADE_BUILDING
+                            participant "scenario\n:Scenario" as SCENARIO
+
+                            activate PLAYER
+
+                                PLAYER -> UI : requests to upgrade a station
+                                activate UI
+
+                                    UI -> CTRL : getStationsAvailableForUpgrade()
+                                    activate CTRL
+
+                                        CTRL -> REPOS : getInstance()
+                                        activate REPOS
+
+                                            REPOS --> CTRL : repositories
+                                        deactivate REPOS
+
+                                        CTRL -> REPOS : getStationRepository()
+                                        activate REPOS
+
+                                            REPOS --> CTRL : stationRepository
+                                        deactivate REPOS
+
+                                        CTRL -> STATION_REPO : getStationsAvailableForUpgrade()
+                                        activate STATION_REPO
+                                            STATION_REPO --> CTRL : stationList
+                                        deactivate STATION_REPO
+
+                                        CTRL --> UI : stationList
+                                    deactivate CTRL
+
+                                    UI --> PLAYER : shows list of stations available for upgrade
+                                deactivate UI
+
+                                PLAYER -> UI : selects a station
+                                activate UI
+
+                                    UI -> CTRL : getAvailableUpgradeBuildings(station)
+                                    activate CTRL
+
+                                    CTRL -> SCENARIO : getCurrentDate()
+                                        activate SCENARIO
+                                            SCENARIO --> CTRL : currentDate
+                                        deactivate SCENARIO
+
+                                    CTRL -> STATION : getUpgradesInstalled(station)
+                                    activate STATION
+                                        STATION --> CTRL : installedUpgradesList (empty if no upgrades installed)
+                                    deactivate STATION
+
+                                    CTRL -> REPOS : getUpgradeBuildingRepository()
+                                    activate REPOS
+
+                                        REPOS --> CTRL : upgradeBuildingRepository
+                                    deactivate REPOS
+
+                                    CTRL -> UPGRADE_BUILDING_REPO : getAvailableUpgradeBuildings(station, installedUpgradesList, currentDate)
+                                    activate UPGRADE_BUILDING_REPO
+                                        UPGRADE_BUILDING_REPO --> CTRL : availableUpgradeBuildingsList
+                                    deactivate UPGRADE_BUILDING_REPO
+
+                                    CTRL --> UI : availableUpgradeBuildingsList
+                                deactivate CTRL
+
+                                UI --> PLAYER : shows valid upgrade buildings for the station
+                            deactivate UI
+
+                                PLAYER -> UI : selects building to upgrade station
+                                activate UI
+
+                                    UI --> PLAYER : shows station's upgrade preview and asks for confirmation
+                                                        deactivate UI
+
+                                PLAYER -> UI : confirms upgrade
+                                activate UI
+                                    UI -> CTRL : applyUpgrade(station, upgradeBuilding)
+                                    activate CTRL
+
+                                        alt installedUpgradesList is not empty
+                                            loop for each installedUpgrade
+                                                CTRL -> UPGRADE_BUILDING : isInSameExclusivityGroup(upgradeBuilding, installedUpgrade)
+                                                activate UPGRADE_BUILDING
+                                                    UPGRADE_BUILDING --> CTRL : true/false
+                                                deactivate UPGRADE_BUILDING
+
+                                                alt true (same exclusivity group)
+                                                    CTRL -> STATION : replaceBuilding(installedUpgrade, upgradeBuilding)
+                                                    activate STATION
+                                                        STATION --> CTRL : success
+                                                    deactivate STATION
+                                                else false (different exclusivity group)
+                                                    CTRL -> STATION : addBuilding(upgradeBuilding)
+                                                    activate STATION
+                                                        STATION --> CTRL : success
+                                                    deactivate STATION
+                                                end
+                                            end
+                                        else installedUpgradesList is empty
+                                            CTRL -> STATION : addBuilding(upgradeBuilding)
+                                            activate STATION
+                                                STATION --> CTRL : success
+                                            deactivate STATION
+                                        end
+
+                                        CTRL --> UI : success message
+                                    deactivate CTRL
+
+                                    UI --> PLAYER : displays success message
+                                deactivate UI
+
+                            deactivate PLAYER
+                            @enduml

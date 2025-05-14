@@ -25,7 +25,7 @@ class StationRepository {
 }
 
 class UpgradeBuildingRepository {
-    + getAvailableUpgradeBuildings(station : Station, currentDate : Date) : List<UpgradeBuilding>
+    + getAvailableUpgradeBuildings(station : Station, installedUpgradesList : List<UpgradeBuilding>, currentDate : Date) : List<UpgradeBuilding>
 }
 
 class Station {
@@ -35,13 +35,16 @@ class Station {
     - cost : double
     - supply : double
     - demand : double
-    + applyUpgrade(upgradeBuilding : UpgradeBuilding) : boolean
+    + getUpgradesInstalled() : List<UpgradeBuilding>
+    + replaceBuilding(installedUpgrade : UpgradeBuilding, upgradeBuilding : UpgradeBuilding) : boolean
+    + addBuilding(upgradeBuilding : UpgradeBuilding) : boolean
 }
 
 class UpgradeBuilding {
     - type : String
     - availabilityDate : Date
     - exclusivityGroup : String
+    + isInSameExclusivityGroup(upgradeBuilding : UpgradeBuilding) : boolean
 }
 
 class Scenario {
