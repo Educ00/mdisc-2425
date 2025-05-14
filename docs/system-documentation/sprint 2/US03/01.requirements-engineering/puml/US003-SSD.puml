@@ -1,0 +1,31 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Editor" as Editor
+participant ":System" as System
+
+activate Editor
+
+    Editor -> System : requests to add a city
+    activate System
+
+        System --> Editor : requests city name, XY coordinates, and number of housing blocks
+    deactivate System
+
+    Editor -> System : provides city name, XY coordinates, and number of housing blocks
+    activate System
+
+        System --> Editor : confirms data and requests final confirmation
+    deactivate System
+
+    Editor -> System : confirms city addition
+    activate System
+
+        System --> Editor : displays success message and updates the map with the city
+    deactivate System
+
+@enduml

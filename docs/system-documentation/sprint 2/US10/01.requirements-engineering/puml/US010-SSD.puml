@@ -1,0 +1,50 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Player" as Player
+participant ":System" as System
+
+activate Player
+
+    Player -> System : asks for a list of available trains
+    activate System
+
+        System --> Player : Shows list of available trains
+    deactivate System
+    Player -> System : Selects train to be used for route.
+    activate System
+
+        System --> Player : Shows list of available stations for that train with respective cargos to be picked up
+    deactivate System
+
+    Player -> System : Selects stations.
+    activate System
+        System -> Player : Displays if there is an error between stations like no railway road.
+
+        alt if player accepts railway error
+                activate System
+
+                    System --> Player : Display's successful completion of faulty route.
+                deactivate System
+
+            else if player rejects railway error
+
+                Player -> System : rejects railway error
+                activate System
+
+                    System --> Player : requests alternative stations
+                deactivate System
+
+                Player -> System : provides alternative stations
+                activate System
+
+                            System --> Player : Confirms Successful or unsuccessful route with available stations, respective cargo pickups and available railway lines.
+                deactivate System
+            end
+    deactivate System
+
+@enduml

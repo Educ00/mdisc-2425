@@ -1,0 +1,32 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Product Owner" as PO
+participant ":System" as System
+
+activate PO
+
+    PO -> System : asks to create a simulator
+    activate System
+
+        System --> PO : requests data (cities, industries, stations)
+    deactivate System
+
+    PO -> System : types requested data
+    activate System
+
+        System --> PO : shows all data and requests confirmation
+    deactivate System
+
+    PO -> System : confirms data
+    activate System
+
+        System --> PO : displays operation success
+    deactivate System
+deactivate PO
+
+@enduml

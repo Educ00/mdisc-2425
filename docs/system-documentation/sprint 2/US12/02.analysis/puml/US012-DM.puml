@@ -1,0 +1,46 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+hide methods
+
+title Domain Model - US12
+
+class Cargo{
+deliverValue
+status
+}
+
+class Station{
+name
+type
+economic radius
+cost
+supply
+demand
+}
+
+class Simulator{
+status
+}
+
+class City {
+   name
+   numberOfHouseBlocks
+}
+
+class Industry{
+type
+}
+
+class ProductOwner{
+}
+
+ProductOwner "1" ---- "1" Simulator : creates >
+Simulator "1" ---- "1..*" Cargo : generates >
+Cargo "1..*" ---- "1" Station : is collected at >
+Station "1" ---- "1..*" City : serves >
+Station "1" ---- "0..*" Industry : serves >
+@enduml

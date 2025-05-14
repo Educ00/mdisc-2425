@@ -1,0 +1,30 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Editor" as Editor
+participant ":System" as System
+
+activate Editor
+
+    Editor -> System : asks to create a new map
+    activate System
+
+        System --> Editor : requests data (i.e. size, name)
+    deactivate System
+
+    Editor -> System : types requested data
+    activate System
+
+        System --> Editor : shows all data and requests confirmation
+    deactivate System
+
+    Editor -> System : confirms data
+    activate System
+
+        System --> Editor : displays operation success
+    deactivate System
+@enduml
