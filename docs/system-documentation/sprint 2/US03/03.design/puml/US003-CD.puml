@@ -1,0 +1,129 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam classAttributeIconSize 0
+
+class ApplicationSession {
+    - ApplicationSession()
+    + {static} getInstance()
+    + getCurrentSession()
+}
+
+class UserSession {
+    + getUserEmail()
+}
+
+class City {
+    - houseBlocks: List<HouseBlock>
+    + City(cityName, location, houseBlocks)
+    - typesProduced: List<Cargo>
+    - typesConsumed: List<Cargo>
+    + getTypesProduced(): List<Cargo>
+    + getTypesConsumed(): List<Cargo>
+    - production: float
+    - consumption: float
+    + getProduction(): float
+    + getConsumption(): float
+}
+
+class HouseBlock {
+    - location: Location
+}
+
+class Location {
+    - x: int
+    - y: int
+
+    + getX(): int
+    + getY(): int
+    + setX(x: int)
+    + setY(y: int)
+}
+
+class Map {
+    - name: String
+    - dimensions: Dimensions
+    - elements: List<Element>
+    - scenarios: List<Scenario>
+
+    + addElement(e: Element)
+    + getName(): String
+    + getScenarioByName(name: String): Scenario
+    + getScenarioList()
+    + getElementList()
+    + isValidPosition(position: Location): boolean
+    + cityExists(cityName: String): boolean
+}
+
+class Dimensions {
+    - width: int
+    - height: int
+}
+
+class Element {
+    - name: String
+    - type: String
+    - location: Location
+
+    + getName(): String
+    + getType(): String
+    + getLocation(): Location
+}
+
+
+class MapRepository {
+    + getMapList(): List<Map>
+    + getMapByName(name: String): Map
+}
+
+class Repositories {
+    - Repositories()
+    + {static} getInstance()
+    + getMapRepository(): MapRepository
+}
+
+class AddCityController {
+    + AddCityController()
+    + getMapList(): List<Map>
+    + getMapByName(mapName: String): Map
+    + verifyCityName(cityName: String): boolean
+    + checkOverbuilding(map: Map, location: Location): boolean
+    + generateLocationsWithNormalDistribution(cityLocation: Location, numBlocks: int): List<Location>
+    + createCity(map: Map, cityName: String, location: Location, houseBlocks: List<HouseBlock>): City
+}
+
+class AddCityUI {
+    - AddCityController controller
+    + getMapList(): List<Map>
+    + getMapByName(mapName: String)
+    + verifyCityName(map: Map, cityName: String): boolean
+    + checkOverbuilding(map: Map, location: Location): boolean
+    + assignHouseBlocksAutomatically(map: Map, cityName: String, numBlocks: int): boolean
+    + createCity(map: Map, cityName: String, location: Location, houseBlocks: List<HouseBlock>): City
+}
+
+AddCityUI .> AddCityController
+
+AddCityController ..> ApplicationSession
+AddCityController ..> UserSession
+AddCityController ..> MapRepository
+AddCityController .> Repositories
+
+Repositories -> "1" Repositories : instance
+Repositories --> "1" MapRepository : mapRepository
+
+ApplicationSession -> "1" ApplicationSession : instance
+ApplicationSession ..> UserSession
+
+MapRepository --> "*" Map : maps
+Map --> "*" Element : elements
+Map --> Dimensions
+
+Element --> Location : location
+
+City ..|> Element
+
+City --> "*" HouseBlock : houseBlocks
+
+@enduml
