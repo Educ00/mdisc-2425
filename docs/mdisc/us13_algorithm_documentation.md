@@ -75,7 +75,7 @@ public List<Railway> Dijkstra(Train train, Station origin, Station target) {
             // Verifica as arestas adjacentes
             // Para cada aresta:
             for (Edge edge : currentNode.edges().collect(Collectors.toList())) {
-                // vamos buscar o objeto Railway to edge -> para termos acesso à distancia etc
+                // vamos buscar o objeto Railway do edge -> para termos acesso à distancia etc
                 Railway railway = this.getRailway(edge);
 
                 // vamos buscar o node de destino do edge
@@ -155,6 +155,7 @@ this.displayCustomGraph(tempGraph);
 ```
 3. **Station Existence Check:**
     - Verify that both origin and target stations exist in the filtered graph. If either is missing, return an empty path immediately.
+    - This check is crucial as it determines if the stations are reachable with the given train type. If a station is isolated after filtering (e.g., an electric train cannot reach a station only connected by non-electrified lines), an empty path is returned indicating no route is possible.
 ```java
 Node originNode = tempGraph.getNode(origin.getName());
 if (originNode == null) {
@@ -167,6 +168,7 @@ if (targetNode == null) {
 ```
 4. **Data Structure Initialization:**
     - Initialize `distances`, `predecessors`, and a priority queue. Set all distances to infinity except the origin, which is zero.
+    - The priority queue is a key component of Dijkstra's algorithm, as it efficiently selects the unvisited node with the smallest distance at each step. This ensures that we always process the most promising nodes first, leading to optimal path discovery.
 ```java
 // Inicializa estruturas de dados
 Map<Node, Double> distances = new HashMap<>();
@@ -183,6 +185,8 @@ priorityQueue.add(originNode);
 ```
 5. **Dijkstra Execution:**
     - Repeatedly extract the unvisited node with the smallest distance, update its neighbors, and record predecessors.
+    - The algorithm continues until the priority queue is empty, meaning all reachable nodes have been processed.
+    - If the target node is not reachable from the origin, it will not have an entry in the predecessors map, resulting in an empty path being returned.
 ```java
 // Executa o algoritmo de Dijkstra
 while (!priorityQueue.isEmpty()) {
@@ -195,7 +199,7 @@ while (!priorityQueue.isEmpty()) {
     // Verifica as arestas adjacentes
     // Para cada aresta:
     for (Edge edge : currentNode.edges().collect(Collectors.toList())) {
-        // vamos buscar o objeto Railway to edge -> para termos acesso à distancia etc
+        // vamos buscar o objeto Railway do edge -> para termos acesso à distancia etc
         Railway railway = this.getRailway(edge);
 
         // vamos buscar o node de destino do edge
@@ -223,6 +227,7 @@ while (!priorityQueue.isEmpty()) {
 ```
 6. **Path Reconstruction:**
     - Backtrack from the target using the `predecessors` map, collect edges, reverse the list, and return the path.
+    - If no path exists (i.e., the target is not reachable from the origin), the while loop will not execute, and an empty path will be returned.
 ```java
 // Reconstrói o caminho
 List<Railway> path = new ArrayList<>();
