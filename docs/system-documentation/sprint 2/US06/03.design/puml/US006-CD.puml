@@ -9,23 +9,27 @@ class Player {
 }
 
 class UpgradeStationUI {
-    + getStationsAvailableForUpgrade() : List<Station>
-    + getAvailableUpgradeBuildings(station : Station) : List<UpgradeBuilding>
-    + applyUpgrade(station : Station, upgradeBuilding : UpgradeBuilding) : boolean
 }
 
 class UpgradeStationController {
     + getStationsAvailableForUpgrade() : List<Station>
     + getAvailableUpgradeBuildings(station : Station) : List<UpgradeBuilding>
-    + applyUpgrade(station : Station, upgradeBuilding : UpgradeBuilding) : boolean
+    + applyUpgrade(station : Station, upgradeBuilding : UpgradeBuilding)
 }
+
+class Repositories {
+            - Repositories()
+            + {static} getInstance() : Repositories
+            + getStationRepository() : StationRepository
+            + getUpgradeBuildingRepository() : UpgradeBuildingRepository
+        }
 
 class StationRepository {
     + getStationsAvailableForUpgrade() : List<Station>
 }
 
 class UpgradeBuildingRepository {
-    + getAvailableUpgradeBuildings(station : Station, currentDate : Date) : List<UpgradeBuilding>
+    + getAvailableUpgradeBuildings(station : Station, installedUpgradesList : List<UpgradeBuilding>, currentDate : Date) : List<UpgradeBuilding>
 }
 
 class Station {
@@ -35,25 +39,34 @@ class Station {
     - cost : double
     - supply : double
     - demand : double
-    + applyUpgrade(upgradeBuilding : UpgradeBuilding) : boolean
+    + getUpgradesInstalled(station : Station) : List<UpgradeBuilding>
+    + replaceBuilding(installedUpgrade : UpgradeBuilding, upgradeBuilding : UpgradeBuilding)
+    + addBuilding(upgradeBuilding : UpgradeBuilding)
 }
 
 class UpgradeBuilding {
     - type : String
     - availabilityDate : Date
     - exclusivityGroup : String
+    + isInSameExclusivityGroup(upgradeBuilding : UpgradeBuilding , installedUpgrade : UpgradeBuilding ) : boolean
 }
 
 class Scenario {
     + getCurrentDate() : Date
 }
 
-Player --> "*" Station : upgrades >
-Station --> "*" UpgradeBuilding : upgraded with >
-UpgradeStationUI --> UpgradeStationController
-UpgradeStationController --> StationRepository
-UpgradeStationController --> UpgradeBuildingRepository
-UpgradeStationController --> Scenario
+Player --> "*" Station : upgrades
+Station --> "*" UpgradeBuilding : upgraded with
+UpgradeStationUI ..> UpgradeStationController
+UpgradeStationController .> Repositories
+Repositories -> "1" Repositories : instance
+Repositories --> "1" StationRepository : stationRepository
+Repositories --> "1" UpgradeBuildingRepository : upgradeBuildingRepository
+UpgradeStationController ..> StationRepository
+UpgradeStationController ..> UpgradeBuildingRepository
+UpgradeStationController ..> Scenario
+UpgradeStationController ..> Station
+UpgradeStationController ..> UpgradeBuilding
 StationRepository --> "*" Station : stations
 UpgradeBuildingRepository --> "*" UpgradeBuilding : upgradeBuildings
 

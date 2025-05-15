@@ -1,0 +1,49 @@
+@startuml
+        skinparam packageStyle rectangle
+        skinparam shadowing false
+        skinparam linetype polyline
+        skinparam classAttributeIconSize 0
+
+        class Player {
+            - budget : double
+        }
+
+        class ListStationUI {
+        }
+
+        class ListStationController {
+            + getAllStations() : List<Station>
+            + getStationDetails(station : Station) : {name, type, economicRadius, performance, supply, demand}
+        }
+
+        class StationRepository {
+            + getAllStations() : List<Station>
+        }
+
+        class Station {
+            - name : String
+            - type : String
+            - economicRadius : double
+            - performance : double
+            - cost : double
+            - supply : double
+            - demand : double
+            + getStationDetails(station : Station) : {name, type, economicRadius, performance, supply, demand}
+        }
+
+        class Repositories {
+            - Repositories()
+            + {static} getInstance() : Repositories
+            + getStationRepository() : StationRepository
+        }
+
+
+        Player --> "*" Station : lists
+        Repositories -> "1" Repositories : instance
+        ListStationUI .> ListStationController
+        ListStationController .> Repositories
+        ListStationController .> StationRepository
+        Repositories --> "1" StationRepository : stationRepository
+        StationRepository --> "*" Station : stations
+
+        @enduml
