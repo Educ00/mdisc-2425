@@ -4,16 +4,18 @@
 
 ### 3.1. Rationale
 
-| Interaction ID | Question: Which class is responsible for...                         | Answer                    | Justification (with patterns)                                                                                         |
-|:---------------|:--------------------------------------------------------------------|:--------------------------|:----------------------------------------------------------------------------------------------------------------------|
-| Step 1         | ... interacting with the actor?                                     | UpgradeStationUI          | **Pure Fabrication**: there is no reason to assign this responsibility to any existing class in the Domain Model.     |
-|                | ... coordinating the US?                                            | UpgradeStationController  | **Controller**: coordinates the interactions between the UI, repositories, and entities.                              |
-| Step 2         | ... knowing the stations available for upgrade?                     | StationRepository         | **IE**: responsible for storing and providing station data.                                                           |
-| Step 3         | ... knowing the buildings available to upgrade the station with?    | UpgradeBuildingRepository | **IE**: responsible for storing and providing available upgrade data.                                                 |
-| Step 4         | ... obtaining the current date?                                     | Scenario                  | **IE**: responsible for providing the current date of the scenario.                                                   |
-| Step 5         | ... verifying if the upgrade belongs to the same exclusivity group? | UpgradeBuilding           | **IE**: responsible for verifying if two upgrades belong to the same exclusivity group.                               |
-| Step 6         | ... applying the upgrade to the station?                            | Station                   | **IE**: responsible for applying the upgrade, as it holds the necessary data.                                         |
-| Step 7         | ... informing the success of the operation?                         | UpgradeStationUI          | **IE**: responsible for interacting with the player and displaying success or error messages.                         |
+| Interaction ID | Question: Which class is responsible for...                         | Answer                    | Justification (with patterns)                                                                                                           |
+|:---------------|:--------------------------------------------------------------------|:--------------------------|:----------------------------------------------------------------------------------------------------------------------------------------|
+| Step 1         | ... interacting with the actor?                                     | UpgradeStationUI          | Pure Fabrication: there is no reason to assign this responsibility to any existing class in the Domain Model.                           |
+|                | ... coordinating the US?                                            | UpgradeStationController  | Controller: coordinates the interactions between the UI, repositories, and entities.                                                    |
+| Step 2         | ... knowing the stations available for upgrade?                     | Repositories              | IE: Repositories maintains StationRepository.                                                                                           |
+|                |                                                                     | StationRepository         | By applying High Cohesion (HC) + Low Coupling (LC) on class Repositories, it delegates the responsibility to StationRepository.         |
+| Step 3         | ... knowing the buildings available to upgrade the station with?    | Repositories              | IE: Repositories maintains UpgradeBuildingRepository.                                                                                   |
+|                |                                                                     | UpgradeBuildingRepository | By applying High Cohesion (HC) + Low Coupling (LC) on class Repositories, it delegates the responsibility to UpgradeBuildingRepository. |
+| Step 4         | ... obtaining the current date?                                     | Scenario                  | IE: responsible for providing the current date of the scenario.                                                                         |
+| Step 5         | ... verifying if the upgrade belongs to the same exclusivity group? | UpgradeBuilding           | IE: responsible for verifying if two upgrades belong to the same exclusivity group.                                                     |
+| Step 6         | ... applying the upgrade to the station?                            | Station                   | IE: responsible for applying the upgrade, as it holds the necessary data.                                                               |
+| Step 7         | ... informing the success of the operation?                         | UpgradeStationUI          | IE: responsible for interacting with the player and displaying success or error messages.                                               |
 
 ### Systematization ##
 
