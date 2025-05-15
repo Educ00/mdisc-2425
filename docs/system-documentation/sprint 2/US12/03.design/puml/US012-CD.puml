@@ -1,0 +1,134 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam classAttributeIconSize 0
+
+class SimulatorUI {
+    - controller: SimulatorController
+    + run()
+}
+
+class SimulatorController {
+    + SimulatorController()
+    + getAvailableScenarios(): List<Scenario>
+    + createSimulator(scenarioName: String): Simulator
+    + startSimulation(): boolean
+    + pauseSimulation(): boolean
+    + getSimulationStatus(): String
+}
+
+class Repositories {
+    - Repositories()
+    + getInstance(): Repositories
+    + getScenarioRepository(): ScenarioRepository
+    + getMapRepository(): MapRepository
+}
+
+class ScenarioRepository {
+    + getScenarioList(): List<Scenario>
+    + getScenarioByName(name: String): Scenario
+}
+
+class MapRepository {
+    + getMapList(): List<Map>
+    + getMapByName(name: String): Map
+}
+
+class Map {
+    - name: String
+    - scenarios: List<Scenario>
+    + getScenarioList(): List<Scenario>
+    + getName(): String
+}
+
+class Scenario {
+    - name: String
+    - stations: List<Station>
+    - cities: List<City>
+    - industries: List<Industry>
+    
+    + getName(): String
+    + getStationList(): List<Station>
+    + getCityList(): List<City>
+    + getIndustryList(): List<Industry>
+    + validateStationCityIndustry(): boolean
+}
+
+class Simulator {
+    - scenario: Scenario
+    - isRunning: boolean
+    - generatedCargoes: List<Cargo>
+    
+    + Simulator(scenario: Scenario)
+    + generateCargoes(): List<Cargo>
+    + startSimulation(): boolean
+    + pauseSimulation(): boolean
+    + isRunning(): boolean
+    + getStatus(): String
+    + determineSupplyDemand(): Map<Station, List<Cargo>>
+}
+
+class Station {
+    - name: String
+    - location: String
+    - type: String
+    - nearbyCity: City
+    - nearbyIndustries: List<Industry>
+    
+    + getName(): String
+    + getLocation(): String
+    + getType(): String
+    + getNearbyCity(): City
+    + getNearbyIndustries(): List<Industry>
+}
+
+class City {
+    - name: String
+    - population: int
+    - demandTypes: List<String>
+    
+    + getName(): String
+    + getPopulation(): int
+    + getDemandTypes(): List<String>
+}
+
+class Industry {
+    - name: String
+    - type: String
+    - productionTypes: List<String>
+    
+    + getName(): String
+    + getType(): String
+    + getProductionTypes(): List<String>
+}
+
+class Cargo {
+    - type: String
+    - quantity: int
+    - origin: Station
+    - destination: Station
+    
+    + getType(): String
+    + getQuantity(): int
+    + getOrigin(): Station
+    + getDestination(): Station
+}
+
+SimulatorUI .> SimulatorController
+SimulatorController ..> Repositories
+SimulatorController ..> ScenarioRepository
+SimulatorController ..> Simulator
+Repositories --> ScenarioRepository
+Repositories --> MapRepository
+MapRepository --> Map
+Map --> Scenario
+Scenario --> Station
+Scenario --> City
+Scenario --> Industry
+Simulator --> Scenario
+Simulator --> Cargo
+Station --> City
+Station --> Industry
+
+@enduml
