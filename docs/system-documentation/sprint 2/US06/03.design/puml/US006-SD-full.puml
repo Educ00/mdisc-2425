@@ -63,11 +63,13 @@ deactivate REPOS_SINGLETON
 
 CTRL -> SCENARIO : getCurrentDate()
 activate SCENARIO
+
 SCENARIO --> CTRL : currentDate
 deactivate SCENARIO
 
 CTRL -> STATION : getUpgradesInstalled(station)
 activate STATION
+
 STATION --> CTRL : installedUpgradesList (empty if no upgrades installed)
 deactivate STATION
 
@@ -84,6 +86,27 @@ deactivate UI
 
 PLAYER -> UI : selects building to upgrade station
 activate UI
+
+UI -> CTRL : getUpgradePreview(upgradeBuilding, station)
+activate CTRL
+
+CTRL -> STATION : getPerformanceImprovement(upgradeBuilding, station)
+activate STATION
+
+STATION --> CTRL : performanceImprovement
+deactivate STATION
+CTRL -> UPGRADE_BUILDING : getCost(upgradeBuilding)
+activate UPGRADE_BUILDING
+
+UPGRADE_BUILDING --> CTRL : cost
+deactivate UPGRADE_BUILDING
+CTRL -> STATION : getUpgradePreview(upgradeBuilding, station, performanceImprovement, cost)
+activate STATION
+
+STATION --> CTRL : upgradePreview
+deactivate STATION
+CTRL --> UI : upgradePreview
+deactivate CTRL
 
 UI --> PLAYER : shows station's upgrade preview and asks for confirmation
 deactivate UI
@@ -103,18 +126,22 @@ deactivate UPGRADE_BUILDING
 alt true (same exclusivity group)
 CTRL -> STATION : replaceBuilding(installedUpgrade, upgradeBuilding)
 activate STATION
+
 STATION --> CTRL : success
 deactivate STATION
 else false (different exclusivity group)
 CTRL -> STATION : addBuilding(upgradeBuilding)
 activate STATION
+
 STATION --> CTRL : success
 deactivate STATION
 end
+
 end
 else installedUpgradesList is empty
 CTRL -> STATION : addBuilding(upgradeBuilding)
 activate STATION
+
 STATION --> CTRL : success
 deactivate STATION
 end

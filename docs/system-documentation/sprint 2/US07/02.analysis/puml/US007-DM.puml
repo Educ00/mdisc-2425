@@ -33,6 +33,7 @@ class Player {
 class Cargo{
 deliverValue
 status
+lifespan
 }
 
 Station "1" ---- "1..*" UpgradeBuilding : upgraded with >
