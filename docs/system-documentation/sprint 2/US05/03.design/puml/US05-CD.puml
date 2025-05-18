@@ -1,126 +1,67 @@
 @startuml
-'skinparam monochrome true
 skinparam packageStyle rectangle
 skinparam shadowing false
 skinparam linetype polyline
-'skinparam linetype orto
-
 skinparam classAttributeIconSize 0
 
-'left to right direction
-
-class ApplicationSession
-{
-    - ApplicationSession()
-    + {static} getInstance()
-    + getCurrentSession()
+class Player {
+    - budget : double
+    + hasBudgetFor(stationType : String) : boolean
 }
 
-class UserSession
-{
-    + getUserEmail()
+class BuildStationUI {
 }
 
-class Employee {
-    - name : String
-    - email : String
-    - position : String
-    - phone : String
-}
-
-class Task {
-    - reference :String
-    - description : String
-    - informalDescription : String
-    - technicalDescription : String
-    - duration : int
-    - cost : double
-
-    + Task(reference, description,\ninformalDescription, technicalDescription,\nduration, cost, taskCategory, createdBy)
-}
-
-class TaskCategory {
-    - description : String
-}
-
-class Organization {
-    - name : String
-    - vatNumber : String
-    - website : String
-    - phone : String
-    - email : String
-
-    + Organization(name, vatNumber, webSite, phone, email, postalAddress, manager)
-    + anyEmployeeHasEmail(email)
-    + getEmployeeByEmail(email)
-    + createTask(reference, description, informalDesccription, technicalDescription, \nduration, cost, taskCategory, employee)
-    - addTask(task)
-    - validateTask(task)
-}
-
-class TaskCategoryRepository {
-    + getTaskCategories()
-    + getTaskCategoryByDescription(taskCategoryDescription)
-}
-
-class OrganizationRepository {
-    + getOrganizationByEmployeeEmail(email)
+class BuildStationController {
+    + getAvailableStationTypes() : List<String>
+    + checkPlayerBudget(stationType : String) : boolean
+    + checkOverbuilding(location : Object) : boolean
+    + calculateGeometricCenter(location : Object) : Object
+    + proposeStationName(location : Object, stationType : String) : String
+    + buildStation(stationType : String, location : Object, center : Object, name : String)
 }
 
 class Repositories {
     - Repositories()
-    + {static} getInstance()
-    + getTaskCategoryRepository()
-    + getOrganizationRepository()
+    + {static} getInstance() : Repositories
+    + getStationRepository() : StationRepository
+    + getMapRepository() : MapRepository
 }
 
-class CreateTaskController {
-    + CreateTaskController()
-    + getTaskCategories()
-    + createTask(reference, description, informalDescription, \n   technicalDescription, duration, cost, taskCategoryDescription)
-    - getTaskCategoryByDescription(taskCategoryDescription)
-    - getEmployeeFromSession()
+class StationRepository {
+    + getAvailableStationTypes() : List<String>
+    + save(station : Station)
 }
 
-note right of CreateTaskController
-    categoryDescription is retrieved
-    from selected data
-end note
-
-note bottom of TaskCategoryRepository
-    - used for displaying
-    the task category list
-end note
-
-class CreateTaskUI {
+class MapRepository {
+    + getCurrentMap() : Map
 }
 
-CreateTaskUI .> CreateTaskController
+class Map {
+    + checkOverbuilding(location : Object) : boolean
+    + calculateGeometricCenter(location : Object) : Object
+    + proposeStationName(location : Object, stationType : String) : String
+    + buildStation(stationType : String, location : Object, center : Object, name : String) : Station
+}
 
-CreateTaskController ..> ApplicationSession
-CreateTaskController ..> UserSession
-CreateTaskController ..> TaskCategory
-CreateTaskController ..> TaskCategoryRepository
-CreateTaskController ..> Organization
-CreateTaskController ..> OrganizationRepository
-CreateTaskController .> Repositories
+class Station {
+    - name : String
+    - type : String
+    - location : Object
+    - center : Object
+    + create(type : String, location : Object, center : Object, name : String) : Station
+}
 
+BuildStationUI ..> BuildStationController
+BuildStationController .> Repositories
 Repositories -> "1" Repositories : instance
-Repositories --> "1" OrganizationRepository : organizationRepository
-Repositories -> "1" TaskCategoryRepository : taskCategoryRepository
-
-ApplicationSession -> "1" ApplicationSession : instance
-ApplicationSession ..> UserSession
-
-TaskCategoryRepository --> "*" TaskCategory : taskCategories
-
-OrganizationRepository --> "*" Organization : organizations
-
-Organization --> "*" Task : tasks
-Organization --> "*" Employee : employees
-
-Task --> "1" TaskCategory : taskCategory
-Task --> "1" Employee : createdBy
-
+Repositories --> "1" StationRepository : stationRepository
+Repositories --> "1" MapRepository : mapRepository
+BuildStationController ..> StationRepository
+BuildStationController ..> MapRepository
+BuildStationController ..> Map
+BuildStationController ..> Player
+StationRepository --> "*" Station : stations
+MapRepository --> "1" Map : maps
 
 @enduml

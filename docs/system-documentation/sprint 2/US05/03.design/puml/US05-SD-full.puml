@@ -1,157 +1,179 @@
 @startuml
-'skinparam monochrome true
+skinparam monochrome true
 skinparam packageStyle rectangle
 skinparam shadowing false
 
 autonumber
 
-'hide footbox
-actor "Organization Employee" as ORG_EMPLOYEE
-participant ":CreateTaskUI" as UI
-participant ":CreateTaskController" as CTRL
+actor "Player" as PLAYER_ACTOR
+participant ":BuildStationUI" as UI
+participant ":BuildStationController" as CTRL
 participant "Repositories" as REPOS
 participant "repositories\n:Repositories" as REPOS_SINGLETON
-participant "taskCategoryRepository\n:TaskCategoryRepository" as TASK_CAT_REPO
-participant "ApplicationSession" as APP_SESSION
-participant "appSession\n:ApplicationSession" as APP_SESSION_SINGLETON
-participant "currentSession\n:UserSession" as CURRENT_SESSION
-participant "organizationRepository\n:OrganizationRepository" as ORG_REPO
-participant "organization\n:Organization" as ORG
-participant "task\n:Task" as TASK
+participant "stationRepository\n:StationRepository" as STATION_REPO
+participant "mapRepository\n:MapRepository" as MAP_REPO
+participant "map\n:Map" as MAP
+participant "player\n:Player" as PLAYER
+participant "station\n:Station" as STATION
 
-activate ORG_EMPLOYEE
+activate PLAYER_ACTOR
 
-        ORG_EMPLOYEE -> UI : asks to create a new task
-        activate UI
-            UI --> CTRL** : create()
+PLAYER_ACTOR -> UI : requests to build a station
+activate UI
 
-            UI -> CTRL : getTaskCategories()
-            activate CTRL
-                CTRL -> REPOS : getInstance()
-                activate REPOS
-                    REPOS --> CTRL: repositories
-                deactivate REPOS
+UI --> CTRL ** : create()
 
-                CTRL -> REPOS_SINGLETON : getTaskCategoryRepository()
-                activate REPOS_SINGLETON
-                    REPOS_SINGLETON --> CTRL: taskCategoryRepository
-                deactivate REPOS_SINGLETON
+UI -> CTRL : getAvailableStationTypes()
 
-                CTRL -> TASK_CAT_REPO : getTaskCategories()
-                activate TASK_CAT_REPO
-                    TASK_CAT_REPO --> CTRL : taskCategoryList
-                deactivate TASK_CAT_REPO
+activate CTRL
+CTRL -> REPOS : getInstance()
+activate REPOS
+REPOS --> CTRL : repositories
+deactivate REPOS
 
-                CTRL --> UI : taskCategoryList
-            deactivate CTRL
+CTRL -> REPOS_SINGLETON : getStationRepository()
+activate REPOS_SINGLETON
+REPOS_SINGLETON --> CTRL : stationRepository
+deactivate REPOS_SINGLETON
 
-            UI --> ORG_EMPLOYEE : shows task category list and asks to select one
-        deactivate UI
+CTRL -> STATION_REPO : getAvailableStationTypes()
+activate STATION_REPO
+STATION_REPO --> CTRL : stationTypes
+deactivate STATION_REPO
 
-    ORG_EMPLOYEE -> UI : selects a task category
-    activate UI
-        UI --> ORG_EMPLOYEE : requests data (reference, description, \ninformal description, technical description,\nduration, cost)
+CTRL --> UI : stationTypes
+deactivate CTRL
+
+UI -> PLAYER_ACTOR : shows available station types
+deactivate UI
+
+PLAYER_ACTOR -> UI : selects station type
+activate UI
+
+
+opt station type is "Station"
+    UI -> PLAYER_ACTOR : requests station center (NE, SE, NW, SW)
+    PLAYER_ACTOR -> UI : provides station center
+end
+
+UI --> CTRL : checkPlayerBudget(stationType)
+activate CTRL
+
+CTRL -> PLAYER : hasBudgetFor(stationType)
+activate PLAYER
+
+PLAYER --> CTRL : true/false
+deactivate PLAYER
+
+alt insufficient budget
+    CTRL --> UI : false
+    deactivate CTRL
+    UI -> PLAYER_ACTOR : shows warning
     deactivate UI
+    deactivate PLAYER_ACTOR
+    else sufficient budget
+    activate CTRL
 
-    ORG_EMPLOYEE -> UI : types requested data
+    CTRL --> UI : true
+    deactivate CTRL
     activate UI
-        UI --> ORG_EMPLOYEE : shows all data and requests confirmation
+    UI -> PLAYER_ACTOR : requests station location
     deactivate UI
+    activate PLAYER_ACTOR
+end
 
-    ORG_EMPLOYEE -> UI : confirms data
+PLAYER_ACTOR -> UI : provides location
+activate UI
+
+
+UI --> CTRL : checkOverbuilding(location)
+activate CTRL
+
+CTRL -> MAP : checkOverbuilding(location)
+activate MAP
+
+MAP --> CTRL : true/false
+deactivate MAP
+
+alt overbuilding detected
+    CTRL --> UI : true
+    deactivate CTRL
+    UI -> PLAYER_ACTOR : shows warning
+    deactivate UI
+    deactivate PLAYER_ACTOR
+
+else no overbuilding detected
+    activate CTRL
+
+    CTRL --> UI : false
     activate UI
-        UI -> CTRL : createTask(reference,\ndescription,\ninformalDescription,\ntechnicalDescription,\nduration, cost,\ntaskCategoryDescription)
-        activate CTRL
-            CTRL -> CTRL : getTaskCategoryByDescription(taskCategoryDescription)
-            activate CTRL
-                CTRL -> REPOS : getInstance()
-                activate REPOS
-                    REPOS --> CTRL: repositories
-                deactivate REPOS
+    activate PLAYER_ACTOR
 
-                CTRL -> REPOS_SINGLETON : getTaskCategoryRepository()
-                activate REPOS_SINGLETON
-                    REPOS_SINGLETON -> CTRL : taskCategoryRepository
-                deactivate REPOS_SINGLETON
+opt station type is not "Station"
+    UI -> CTRL : calculateGeometricCenter(location)
+    CTRL -> MAP : calculateGeometricCenter(location)
+    activate MAP
+    MAP --> CTRL : geometricCenter
+    deactivate MAP
+    CTRL --> UI : geometricCenter
+end
 
-                CTRL -> TASK_CAT_REPO : getTaskCategoryByDescription(taskCategoryDescription)
-                activate TASK_CAT_REPO
-                    TASK_CAT_REPO --> CTRL : taskCategory
-                deactivate TASK_CAT_REPO
-                    CTRL --> CTRL : taskCategory
-            deactivate CTRL
+UI -> CTRL : proposeStationName(location, stationType)
 
-            |||
-            CTRL -> CTRL : getEmployeeFromSession()
-            activate CTRL
-                CTRL -> APP_SESSION: getInstance()
-                activate APP_SESSION
-                    APP_SESSION -> CTRL: appSession
-                deactivate APP_SESSION
+CTRL -> REPOS : getMapRepository()
+activate REPOS
+REPOS --> CTRL : mapRepository
+deactivate REPOS
 
-                CTRL -> APP_SESSION_SINGLETON: getCurrentSession()
-                activate APP_SESSION_SINGLETON
-                    APP_SESSION_SINGLETON --> CTRL: currentSession
-                deactivate APP_SESSION_SINGLETON
+CTRL -> MAP_REPO : getcurrentMap()
+activate MAP_REPO
 
-                CTRL -> CURRENT_SESSION: getUserEmail()
-                activate CURRENT_SESSION
-                    CURRENT_SESSION --> CTRL: email
-                deactivate CURRENT_SESSION
+MAP_REPO --> CTRL : map
+deactivate MAP_REPO
 
-                CTRL -> REPOS : getInstance()
-                activate REPOS
-                    REPOS --> CTRL: repositories
-                deactivate REPOS
+CTRL -> MAP : proposeStationName(location, stationType)
+activate MAP
 
-                CTRL -> REPOS_SINGLETON: getOrganizationRepository()
-                activate REPOS_SINGLETON
-                    REPOS_SINGLETON --> CTRL: organizationRepository
-                deactivate REPOS_SINGLETON
+MAP --> CTRL : proposedName
+deactivate MAP
 
-                CTRL -> ORG_REPO: getOrganizationByEmployeeEmail(email)
-                activate ORG_REPO
+CTRL --> UI : proposedName
+deactivate CTRL
 
-                    loop [for each organization
-                        ORG_REPO -> ORG : anyEmployeeHasEmail(email)
-                        activate ORG
-                             ORG --> ORG_REPO : true/false
-                        deactivate ORG
-                    end
-                    ORG_REPO --> CTRL : organization
-                deactivate ORG_REPO
+UI -> PLAYER_ACTOR : shows proposed name
 
-                CTRL -> ORG: getEmployeeByEmail(email)
-                activate ORG
-                    ORG --> CTRL : employee
-                deactivate ORG
+end
 
-                CTRL --> CTRL : employee
-            deactivate CTRL
+alt accepts proposed name
+    PLAYER_ACTOR -> UI : confirms station name
+else rejects proposed name
+    UI -> PLAYER_ACTOR : requests alternative name
+    PLAYER_ACTOR -> UI : provides alternative name
+end
 
-            |||
-            CTRL -> ORG: createTask(reference, description,\ninformalDescription, technicalDescription,\nduration, cost, taskCategory, employee)
-            activate ORG
-                ORG --> TASK**: create(reference, description, informalDescription, \ntechnicalDescription, duration, cost, taskCategory, employee)
+UI --> PLAYER_ACTOR : shows all station data (stationType, location, center, name) for final confirmation
+PLAYER_ACTOR -> UI : confirms all data
 
-                ORG -> ORG: addTask (task)
-                activate ORG
-                    ORG -> ORG: validateTask(task)
-                    activate ORG
-                        ORG --> ORG : true
-                    deactivate ORG
+UI -> CTRL : buildStation(stationType, location, center, name)
+activate CTRL
 
-                    ORG --> ORG : true
-                deactivate ORG
+CTRL -> MAP : buildStation(stationType, location, center, name)
+activate MAP
 
-                ORG --> CTRL : task
-            deactivate ORG
+MAP -> STATION : create(stationType, location, center, name)
+MAP --> CTRL : station
+deactivate MAP
 
-            CTRL --> UI: task
-            deactivate CTRL
-            UI --> ORG_EMPLOYEE: displays operation success
-    deactivate UI
+CTRL -> STATION_REPO : save(station)
+activate STATION_REPO
+STATION_REPO --> CTRL : success
+deactivate STATION_REPO
 
-deactivate ORG_EMPLOYEE
+CTRL --> UI : success
+deactivate CTRL
 
+UI -> PLAYER_ACTOR : displays operation success
+deactivate UI
+
+deactivate PLAYER_ACTOR
 @enduml
