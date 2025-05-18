@@ -1,47 +1,31 @@
-# US006 - Create a Task
+### Rationale Table for US004 – Create Scenario
 
-## 3. Design
+| Interaction ID | Question: Which class is responsible for...                             | Answer                     | Justification (with patterns)                                                                                                 |
+|----------------|-------------------------------------------------------------------------|----------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| Step 1         | ... interacting with the actor?                                          | CreateScenarioUI           | **Pure Fabrication**: não pertence ao modelo de domínio e é necessária para gerir a interface com o utilizador.              |
+|                | ... coordenar a execução da US?                                          | CreateScenarioController   | **Controller**: coordena o fluxo da criação de cenários e orquestra chamadas para o domínio e repositórios.                 |
+| Step 2         | ... conhecer os mapas existentes?                                        | MapRepository              | **Information Expert**: detém os dados dos mapas; responsável por `getMapList()`.                                           |
+|                |                                                                         | Repositories               | **HC + LC**: encapsula o acesso a vários repositórios especializados.                                                        |
+| Step 3         | ... verificar se o nome do cenário é válido?                            | Map                        | **IE**: contém a lista de `Scenario`, conhece os nomes dos existentes e pode verificar duplicações.                         |
+| Step 4         | ... manter temporariamente os dados do novo cenário antes da criação?   | CreateScenarioUI           | **IE**: responsável pela recolha sequencial dos dados do utilizador.                                                        |
+| Step 5         | ... instanciar o novo cenário?                                           | CreateScenarioController   | **Creator (Rule 3)**: possui os dados necessários e encapsula a criação baseada nos inputs da UI.                           |
+| Step 6         | ... validar os dados do cenário (restrições, anos, tipos)?              | CreateScenarioController   | **IE**: validações simples delegadas ao controller antes de persistir o cenário.                                            |
+| Step 7         | ... guardar o novo cenário no mapa?                                      | Map                        | **Creator (Rule 1)**: o `Map` contém uma lista de `Scenario`, logo deve criar/adicionar o novo cenário.                     |
+| Step 8         | ... confirmar o sucesso da operação ao utilizador?                      | CreateScenarioUI           | **IE**: gere as mensagens finais e comunicação com o ator.                                                                  |
 
-### 3.1. Rationale
+---
 
-| Interaction ID | Question: Which class is responsible for...        | Answer                 | Justification (with patterns)                                                                                                       |
-|:---------------|:---------------------------------------------------|:-----------------------|:------------------------------------------------------------------------------------------------------------------------------------|
-| Step 1         | ... interacting with the actor?                    | CreateTaskUI           | Pure Fabrication: there is no reason to assign this responsibility to any existing class in the Domain Model.                       |
-|                | ... coordinating the US?                           | CreateTaskController   | Controller                                                                                                                          |
-|                | ... knowing the user using the system?             | UserSession            | IE: cf. A&A component documentation.                                                                                                |
-|                |                                                    | Organization           | IE: knows/has its own Employees                                                                                                     |
-|                |                                                    | Employee               | IE: knows its own data (e.g. email)                                                                                                 |
-| Step 2         | ... knowing all existing task categories to show?  | Repositories           | IE: Repositories maintains Task Categories.                                                                                         |
-|                |                                                    | TaskCategoryRepository | By applying High Cohesion (HC) + Low Coupling (LC) on class Repositories, it delegates the responsibility on TaskCategoryContainer. |
-| Step 3         | ... saving the selected category?                  | CreateTaskUI           | IE: is responsible for keeping the selected category.                                                                               |
-| Step 4         | ... requesting data?                               | CreateTaskUI           | IE: is responsible for user interactions.                                                                                           |
-| Step 5         | ... saving the inputted data?                      | CreateTaskUI           | IE: is responsible for keeping the inputted data.                                                                                   |
-| Step 6         | ... showing all data and requesting confirmation?  | CreateTaskUI           | IE: is responsible for user interactions.                                                                                           |              
-| Step 7         | ... instantiating a new Task?                      | Organization           | Creator (Rule 1): in the DM Organization has a Task.                                                                                |
-|                | ... validating all data (local validation)?        | Task                   | IE: owns its data.                                                                                                                  | 
-|                | ... validating all data (global validation)?       | Organization           | IE: knows all its tasks.                                                                                                            | 
-|                | ... saving the created task?                       | Organization           | IE: owns all its tasks.                                                                                                             | 
-| Step 8         | ... informing operation success?                   | CreateTaskUI           | IE: is responsible for user interactions.                                                                                           | 
+### Systematization
 
-### Systematization ##
+According to the taken rationale, the conceptual classes promoted to software classes are:
+- Map
+- Scenario
 
-According to the taken rationale, the conceptual classes promoted to software classes are: 
-
-* Organization
-* Task
-* TaskCategory
-* Employee
-
-Other software classes (i.e. Pure Fabrication) identified: 
-
-* CreateTaskUI  
-* CreateTaskController
-* Repositories
-* TaskCategoryRepository
-* OrganizationRepository
-* ApplicationSession
-* UserSession
-
+Other software classes (i.e. Pure Fabrication) identified:
+- CreateScenarioUI
+- CreateScenarioController
+- Repositories
+- MapRepository
 
 ## 3.2. Sequence Diagram (SD)
 
@@ -50,30 +34,6 @@ Other software classes (i.e. Pure Fabrication) identified:
 This diagram shows the full sequence of interactions between the classes involved in the realization of this user story.
 
 ![Sequence Diagram - Full](svg/US004-SD-full.svg)
-
-### Split Diagrams
-
-The following diagram shows the same sequence of interactions between the classes involved in the realization of this user story, but it is split in partial diagrams to better illustrate the interactions between the classes.
-
-It uses Interaction Occurrence (a.k.a. Interaction Use).
-
-![Sequence Diagram - split](svg/US006-SD-split.svg)
-
-**Get Task Category List Partial SD**
-
-![Sequence Diagram - Partial - Get Task Category List](svg/US006-SD-partial-get-task-category-list.svg)
-
-**Get Task Category Object**
-
-![Sequence Diagram - Partial - Get Task Category Object](svg/US006-SD-partial-get-task-category.svg)
-
-**Get Employee**
-
-![Sequence Diagram - Partial - Get Employee](svg/US006-SD-partial-get-employee.svg)
-
-**Create Task**
-
-![Sequence Diagram - Partial - Create Task](svg/US006-SD-partial-create-task.svg)
 
 ## 3.3. Class Diagram (CD)
 
