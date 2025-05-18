@@ -1,80 +1,40 @@
-# US006 - Create a Task
+## US009 - Buy a Locomotive
 
-## 3. Design
+### 3. Design
 
-### 3.1. Rationale
+#### 3.1. Rationale
 
-| Interaction ID | Question: Which class is responsible for...        | Answer                 | Justification (with patterns)                                                                                                       |
-|:---------------|:---------------------------------------------------|:-----------------------|:------------------------------------------------------------------------------------------------------------------------------------|
-| Step 1         | ... interacting with the actor?                    | CreateTaskUI           | Pure Fabrication: there is no reason to assign this responsibility to any existing class in the Domain Model.                       |
-|                | ... coordinating the US?                           | CreateTaskController   | Controller                                                                                                                          |
-|                | ... knowing the user using the system?             | UserSession            | IE: cf. A&A component documentation.                                                                                                |
-|                |                                                    | Organization           | IE: knows/has its own Employees                                                                                                     |
-|                |                                                    | Employee               | IE: knows its own data (e.g. email)                                                                                                 |
-| Step 2         | ... knowing all existing task categories to show?  | Repositories           | IE: Repositories maintains Task Categories.                                                                                         |
-|                |                                                    | TaskCategoryRepository | By applying High Cohesion (HC) + Low Coupling (LC) on class Repositories, it delegates the responsibility on TaskCategoryContainer. |
-| Step 3         | ... saving the selected category?                  | CreateTaskUI           | IE: is responsible for keeping the selected category.                                                                               |
-| Step 4         | ... requesting data?                               | CreateTaskUI           | IE: is responsible for user interactions.                                                                                           |
-| Step 5         | ... saving the inputted data?                      | CreateTaskUI           | IE: is responsible for keeping the inputted data.                                                                                   |
-| Step 6         | ... showing all data and requesting confirmation?  | CreateTaskUI           | IE: is responsible for user interactions.                                                                                           |              
-| Step 7         | ... instantiating a new Task?                      | Organization           | Creator (Rule 1): in the DM Organization has a Task.                                                                                |
-|                | ... validating all data (local validation)?        | Task                   | IE: owns its data.                                                                                                                  | 
-|                | ... validating all data (global validation)?       | Organization           | IE: knows all its tasks.                                                                                                            | 
-|                | ... saving the created task?                       | Organization           | IE: owns all its tasks.                                                                                                             | 
-| Step 8         | ... informing operation success?                   | CreateTaskUI           | IE: is responsible for user interactions.                                                                                           | 
+| Interaction ID | Question: Which class is responsible for...                           | Answer                  | Justification (with patterns)                                                                                                   |
+|----------------|----------------------------------------------------------------------|--------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| Step 1         | ... interacting with the actor?                                       | `BuyLocomotiveUI`        | **Pure Fabrication**: there is no reason to assign this responsibility to any domain class.                                     |
+|                | ... coordinating the US?                                              | `BuyLocomotiveController`| **Controller**: coordinates user input, business logic, and system interaction.                                                  |
+| Step 2         | ... knowing which locomotives are available in the scenario?          | `Repositories`           | **IE**: Provides access to `LocomotiveRepository`.                                                                              |
+|                |                                                                      | `LocomotiveRepository`   | **High Cohesion + Low Coupling**: Specializes in locomotive data access while maintaining separation from core logic.           |
+| Step 3         | ... storing the locomotive data and price?                            | `Locomotive`             | **IE**: It owns and provides its attributes such as type, cost, and serial number.                                              |
+| Step 4         | ... owning the purchased locomotives and budget?                      | `Player`                 | **IE**: The player entity tracks budget and purchased locomotives.                                                              |
 
-### Systematization ##
+#### 3.2. Systematization
 
-According to the taken rationale, the conceptual classes promoted to software classes are: 
+According to the rationale, the conceptual classes promoted to software classes are:
 
-* Organization
-* Task
-* TaskCategory
-* Employee
+- `Locomotive`
+- `Player`
 
-Other software classes (i.e. Pure Fabrication) identified: 
+Other software classes (**Pure Fabrication**) identified:
 
-* CreateTaskUI  
-* CreateTaskController
-* Repositories
-* TaskCategoryRepository
-* OrganizationRepository
-* ApplicationSession
-* UserSession
+- `BuyLocomotiveUI`
+- `BuyLocomotiveController`
+- `Repositories`
+- `LocomotiveRepository`
 
+#### 3.3. Sequence Diagram
 
-## 3.2. Sequence Diagram (SD)
+This diagram shows the full sequence of interactions involved in this user story:
 
-### Full Diagram
+![Sequence Diagram - Full](svg/US009-SD-full.svg)
 
-This diagram shows the full sequence of interactions between the classes involved in the realization of this user story.
+#### 3.4. Class Diagram
 
-![Sequence Diagram - Full](svg/US006-SD-full.svg)
+This diagram captures the structure of the classes involved in this use case:
 
-### Split Diagrams
-
-The following diagram shows the same sequence of interactions between the classes involved in the realization of this user story, but it is split in partial diagrams to better illustrate the interactions between the classes.
-
-It uses Interaction Occurrence (a.k.a. Interaction Use).
-
-![Sequence Diagram - split](svg/US006-SD-split.svg)
-
-**Get Task Category List Partial SD**
-
-![Sequence Diagram - Partial - Get Task Category List](svg/US006-SD-partial-get-task-category-list.svg)
-
-**Get Task Category Object**
-
-![Sequence Diagram - Partial - Get Task Category Object](svg/US006-SD-partial-get-task-category.svg)
-
-**Get Employee**
-
-![Sequence Diagram - Partial - Get Employee](svg/US006-SD-partial-get-employee.svg)
-
-**Create Task**
-
-![Sequence Diagram - Partial - Create Task](svg/US006-SD-partial-create-task.svg)
-
-## 3.3. Class Diagram (CD)
-
-![Class Diagram](svg/US006-CD.svg)
+![Class Diagram](svg/US009-CD.svg)

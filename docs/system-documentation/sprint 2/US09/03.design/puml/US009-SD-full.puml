@@ -1,0 +1,67 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Player" as PLAYER
+participant ":BuyLocomotiveUI" as UI
+participant ":BuyLocomotiveController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "locomotiveRepository\n:LocomotiveRepository" as LOCO_REPO
+participant "locomotive\n:Locomotive" as LOCO
+
+activate PLAYER
+
+    PLAYER -> UI : requests to buy a locomotive
+    activate UI
+
+        UI --> CTRL** : create()
+
+        UI -> CTRL : getAvailableLocomotives()
+        activate CTRL
+
+            CTRL -> REPOS : getInstance()
+            activate REPOS
+
+                REPOS --> CTRL : repositories
+            deactivate REPOS
+
+            CTRL -> REPOS_SINGLETON : getLocomotiveRepository()
+            activate REPOS_SINGLETON
+                REPOS_SINGLETON --> CTRL : locomotiveRepository
+            deactivate REPOS_SINGLETON
+
+            CTRL -> LOCO_REPO : getAvailableLocomotives()
+            activate LOCO_REPO
+                LOCO_REPO --> CTRL : locomotiveList
+            deactivate LOCO_REPO
+
+            CTRL --> UI : locomotiveList
+        deactivate CTRL
+
+        UI --> PLAYER : displays available locomotives
+    deactivate UI
+
+    PLAYER -> UI : selects a locomotive and current date
+    activate UI
+
+        UI -> CTRL : buyLocomotive(selected, currentDate)
+        activate CTRL
+
+            CTRL -> LOCO : getCost()
+            activate LOCO
+                LOCO --> CTRL : cost
+            deactivate LOCO
+
+            CTRL --> UI : success or failure
+        deactivate CTRL
+
+        UI --> PLAYER : notifies player
+    deactivate UI
+
+deactivate PLAYER
+
+@enduml
