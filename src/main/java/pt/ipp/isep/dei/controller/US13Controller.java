@@ -83,13 +83,9 @@ public class US13Controller {
             }
         }
 
-        System.out.println(mapToReturn.keySet().size() + "pairs");
-        int i = 0;
         for (Map.Entry<Pair<Station, Station>, List<Railway>> a : mapToReturn.entrySet()) {
-            System.out.println("Pair" + i);
             List<Railway> path = this.checkRouteForTrain(chosenTrain, a.getKey().getFirst(), a.getKey().getSecond(), false, true);
             mapToReturn.replace(a.getKey(), path);
-            i++;
         }
 
         return mapToReturn;
