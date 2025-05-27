@@ -60,15 +60,15 @@ public class US13Controller {
         return this.stationRepository.getAllStationTypes();
     }
 
-    public List<Railway> checkRouteForTrain(Train chosenTrain, Station originStation, Station targetStation, boolean displayGraph, boolean removeAloneNodes) {
+    public List<Station> checkRouteForTrain(Train chosenTrain, Station originStation, Station targetStation, boolean displayGraph, boolean removeAloneNodes) {
         return this.mapRepository.Dijkstra(chosenTrain, originStation, targetStation, displayGraph, removeAloneNodes);
     }
 
-    public Map<Pair<Station, Station>, List<Railway>> checkRoutesForTrain(Train chosenTrain, StationType originStationType, StationType targetStationType, boolean displayGraph) {
+    public Map<Pair<Station, Station>, List<Station>> checkRoutesForTrain(Train chosenTrain, StationType originStationType, StationType targetStationType, boolean displayGraph) {
         if (displayGraph) {
             this.mapRepository.displayCustomGraph(this.mapRepository.getGraphForTrain(chosenTrain, true));
         }
-        Map<Pair<Station, Station>, List<Railway>> mapToReturn = new HashMap<>();
+        Map<Pair<Station, Station>, List<Station>> mapToReturn = new HashMap<>();
         Set<Station> originStations = this.mapRepository.getStationsByType(originStationType);
         Set<Station> targetStations = this.mapRepository.getStationsByType(targetStationType);
 
@@ -83,8 +83,8 @@ public class US13Controller {
             }
         }
 
-        for (Map.Entry<Pair<Station, Station>, List<Railway>> a : mapToReturn.entrySet()) {
-            List<Railway> path = this.checkRouteForTrain(chosenTrain, a.getKey().getFirst(), a.getKey().getSecond(), false, true);
+        for (Map.Entry<Pair<Station, Station>, List<Station>> a : mapToReturn.entrySet()) {
+            List<Station> path = this.checkRouteForTrain(chosenTrain, a.getKey().getFirst(), a.getKey().getSecond(), false, true);
             mapToReturn.replace(a.getKey(), path);
         }
 

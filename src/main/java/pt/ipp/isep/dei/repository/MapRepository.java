@@ -36,6 +36,9 @@ public class MapRepository {
 
     public Graph getGraphForTrain(Train train, boolean removeAloneNodes) {
         Graph tempGraph = Graphs.clone(this.railwayGraph);
+        if (train == null) {
+            return tempGraph;
+        }
         // Se for elétrico excluimos todas as linhas não eletricas da copia do grafo
         switch (train.getType()) {
             case Electric:
@@ -161,7 +164,7 @@ public class MapRepository {
         return this.railwayGraph.getNodeCount() == 0 && this.railwayGraph.getEdgeCount() == 0;
     }
 
-    public List<Railway> Dijkstra(Train train, Station origin, Station target, boolean displayGraph, boolean removeAloneNodes) {
+    public List<Station> Dijkstra(Train train, Station origin, Station target, boolean displayGraph, boolean removeAloneNodes) {
         Graph tempGraph = getGraphForTrain(train, removeAloneNodes);
 
         if (displayGraph) {
@@ -231,16 +234,17 @@ public class MapRepository {
         }
 
         // Reconstrói o caminho
-        List<Railway> path = new ArrayList<>();
+        List<Station> path = new ArrayList<>();
+        path.add(target);
         // Começamos na Estação de chegada e vamos para tras
         Node step = targetNode;
         while (predecessors.containsKey(step)) {
             // vamos buscar o node anterior
             Node previous = predecessors.get(step);
             // vamos buscar a aresta
-            Edge edge = previous.getEdgeBetween(step);
+            //Edge edge = previous.getEdgeBetween(step);
             // vamos buscar o objeto railway
-            path.add(this.getRailway(edge));
+            path.add(this.getStation(previous));
             step = previous;
         }
 

@@ -75,7 +75,7 @@ public class US13UI implements Runnable {
 
         switch (option){
             case 1:
-                List<Railway> path = us13Controller.checkRouteForTrain(chosenTrain, originStation, targetStation, true, true);
+                List<Station> path = us13Controller.checkRouteForTrain(chosenTrain, originStation, targetStation, true, true);
                 if (path.isEmpty()) {
                     System.out.println("Não é possivel ir de " + originStation.getName() + " até " + targetStation.getName() + " com o comboio " + chosenTrain.getName());
                 }else {
@@ -89,10 +89,10 @@ public class US13UI implements Runnable {
                 }
                 break;
             case 2:
-                Map<Pair<Station, Station>, List<Railway>> results = us13Controller.checkRoutesForTrain(chosenTrain, originStationType, targetStationType, true);
-                for (Map.Entry<Pair<Station, Station>, List<Railway>> a : results.entrySet()) {
+                Map<Pair<Station, Station>, List<Station>> results = us13Controller.checkRoutesForTrain(chosenTrain, originStationType, targetStationType, true);
+                for (Map.Entry<Pair<Station, Station>, List<Station>> a : results.entrySet()) {
                     Pair<Station, Station> left = a.getKey();
-                    List<Railway> right = a.getValue();
+                    List<Station> right = a.getValue();
                     if (right.isEmpty()){
                         System.out.println(left.getFirst().getName() + " to " + left.getSecond().getName() + "  with " + chosenTrain.getName() + " is impossible with" + chosenTrain.getName());
                     } else {
