@@ -34,6 +34,35 @@ public class MapRepository {
         return true;
     }
 
+    public Graph getGraphForTrain(Train train, boolean removeAloneNodes) {
+        Graph tempGraph = Graphs.clone(this.railwayGraph);
+        if (train == null) {
+            return tempGraph;
+        }
+        // Se for elétrico excluimos todas as linhas não eletricas da copia do grafo
+        switch (train.getType()) {
+            case Electric:
+                List<Edge> edgesToRemove = tempGraph.edges()
+                        .filter(edge -> {
+                            Railway railway = (Railway) edge.getAttribute("railway");
+                            return railway.getRailwayType().equals(RailwayType.Non_Electrified);
+                        })
+                        .collect(Collectors.toList());
+                edgesToRemove.forEach(tempGraph::removeEdge);
+                break;
+        }
+
+        if (removeAloneNodes) {
+            // Remove nós sem arestas
+            List<Node> nodesToRemove = tempGraph.nodes()
+                    .filter(node -> node.edges().count() == 0)
+                    .collect(Collectors.toList());
+            nodesToRemove.forEach(tempGraph::removeNode);
+        }
+
+        return tempGraph;
+    }
+
     public void displayCustomGraph(Graph graph) {
         graph.setAttribute("ui.quality");
         graph.setAttribute("ui.antialias");
@@ -112,6 +141,17 @@ public class MapRepository {
         return (Station) node.getAttribute("station");
     }
 
+    public Set<Station> getStationsByType(StationType stationType) {
+        Set<Station> listToReturn = new HashSet<>();
+        for (Node node : this.railwayGraph.nodes().collect(Collectors.toSet())) {
+            Station station = this.getStation(node);
+            if (station.getStationType().equals(stationType)) {
+                listToReturn.add(station);
+            }
+        }
+        return listToReturn;
+    }
+
     public Railway getRailway(Edge edge) {
         return (Railway) edge.getAttribute("railway");
     }
@@ -124,27 +164,12 @@ public class MapRepository {
         return this.railwayGraph.getNodeCount() == 0 && this.railwayGraph.getEdgeCount() == 0;
     }
 
-    public List<Railway> Dijkstra(Train train, Station origin, Station target) {
-        Graph tempGraph = Graphs.clone(this.railwayGraph);
+    public List<Station> Dijkstra(Train train, Station origin, Station target, boolean displayGraph, boolean removeAloneNodes) {
+        Graph tempGraph = getGraphForTrain(train, removeAloneNodes);
 
-        // Se for elétrico excluimos todas as linhas não eletricas da copia do grafo
-        if (train.getType().equals(TrainType.Electric)) {
-            List<Edge> edgesToRemove = tempGraph.edges()
-                    .filter(edge -> {
-                        Railway railway = (Railway) edge.getAttribute("railway");
-                        return railway.getRailwayType().equals(RailwayType.Non_Electrified);
-                    })
-                    .collect(Collectors.toList());
-            edgesToRemove.forEach(tempGraph::removeEdge);
+        if (displayGraph) {
+            this.displayCustomGraph(tempGraph);
         }
-
-        // Remove nós sem arestas
-        List<Node> nodesToRemove = tempGraph.nodes()
-                .filter(node -> node.edges().count() == 0)
-                .collect(Collectors.toList());
-        nodesToRemove.forEach(tempGraph::removeNode);
-
-        this.displayCustomGraph(tempGraph);
 
         // Verifica se as estações existem no grafo copiado
         // se não existirem, depois de remover os vertices sem arestas, quer dizer que não se consegue chegar lá
@@ -209,16 +234,17 @@ public class MapRepository {
         }
 
         // Reconstrói o caminho
-        List<Railway> path = new ArrayList<>();
+        List<Station> path = new ArrayList<>();
+        path.add(target);
         // Começamos na Estação de chegada e vamos para tras
         Node step = targetNode;
         while (predecessors.containsKey(step)) {
             // vamos buscar o node anterior
             Node previous = predecessors.get(step);
             // vamos buscar a aresta
-            Edge edge = previous.getEdgeBetween(step);
+            //Edge edge = previous.getEdgeBetween(step);
             // vamos buscar o objeto railway
-            path.add(this.getRailway(edge));
+            path.add(this.getStation(previous));
             step = previous;
         }
 
@@ -226,4 +252,6 @@ public class MapRepository {
         Collections.reverse(path);
         return path;
     }
+
+
 }

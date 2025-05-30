@@ -1,6 +1,7 @@
 package pt.ipp.isep.dei.repository;
 
 import pt.ipp.isep.dei.domain.Station;
+import pt.ipp.isep.dei.domain.StationType;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -41,6 +42,14 @@ public class StationRepository {
 
     public Set<Station> getAllStations() {
         return new HashSet<>(this.stationSet);
+    }
+
+    public Set<StationType> getAllStationTypes() {
+        Set<StationType> listToReturn = new HashSet<>();
+        for (Station a : this.stationSet) {
+            listToReturn.add(a.getStationType());
+        }
+        return listToReturn;
     }
 
     public boolean isEmpty(){

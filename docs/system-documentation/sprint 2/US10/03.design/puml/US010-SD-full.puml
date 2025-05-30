@@ -1,0 +1,95 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Player" as PLAYER
+participant ":AssignRouteUI" as UI
+participant ":AssignRouteController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "trainRepository\n:TrainRepository" as TRAIN_REPO
+participant "stationRepository\n:StationRepository" as STATION_REPO
+participant "railwayService\n:RailwayNetworkService" as RAILWAY_SERVICE
+
+activate PLAYER
+
+    PLAYER -> UI : requests to assign a train to a route
+    activate UI
+
+        UI --> CTRL** : create()
+
+        UI -> CTRL : getAvailableTrains()
+        activate CTRL
+
+            CTRL -> REPOS : getInstance()
+            activate REPOS
+                REPOS --> CTRL : repositories
+            deactivate REPOS
+
+            CTRL -> REPOS_SINGLETON : getTrainRepository()
+            activate REPOS_SINGLETON
+                REPOS_SINGLETON --> CTRL : trainRepository
+            deactivate REPOS_SINGLETON
+
+            CTRL -> TRAIN_REPO : getAvailableTrains()
+            activate TRAIN_REPO
+                TRAIN_REPO --> CTRL : trainList
+            deactivate TRAIN_REPO
+
+            CTRL --> UI : trainList
+        deactivate CTRL
+
+        UI --> PLAYER : displays available trains
+    deactivate UI
+
+    PLAYER -> UI : selects train
+    activate UI
+
+        UI -> CTRL : getAvailableStations(train)
+        activate CTRL
+
+            CTRL -> REPOS_SINGLETON : getStationRepository()
+            activate REPOS_SINGLETON
+                REPOS_SINGLETON --> CTRL : stationRepository
+            deactivate REPOS_SINGLETON
+
+            CTRL -> STATION_REPO : getStationsForTrain(train)
+            activate STATION_REPO
+                STATION_REPO --> CTRL : stationList
+            deactivate STATION_REPO
+
+            CTRL --> UI : stationList + cargo pickups
+        deactivate CTRL
+
+        UI --> PLAYER : displays stations and cargos
+    deactivate UI
+
+    PLAYER -> UI : selects stations
+    activate UI
+
+        UI -> CTRL : assignRoute(train, stations)
+        activate CTRL
+
+            CTRL -> RAILWAY_SERVICE : isValidPath(stations)
+            activate RAILWAY_SERVICE
+
+                RAILWAY_SERVICE --> CTRL : true/false
+            deactivate RAILWAY_SERVICE
+
+            alt valid path
+                CTRL --> UI : success
+            else invalid path
+                CTRL --> UI : warn player, await decision
+            end
+
+        deactivate CTRL
+
+        UI --> PLAYER : notify of route status
+    deactivate UI
+
+deactivate PLAYER
+
+@enduml

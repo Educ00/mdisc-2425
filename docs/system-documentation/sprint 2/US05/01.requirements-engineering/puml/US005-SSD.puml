@@ -46,9 +46,8 @@
              deactivate System
 
              Player -> System : provides alternative name
+             activate System
          end
-
-         activate System
 
              System --> Player : displays station's name, location, and center and requests final confirmation
          deactivate System
