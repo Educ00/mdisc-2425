@@ -63,6 +63,42 @@ public class MapRepository {
         return tempGraph;
     }
 
+    public void DisplayGraphWithPathFromStationList(List<Station> path) {
+        Graph graphToDisplay = getGraphForTrain(null, false);
+
+        String colorAttributeRegex = "(fill-color|text-color)\\s*:\\s*(\\w+|#[0-9a-fA-F]{3,6});";
+
+        for (Edge edge : graphToDisplay.edges().collect(Collectors.toList())) {
+            String currentStyle = edge.getAttribute("ui.style").toString();
+            String updatedStyle = currentStyle.replaceAll(colorAttributeRegex, "$1: black;");
+            edge.setAttribute("ui.style", updatedStyle);
+        }
+
+        if (path != null && path.size() >= 2) {
+            for (int i = 0; i < path.size() - 1; i++) {
+                Station station1 = path.get(i);
+                Station station2 = path.get(i + 1);
+
+                Node node1 = graphToDisplay.getNode(station1.getName());
+                Node node2 = graphToDisplay.getNode(station2.getName());
+
+                if (node1 != null && node2 != null) {
+                    for (Edge edge : node1.edges().collect(Collectors.toList())) {
+                        if (edge.getOpposite(node1).equals(node2)) {
+                            String currentStyle = edge.getAttribute("ui.style").toString();
+                            String highlightedStyle = currentStyle.replaceAll(colorAttributeRegex, "$1: red;");
+
+                            edge.setAttribute("ui.style", highlightedStyle);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        displayCustomGraph(graphToDisplay);
+    }
+
     public void displayCustomGraph(Graph graph) {
         graph.setAttribute("ui.quality");
         graph.setAttribute("ui.antialias");

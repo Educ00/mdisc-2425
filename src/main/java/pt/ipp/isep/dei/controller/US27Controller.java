@@ -1,6 +1,5 @@
 package pt.ipp.isep.dei.controller;
 
-import pt.ipp.isep.dei.domain.Railway;
 import pt.ipp.isep.dei.domain.Station;
 import pt.ipp.isep.dei.repository.MapRepository;
 import pt.ipp.isep.dei.repository.Repositories;
@@ -70,6 +69,7 @@ public class US27Controller {
                 }
             }
         }
+        this.mapRepository.DisplayGraphWithPathFromStationList(path);
         return path;
     }
 }
