@@ -109,7 +109,7 @@ activate CTRL
                     REPOS_SINGLETON --> CTRL: mapRepository
                 deactivate REPOS_SINGLETON
 
-CTRL -> MAP_REPO : getcurrentMap()
+CTRL -> MAP_REPO : getCurrentMap()
 activate MAP_REPO
 
 MAP_REPO --> CTRL : map

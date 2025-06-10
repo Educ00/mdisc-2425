@@ -12,6 +12,8 @@ participant "Repositories" as REPOS
 participant "repositories\n:Repositories" as REPOS_SINGLETON
 participant "stationRepository\n:StationRepository" as STATION_REPO
 participant "upgradeBuildingRepository\n:UpgradeBuildingRepository" as UPGRADE_BUILDING_REPO
+participant "ApplicationSession" as APP_SESSION
+participant "appSession\n:ApplicationSession" as APP_SESSION_SINGLETON
 participant "station\n:Station" as STATION
 participant "upgradeBuilding\n:UpgradeBuilding" as UPGRADE_BUILDING
 participant "scenario\n:Scenario" as SCENARIO
@@ -40,7 +42,7 @@ deactivate REPOS_SINGLETON
 
 CTRL -> STATION_REPO : getStationsAvailableForUpgrade()
 activate STATION_REPO
-STATION_REPO --> CTRL : stationList
+STATION_REPO --> CTRL : stationList (especificar o tipo de lista?)
 deactivate STATION_REPO
 
 CTRL --> UI : stationList
@@ -55,17 +57,46 @@ activate UI
 UI -> CTRL : getAvailableUpgradeBuildings(station)
 activate CTRL
 
-CTRL -> REPOS_SINGLETON : getUpgradeBuildingRepository()
-activate REPOS_SINGLETON
+CTRL -> STATION_REPO : getStationByID(stationID)
+activate STATION_REPO
+STATION_REPO --> CTRL : station
+deactivate STATION_REPO
 
-REPOS_SINGLETON --> CTRL : upgradeBuildingRepository
-deactivate REPOS_SINGLETON
+|||
+CTRL -> CTRL : getCurrentDateFromSession()
+activate CTRL
+                CTRL -> APP_SESSION: getInstance()
+                activate APP_SESSION
+                    APP_SESSION -> CTRL: appSession
+                deactivate APP_SESSION
+
+                CTRL -> APP_SESSION_SINGLETON: getCurrentSession()
+                activate APP_SESSION_SINGLETON
+                    APP_SESSION_SINGLETON --> CTRL: currentSession
+                deactivate APP_SESSION_SINGLETON
 
 CTRL -> SCENARIO : getCurrentDate()
 activate SCENARIO
 
 SCENARIO --> CTRL : currentDate
 deactivate SCENARIO
+
+CTRL --> CTRL : currentDate
+deactivate CTRL
+
+|||
+CTRL -> CTRL : getAvailableUpgradeBuildings(station)
+activate CTRL
+CTRL -> REPOS : getInstance()
+activate REPOS
+REPOS --> CTRL : repositories
+deactivate REPOS
+
+CTRL -> REPOS_SINGLETON : getUpgradeBuildingRepository()
+activate REPOS_SINGLETON
+
+REPOS_SINGLETON --> CTRL : upgradeBuildingRepository
+deactivate REPOS_SINGLETON
 
 CTRL -> STATION : getUpgradesInstalled(station)
 activate STATION
@@ -78,6 +109,9 @@ activate UPGRADE_BUILDING_REPO
 UPGRADE_BUILDING_REPO --> CTRL : availableUpgradeBuildingsList
 deactivate UPGRADE_BUILDING_REPO
 
+CTRL --> CTRL : availableUpgradeBuildingsList
+deactivate CTRL
+
 CTRL --> UI : availableUpgradeBuildingsList
 deactivate CTRL
 
@@ -87,25 +121,13 @@ deactivate UI
 PLAYER -> UI : selects building to upgrade station
 activate UI
 
-UI -> CTRL : getUpgradePreview(upgradeBuilding, station)
+UI -> CTRL : getUpgradeBuildingByID(upgradeBuildingID)
 activate CTRL
-
-CTRL -> STATION : getPerformanceImprovement(upgradeBuilding, station)
-activate STATION
-
-STATION --> CTRL : performanceImprovement
-deactivate STATION
-CTRL -> UPGRADE_BUILDING : getCost(upgradeBuilding)
-activate UPGRADE_BUILDING
-
-UPGRADE_BUILDING --> CTRL : cost
-deactivate UPGRADE_BUILDING
-CTRL -> STATION : getUpgradePreview(upgradeBuilding, station, performanceImprovement, cost)
-activate STATION
-
-STATION --> CTRL : upgradePreview
-deactivate STATION
-CTRL --> UI : upgradePreview
+CTRL -> UPGRADE_BUILDING_REPO : getUpgradeBuildingByID(upgradeBuildingID)
+activate UPGRADE_BUILDING_REPO
+UPGRADE_BUILDING_REPO --> CTRL : upgradeBuilding
+deactivate UPGRADE_BUILDING_REPO
+CTRL --> UI : upgradeBuilding
 deactivate CTRL
 
 UI --> PLAYER : shows station's upgrade preview and asks for confirmation
@@ -124,13 +146,13 @@ UPGRADE_BUILDING --> CTRL : true/false
 deactivate UPGRADE_BUILDING
 
 alt true (same exclusivity group)
-CTRL -> STATION : replaceBuilding(installedUpgrade, upgradeBuilding)
+CTRL -> STATION : replaceBuilding(installedUpgrade, upgradeBuilding, station)
 activate STATION
 
 STATION --> CTRL : success
 deactivate STATION
 else false (different exclusivity group)
-CTRL -> STATION : addBuilding(upgradeBuilding)
+CTRL -> STATION : addBuilding(upgradeBuilding, station)
 activate STATION
 
 STATION --> CTRL : success
@@ -139,13 +161,14 @@ end
 
 end
 else installedUpgradesList is empty
-CTRL -> STATION : addBuilding(upgradeBuilding)
+CTRL -> STATION : addBuilding(upgradeBuilding, station)
 activate STATION
 
 STATION --> CTRL : success
 deactivate STATION
 end
 
+'Devo no fim do replaceBuilding ou addBuilding guardar a station no repositorio novamente, ou guardar a alteracao em si?
 CTRL --> UI : success message
 deactivate CTRL
 

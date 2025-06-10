@@ -4,63 +4,54 @@ skinparam shadowing false
 skinparam linetype polyline
 skinparam classAttributeIconSize 0
 
-class Player {
-    - budget : double
-}
-
 class UpgradeStationUI {
 }
 
 class UpgradeStationController {
+    + UpgradeStationController()
     + getStationsAvailableForUpgrade() : List<Station>
     + getAvailableUpgradeBuildings(station : Station) : List<UpgradeBuilding>
+    + getUpgradeBuildingByID(upgradeBuildingID : String) : UpgradeBuilding
     + applyUpgrade(station : Station, upgradeBuilding : UpgradeBuilding)
-    + getUpgradePreview(upgradeBuilding : UpgradeBuilding, station : Station) : Map<String, Object>
 }
 
 class Repositories {
     - Repositories()
-    + {static} getInstance() : Repositories
-    + getStationRepository() : StationRepository
-    + getUpgradeBuildingRepository() : UpgradeBuildingRepository
+    + {static} getInstance()
+    + getStationRepository()
+    + getUpgradeBuildingRepository()
 }
 
 class StationRepository {
     + getStationsAvailableForUpgrade() : List<Station>
+    + getStationByID(stationID : String) : Station
 }
 
 class UpgradeBuildingRepository {
     + getAvailableUpgradeBuildings(station : Station, installedUpgradesList : List<UpgradeBuilding>, currentDate : Date) : List<UpgradeBuilding>
+    + getUpgradeBuildingByID(upgradeBuildingID : String) : UpgradeBuilding
 }
 
 class Station {
-    - name : String
-    - type : String
-    - economicRadius : double
-    - cost : double
-    - supply : double
-    - demand : double
     + getUpgradesInstalled(station : Station) : List<UpgradeBuilding>
-    + replaceBuilding(installedUpgrade : UpgradeBuilding, upgradeBuilding : UpgradeBuilding)
-    + addBuilding(upgradeBuilding : UpgradeBuilding)
-    + getPerformanceImprovement(upgradeBuilding : UpgradeBuilding, station : Station) : Map<String, Object>
-    + getUpgradePreview(upgradeBuilding : UpgradeBuilding, station : Station, performanceImprovement : double, cost : double) : Map<String, Object>
+    + replaceBuilding(installedUpgrade : UpgradeBuilding, upgradeBuilding : UpgradeBuilding, station : Station)
+    + addBuilding(upgradeBuilding : UpgradeBuilding, station : Station)
 }
 
 class UpgradeBuilding {
-    - type : String
-    - availabilityDate : Date
-    - exclusivityGroup : String
-    + isInSameExclusivityGroup(upgradeBuilding : UpgradeBuilding , installedUpgrade : UpgradeBuilding ) : boolean
-    + getCost(upgradeBuilding : UpgradeBuilding) : double
+    + isInSameExclusivityGroup(upgradeBuilding : UpgradeBuilding, installedUpgrade : UpgradeBuilding) : boolean
 }
 
 class Scenario {
     + getCurrentDate() : Date
 }
 
-Player --> "*" Station : upgrades
-Station --> "*" UpgradeBuilding : upgraded with
+class ApplicationSession {
+    - ApplicationSession()
+    + {static} getInstance()
+    + getCurrentSession()
+}
+
 UpgradeStationUI ..> UpgradeStationController
 UpgradeStationController .> Repositories
 Repositories -> "1" Repositories : instance
@@ -69,9 +60,9 @@ Repositories --> "1" UpgradeBuildingRepository : upgradeBuildingRepository
 UpgradeStationController ..> StationRepository
 UpgradeStationController ..> UpgradeBuildingRepository
 UpgradeStationController ..> Scenario
-UpgradeStationController ..> Station
-UpgradeStationController ..> UpgradeBuilding
+UpgradeStationController ..> ApplicationSession
 StationRepository --> "*" Station : stations
 UpgradeBuildingRepository --> "*" UpgradeBuilding : upgradeBuildings
+ApplicationSession --> "1" ApplicationSession : instance
 
 @enduml

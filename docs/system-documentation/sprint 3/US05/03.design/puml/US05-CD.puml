@@ -12,7 +12,7 @@ class BuildStationController {
     + getAvailableStationTypes() : List<StationType>
     + getStationTypeByID(stationTypeID : String) : StationType
     + proposeStationName(location : Object, stationType : StationType) : String
-    - getCurrentMapSession() : Map
+    - getCurrentMapFromSession() : Map
     - getProposedStationName(nearestCity : String, stationType : StationType) : String
     + buildStation(stationType : StationType, location : Object, center : Object, name : String)
 }
