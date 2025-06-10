@@ -1,0 +1,46 @@
+@startuml
+
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+hide methods
+
+title Domain Model - US05
+
+class Map {
+    size
+    name
+}
+
+class City {
+    name
+    numberOfHouseBlocks
+}
+
+class Location {
+    X coordinates
+    Y coordinates
+}
+
+class Station {
+    name
+    type
+    economic radius
+    performance
+    cost
+    supply
+    demand
+}
+
+class Player {
+    budget
+}
+
+Map "1" ---- "0..*" Station : contains >
+City "1" ---- "0..*" Station : is served by >
+Station "1" ---- "1" Location : bears >
+Player "1" ---- "1..*" Station : builds >
+
+@enduml

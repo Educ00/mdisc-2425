@@ -1,0 +1,68 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Player" as PLAYER
+participant ":ListStationUI" as UI
+participant ":ListStationController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "stationRepository\n:StationRepository" as STATION_REPO
+participant "station\n:Station" as STATION
+
+activate PLAYER
+
+    PLAYER -> UI : requests to list all stations
+    activate UI
+
+           UI --> CTRL** : create()
+
+        UI -> CTRL : getAllStations()
+        activate CTRL
+
+            CTRL -> REPOS : getInstance()
+            activate REPOS
+
+                REPOS --> CTRL : repositories
+            deactivate REPOS
+
+            CTRL -> REPOS_SINGLETON : getStationRepository()
+            activate REPOS_SINGLETON
+                REPOS_SINGLETON --> CTRL : stationRepository
+            deactivate REPOS_SINGLETON
+
+            CTRL -> STATION_REPO : getAllStations()
+            activate STATION_REPO
+                STATION_REPO --> CTRL : stationList
+            deactivate STATION_REPO
+
+            CTRL --> UI : stationList
+        deactivate CTRL
+
+        UI --> PLAYER : displays all stations
+    deactivate UI
+
+    PLAYER -> UI : selects a station
+    activate UI
+
+        UI -> CTRL : getStationDetails(station)
+        activate CTRL
+
+            CTRL -> STATION : getStationDetails(station)
+            activate STATION
+
+                STATION --> CTRL : stationDetails
+            deactivate STATION
+
+            CTRL --> UI : stationDetails
+        deactivate CTRL
+
+        UI --> PLAYER : displays station details (name, type, economic radius, performance, supply/demand)
+    deactivate UI
+
+deactivate PLAYER
+
+@enduml

@@ -1,0 +1,79 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam classAttributeIconSize 0
+
+class Player {
+    - budget : double
+}
+
+class AssignRouteUI {
+}
+
+class AssignRouteController {
+    + getAvailableTrains() : List<Train>
+    + getAvailableStations(train : Train) : List<Station>
+    + assignRoute(train : Train, stations : List<Station>) : boolean
+}
+
+class Repositories {
+    - Repositories()
+    + {static} getInstance() : Repositories
+    + getTrainRepository() : TrainRepository
+    + getStationRepository() : StationRepository
+}
+
+class TrainRepository {
+    + getAvailableTrains() : List<Train>
+}
+
+class StationRepository {
+    + getStationsForTrain(train : Train) : List<Station>
+}
+
+class RailwayNetworkService {
+    + isValidPath(stations : List<Station>) : boolean
+}
+
+class Train {
+}
+
+class Station {
+    - name : String
+    - type : String
+    - economicRadius : double
+    - cost : double
+    - supply : double
+    - demand : double
+}
+
+class Route {
+}
+
+class Cargo {
+    - deliverValue : double
+    - status : String
+}
+
+class CargoType {
+    - type : String
+}
+
+Player --> "*" Train : assigns >
+Train --> "*" Cargo : transports >
+Route --> "*" Station : includes >
+Cargo --> "1" Station : is collected at >
+Cargo --> "1" CargoType : has >
+Train --> "*" Station : passes through >
+Train --> "1" Route : follows >
+
+AssignRouteUI .> AssignRouteController
+AssignRouteController .> Repositories
+AssignRouteController .> TrainRepository
+AssignRouteController .> StationRepository
+AssignRouteController .> RailwayNetworkService
+Repositories --> "1" TrainRepository : trainRepository
+Repositories --> "1" StationRepository : stationRepository
+
+@enduml

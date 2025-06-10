@@ -1,0 +1,37 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Editor" as Editor
+participant ":System" as System
+
+activate Editor
+
+    Editor -> System : requests to create a scenario
+    activate System
+
+        System --> Editor : requests scenario name, start/end dates, and map selection
+    deactivate System
+
+    Editor -> System : provides scenario name, start/end dates, and selects map
+    activate System
+
+        System --> Editor : requests port behavior, locomotion types, industry generation modifiers, and historical events
+    deactivate System
+
+    Editor -> System : provides the requested scenario configurations
+    activate System
+
+        System --> Editor : confirms data and requests final confirmation
+    deactivate System
+
+    Editor -> System : confirms scenario creation
+    activate System
+
+        System --> Editor : displays success message and saves scenario configuration
+    deactivate System
+
+@enduml

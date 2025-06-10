@@ -1,0 +1,190 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Player" as PLAYER_ACTOR
+participant ":BuildStationUI" as UI
+participant ":BuildStationController" as CTRL
+participant "Repositories" as REPOS
+participant "repositories\n:Repositories" as REPOS_SINGLETON
+participant "stationRepository\n:StationRepository" as STATION_REPO
+participant "mapRepository\n:MapRepository" as MAP_REPO
+participant "ApplicationSession" as APP_SESSION
+participant "appSession\n:ApplicationSession" as APP_SESSION_SINGLETON
+participant "map\n:Map" as MAP
+participant "station\n:Station" as STATION
+
+activate PLAYER_ACTOR
+
+PLAYER_ACTOR -> UI : requests to build a station
+activate UI
+
+UI --> CTRL ** : create()
+
+UI -> CTRL : getAvailableStationTypes()
+
+activate CTRL
+CTRL -> REPOS : getInstance()
+activate REPOS
+REPOS --> CTRL : repositories
+deactivate REPOS
+
+CTRL -> REPOS_SINGLETON : getStationRepository()
+activate REPOS_SINGLETON
+REPOS_SINGLETON --> CTRL : stationRepository
+deactivate REPOS_SINGLETON
+
+CTRL -> STATION_REPO : getAvailableStationTypes()
+activate STATION_REPO
+STATION_REPO --> CTRL : stationTypes (devo meter aqui que e uma lista? e.g stationTypes: List<StationType>)
+deactivate STATION_REPO
+
+CTRL --> UI : stationTypes
+deactivate CTRL
+
+UI -> PLAYER_ACTOR : shows available station types
+deactivate UI
+
+PLAYER_ACTOR -> UI : selects station type
+activate UI
+
+UI -> CTRL : getStationTypeByID(stationTypeID)
+activate CTRL
+CTRL -> STATION_REPO : getStationTypeByID(stationTypeID)
+activate STATION_REPO
+STATION_REPO --> CTRL : stationType (devo meter aqui que e um StationType?)
+deactivate STATION_REPO
+
+'Ver se o bloco opt esta correto aqui e se faz sentido ser o StationRepo que faz isso
+opt station type is NOT "Station"
+    CTRL -> STATION_REPO : calculateGeometricCenter(stationType)
+    activate STATION_REPO
+    STATION_REPO --> CTRL : geometricCenter
+    deactivate STATION_REPO
+end
+
+CTRL --> UI : stationType
+deactivate CTRL
+
+
+opt station type is "Station"
+    UI -> PLAYER_ACTOR : requests station center (NE, SE, NW, SW)
+    deactivate UI
+    PLAYER_ACTOR -> UI : provides station center
+    activate UI
+end
+
+    UI -> PLAYER_ACTOR : requests station location
+    deactivate UI
+
+PLAYER_ACTOR -> UI : provides location
+activate UI
+
+UI -> CTRL : proposeStationName(location, stationType)
+activate CTRL
+
+|||
+            CTRL -> CTRL : getCurrentMapFromSession()
+            activate CTRL
+                CTRL -> APP_SESSION: getInstance()
+                activate APP_SESSION
+                    APP_SESSION -> CTRL: appSession
+                deactivate APP_SESSION
+
+                CTRL -> APP_SESSION_SINGLETON: getCurrentSession()
+                activate APP_SESSION_SINGLETON
+                    APP_SESSION_SINGLETON --> CTRL: currentSession
+                deactivate APP_SESSION_SINGLETON
+
+                CTRL -> REPOS : getInstance()
+                activate REPOS
+                    REPOS --> CTRL: repositories
+                deactivate REPOS
+
+                CTRL -> REPOS_SINGLETON: getMapRepository()
+                activate REPOS_SINGLETON
+                    REPOS_SINGLETON --> CTRL: mapRepository
+                deactivate REPOS_SINGLETON
+
+CTRL -> MAP_REPO : getcurrentMap()
+activate MAP_REPO
+
+MAP_REPO --> CTRL : map
+deactivate MAP_REPO
+
+CTRL --> CTRL : map
+deactivate CTRL
+
+
+|||
+'Ver se os parametros estao corretos
+CTRL -> CTRL : getProposedStationName(location, stationType)
+activate CTRL
+CTRL -> REPOS : getInstance()
+activate REPOS
+REPOS --> CTRL : repositories
+deactivate REPOS
+
+CTRL -> REPOS_SINGLETON : getStationRepository()
+activate REPOS_SINGLETON
+REPOS_SINGLETON --> CTRL : stationRepository
+deactivate REPOS_SINGLETON
+    CTRL -> MAP : getNearestCityFromLocation(location)
+    activate MAP
+            MAP -> CTRL : nearestCity
+        deactivate MAP
+
+CTRL -> STATION_REPO : getProposedStationName(nearestCity, stationType)
+activate STATION_REPO
+STATION_REPO --> CTRL : proposedName
+deactivate STATION_REPO
+CTRL --> CTRL : proposedName
+deactivate CTRL
+CTRL --> UI : proposedName
+deactivate CTRL
+UI --> PLAYER_ACTOR : proposes station name
+
+deactivate UI
+
+'Ver se os fluxos de vida da UI dentro do alt estao corretos
+
+alt accepts proposed name
+    PLAYER_ACTOR -> UI : confirms station name
+    activate UI
+else rejects proposed name
+    UI -> PLAYER_ACTOR : requests alternative name
+    deactivate UI
+    PLAYER_ACTOR -> UI : provides alternative name
+    activate UI
+end
+
+UI --> PLAYER_ACTOR : shows all station data (stationType, location, center, name) and requests final confirmation
+PLAYER_ACTOR -> UI : confirms all data
+
+UI -> CTRL : buildStation(stationType, location, center, name)
+activate CTRL
+
+|||
+CTRL -> STATION_REPO : buildStation(stationType, location, center, name)
+activate STATION_REPO
+
+STATION_REPO -> STATION** : create(stationType, location, center, name)
+STATION_REPO --> STATION_REPO : addStation(station)
+activate STATION_REPO
+STATION_REPO --> STATION_REPO : true
+deactivate STATION_REPO
+
+STATION_REPO --> CTRL : station
+deactivate STATION_REPO
+
+CTRL --> UI : station
+deactivate CTRL
+
+UI -> PLAYER_ACTOR : displays operation success
+deactivate UI
+
+deactivate PLAYER_ACTOR
+@enduml

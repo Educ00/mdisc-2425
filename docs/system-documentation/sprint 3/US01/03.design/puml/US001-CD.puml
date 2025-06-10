@@ -1,0 +1,74 @@
+@startuml
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam classAttributeIconSize 0
+
+class CreateMapUI {
+    + run()
+}
+
+class CreateMapController {
+    + CreateMapController()
+    + createMap(name: String, width: int, height: int): void
+    + verifyName(mapName: String): boolean
+}
+
+class ApplicationSession {
+    -ApplicationSession()
+    + {static} getInstance()
+    + getCurrentSession()
+}
+
+class UserSession {
+    + getUserEmail()
+}
+
+class Repositories {
+    - Repositories()
+    + {static} getInstance()
+    + getMapRepository(): MapRepository
+}
+
+class MapRepository {
+    + getMapList(): List<Map>
+    + getMapByName(name: String): Map
+    + isMapNameTaken(name: String): boolean
+}
+
+class Map {
+    - name: String
+    - dimensions: Dimensions
+    - elements: List<Element>
+    - scenarios: List<Scenario>
+
+    + Map(name: String, width: int, height: int,elements: List<Element>: , scenarios : List<Scenario> )
+    + addElement(e: Element)
+    + getName(): String
+    + getScenarioList()
+    + getElementList()
+}
+
+class Dimensions {
+    - width: int
+    - height: int
+    + getWidth(): int
+    + getHeight(): int
+}
+
+CreateMapUI .> CreateMapController
+CreateMapController ..> ApplicationSession
+CreateMapController ..> UserSession
+CreateMapController .> Repositories
+CreateMapController ..> MapRepository
+CreateMapController ..> Map
+
+ApplicationSession -> "1" ApplicationSession : instance
+ApplicationSession ..> UserSession
+
+Repositories -> "1" Repositories : instance
+Repositories --> "1" MapRepository : mapRepository
+
+Map --> Dimensions
+MapRepository --> "*" Map : maps
+@enduml

@@ -1,0 +1,130 @@
+@startuml
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+autonumber
+
+actor "Product Owner" as PO
+participant ":SimulatorUI" as UI
+participant ":SimulatorController" as CTRL
+participant ":Repositories" as REPOS
+participant ":ScenarioRepository" as SREPO
+participant ":Scenario" as SCEN
+participant ":Simulator" as SIM
+participant ":Cargo" as CARGO
+
+activate PO
+
+    PO -> UI : asks to create a simulator
+    activate UI
+    
+        UI -> CTRL : getAvailableScenarios()
+        activate CTRL
+        
+            CTRL -> REPOS : getInstance()
+            activate REPOS
+                REPOS --> CTRL : repositories
+            deactivate REPOS
+            
+            CTRL -> REPOS : getScenarioRepository()
+            activate REPOS
+                REPOS --> CTRL : scenarioRepository
+            deactivate REPOS
+            
+            CTRL -> SREPO : getScenarioList()
+            activate SREPO
+                SREPO --> CTRL : scenarioList
+            deactivate SREPO
+            
+            CTRL --> UI : scenarioList
+        deactivate CTRL
+        
+        UI --> PO : shows available scenarios and requests selection
+    deactivate UI
+    
+    PO -> UI : selects a scenario
+    activate UI
+    
+        UI -> CTRL : createSimulator(scenarioName)
+        activate CTRL
+        
+            CTRL -> REPOS : getInstance()
+            activate REPOS
+                REPOS --> CTRL : repositories
+            deactivate REPOS
+            
+            CTRL -> REPOS : getScenarioRepository()
+            activate REPOS
+                REPOS --> CTRL : scenarioRepository
+            deactivate REPOS
+            
+            CTRL -> SREPO : getScenarioByName(scenarioName)
+            activate SREPO
+                SREPO --> CTRL : scenario
+            deactivate SREPO
+            
+            CTRL -> SCEN : validateStationCityIndustry()
+            activate SCEN
+                SCEN --> CTRL : validationResult
+            deactivate SCEN
+            
+            CTRL -> SIM** : create(scenario)
+            
+            CTRL -> SIM : generateCargoes()
+            activate SIM
+                SIM -> SIM : determineSupplyDemand()
+                activate SIM
+                    SIM --> SIM : supplyDemandMap
+                deactivate SIM
+                
+                loop for each station with supply/demand
+                    SIM -> CARGO** : create(type, quantity, origin, destination)
+                end
+                
+                SIM --> CTRL : generatedCargoes
+            deactivate SIM
+            
+            CTRL --> UI : simulator
+        deactivate CTRL
+        
+        UI --> PO : shows simulation setup and control options (start/pause)
+    deactivate UI
+    
+    PO -> UI : selects to start simulation
+    activate UI
+    
+        UI -> CTRL : startSimulation()
+        activate CTRL
+        
+            CTRL -> SIM : startSimulation()
+            activate SIM
+                SIM --> CTRL : success
+            deactivate SIM
+            
+            CTRL --> UI : success
+        deactivate CTRL
+        
+        UI --> PO : displays simulation started status
+    deactivate UI
+    
+    PO -> UI : selects to pause simulation
+    activate UI
+    
+        UI -> CTRL : pauseSimulation()
+        activate CTRL
+        
+            CTRL -> SIM : pauseSimulation()
+            activate SIM
+                SIM --> CTRL : success
+            deactivate SIM
+            
+            CTRL --> UI : success
+        deactivate CTRL
+        
+        UI --> PO : displays simulation paused status
+    deactivate UI
+
+deactivate PO
+
+@enduml

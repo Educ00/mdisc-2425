@@ -1,0 +1,35 @@
+@startuml
+
+skinparam monochrome true
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide circle
+hide methods
+
+title Domain Model - US06
+
+class Station {
+    name
+    type
+    economic radius
+    performance
+    cost
+    supply
+    demand
+}
+
+class UpgradeBuilding {
+    type
+    availabilityDate
+    exclusivityGroup
+}
+
+class Player {
+    budget
+}
+
+Station "1" ---- "1..*" UpgradeBuilding : upgraded with >
+Player "1" ---- "1..*" Station : upgrades >
+
+@enduml
