@@ -12,17 +12,25 @@ However, be aware, this is a pedagogical simplification. On further projects and
 
 # Use Cases / User Stories
 
-| UC/US | Description               |                   
-|:------|:--------------------------|
-| US01  | Create a Map              |
-| US02  | Add an Industry           |
-| US03  | Add a city                |
-| US04  | Create a Scenario         |
-| US05  | Build a Station           |
-| US06  | Upgrade a Station         |
-| US07  | List all Stations         |
-| US08  | Build a Railway Line      |
-| US09  | Buy a Locomotive          |
-| US10  | Assign a train to a route |
-| US11  | List all Trains           |
-| US12  | Create a Simulator        |
+| UC/US | Description                        |                   
+|:------|:-----------------------------------|
+| US01  | Create a Map                       |
+| US02  | Add an Industry                    |
+| US03  | Add a city                         |
+| US04  | Create a Scenario                  |
+| US05  | Build a Station                    |
+| US06  | Upgrade a Station                  |
+| US07  | List all Stations                  |
+| US08  | Build a Railway Line               |
+| US09  | Buy a Locomotive                   |
+| US10  | Assign a train to a route          |
+| US11  | List all Trains                    |
+| US12  | Create a Simulator                 |
+| US19  | Save a Map                         |
+| US20  | Load a Map                         |
+| US21  | Save a Scenario                    |
+| US22  | Load a Scenario                    |
+| US23  | Save a Simulation (Game)           |
+| US24  | Load a Simulation (Game)           |
+| US25  | View Year Financial Results        |
+

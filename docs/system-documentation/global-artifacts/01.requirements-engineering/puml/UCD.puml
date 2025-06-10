@@ -26,6 +26,13 @@ actor "Product Owner" as PO
     usecase "UC10- Assign a train to a route" as UC10
     usecase "UC11- List all Trains" as UC11
     usecase "UC12- Create a Simulator" as UC12
+    usecase "UC19 - Save a Map" as UC19
+    usecase "UC20 - Load a Map" as UC20
+    usecase "UC21 - Save a Scenario" as UC21
+    usecase "UC22 - Load a Scenario" as UC22
+    usecase "UC23 - Save a Simulation" as UC23
+    usecase "UC24 - Load a Simulation" as UC24
+    usecase "UC25 - View Year Financial Results" as UC25
 
 E --> UC1
 E --> UC2
@@ -41,6 +48,15 @@ P --> UC10
 P --> UC11
 
 PO --> UC12
+
+E --> UC19
+E --> UC20
+E --> UC21
+E --> UC22
+
+P --> UC23
+P --> UC24
+P --> UC25
 
 
 @enduml
