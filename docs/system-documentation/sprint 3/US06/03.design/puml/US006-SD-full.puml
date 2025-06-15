@@ -14,6 +14,17 @@ participant "stationRepository\n:StationRepository" as STATION_REPO
 participant "upgradeBuildingRepository\n:UpgradeBuildingRepository" as UPGRADE_BUILDING_REPO
 participant "ApplicationSession" as APP_SESSION
 participant "appSession\n:ApplicationSession" as APP_SESSION_SINGLETON
+participant "currentSession\n:CurrentSession" as CURRENT_SESSION
+participant "stationMapper\n:StationMapper" as StationMapper
+participant "stationListDTO\n:List<StationDTO>" as StationListDto
+participant ":List<Station>" as ListStation
+participant "stationList \n:List<Station>" as stationList
+participant "stationDTO\n:StationDTO" as StationDto
+participant "upgradeBuildingMapper\n:UpgradeBuildingMapper" as UpgradeBuildingMapper
+participant "upgradeBuildingListDTO\n:List<UpgradeBuildingDTO>" as UpgradeBuildingListDto
+participant ":List<UpgradeBuilding>" as ListUpgradeBuilding
+participant "availableUpgradeBuildingsList \n:List<UpgradeBuilding>" as availableUpgradeBuildingsList
+participant "upgradeBuildingDTO\n:UpgradeBuildingDTO" as UpgradeBuildingDto
 participant "station\n:Station" as STATION
 participant "upgradeBuilding\n:UpgradeBuilding" as UPGRADE_BUILDING
 participant "scenario\n:Scenario" as SCENARIO
@@ -27,28 +38,51 @@ UI --> CTRL** : create()
 
 UI -> CTRL : getStationsAvailableForUpgrade()
 activate CTRL
-
 CTRL -> REPOS : getInstance()
 activate REPOS
-
 REPOS --> CTRL : repositories
 deactivate REPOS
-
 CTRL -> REPOS_SINGLETON : getStationRepository()
 activate REPOS_SINGLETON
-
 REPOS_SINGLETON --> CTRL : stationRepository
 deactivate REPOS_SINGLETON
-
 CTRL -> STATION_REPO : getStationsAvailableForUpgrade()
 activate STATION_REPO
-STATION_REPO --> CTRL : stationList (especificar o tipo de lista?)
+STATION_REPO -> stationList ** : create()
+loop for each Station
+    STATION_REPO -> ListStation++ : get(i)
+    ListStation --> STATION_REPO-- : station
+    STATION_REPO -> stationList++ : add(station)
+    stationList --> STATION_REPO-- : true
+end
+STATION_REPO --> CTRL : stationList : List<Station>
 deactivate STATION_REPO
 
-CTRL --> UI : stationList
-deactivate CTRL
+CTRL -> StationMapper : toDTO(stationList)
+activate StationMapper
+StationMapper -> StationListDto ** : create()
+loop for each station in stationList
+    StationMapper -> ListStation : station = get(i)
+    activate ListStation
+    ListStation --> StationMapper : station
+    deactivate ListStation
+    StationMapper -> StationMapper : stationDTO = toDTO(station)
+    activate StationMapper
+    StationMapper -> StationDto** : createStationDTO(station)
+    StationMapper -> StationListDto : add(stationDTO)
+    activate StationListDto
+    StationListDto --> StationMapper : true
+    deactivate StationListDto
+end
+    StationMapper --> StationMapper : stationListDTO
+    deactivate StationMapper
 
-UI --> PLAYER : shows list of stations available for upgrade
+StationMapper --> CTRL : stationListDTO : List<StationDTO>
+deactivate StationMapper
+
+CTRL --> UI : stationListDTO
+deactivate CTRL
+UI -> PLAYER : shows list of stations available for upgrade
 deactivate UI
 
 PLAYER -> UI : selects a station
@@ -75,6 +109,11 @@ activate CTRL
                     APP_SESSION_SINGLETON --> CTRL: currentSession
                 deactivate APP_SESSION_SINGLETON
 
+                CTRL -> CURRENT_SESSION: getCurrentScenario()
+                activate CURRENT_SESSION
+                CURRENT_SESSION --> CTRL: scenario
+                deactivate CURRENT_SESSION
+
 CTRL -> SCENARIO : getCurrentDate()
 activate SCENARIO
 
@@ -85,7 +124,7 @@ CTRL --> CTRL : currentDate
 deactivate CTRL
 
 |||
-CTRL -> CTRL : getAvailableUpgradeBuildings(station)
+CTRL -> CTRL : getAvailableUpgradeBuildings(station, currentDate)
 activate CTRL
 CTRL -> REPOS : getInstance()
 activate REPOS
@@ -101,21 +140,46 @@ deactivate REPOS_SINGLETON
 CTRL -> STATION : getUpgradesInstalled(station)
 activate STATION
 
-STATION --> CTRL : installedUpgradesList (empty if no upgrades installed)
+STATION --> CTRL : installedUpgradesList : List<UpgradeBuilding> (empty if no upgrades installed)
 deactivate STATION
 
 CTRL -> UPGRADE_BUILDING_REPO : getAvailableUpgradeBuildings(station, installedUpgradesList, currentDate)
 activate UPGRADE_BUILDING_REPO
-UPGRADE_BUILDING_REPO --> CTRL : availableUpgradeBuildingsList
+UPGRADE_BUILDING_REPO -> availableUpgradeBuildingsList ** : create()
+loop for each UpgradeBuilding
+    UPGRADE_BUILDING_REPO -> ListUpgradeBuilding++ : get(i)
+    ListUpgradeBuilding --> UPGRADE_BUILDING_REPO-- : upgradeBuilding
+    UPGRADE_BUILDING_REPO -> availableUpgradeBuildingsList++ : add(upgradeBuilding)
+    availableUpgradeBuildingsList --> UPGRADE_BUILDING_REPO-- : true
+end
+UPGRADE_BUILDING_REPO --> CTRL : availableUpgradeBuildingsList : List<UpgradeBuilding>
 deactivate UPGRADE_BUILDING_REPO
 
-CTRL --> CTRL : availableUpgradeBuildingsList
-deactivate CTRL
+CTRL -> UpgradeBuildingMapper : toDTO(availableUpgradeBuildingsList)
+activate UpgradeBuildingMapper
+UpgradeBuildingMapper -> UpgradeBuildingListDto ** : create()
+loop for each upgradeBuilding in availableUpgradeBuildingsList
+    UpgradeBuildingMapper -> ListUpgradeBuilding : upgradeBuilding = get(i)
+    activate ListUpgradeBuilding
+    ListUpgradeBuilding --> UpgradeBuildingMapper : upgradeBuilding
+    deactivate ListUpgradeBuilding
+    UpgradeBuildingMapper -> UpgradeBuildingMapper : upgradeBuildingDTO = toDTO(upgradeBuilding)
+    activate UpgradeBuildingMapper
+    UpgradeBuildingMapper -> UpgradeBuildingDto** : createUpgradeBuildingDTO(upgradeBuilding)
+    UpgradeBuildingMapper -> UpgradeBuildingListDto : add(upgradeBuildingDTO)
+    activate UpgradeBuildingListDto
+    UpgradeBuildingListDto --> UpgradeBuildingMapper : true
+    deactivate UpgradeBuildingListDto
+end
+    UpgradeBuildingMapper --> UpgradeBuildingMapper : upgradeBuildingListDTO
+    deactivate UpgradeBuildingMapper
 
-CTRL --> UI : availableUpgradeBuildingsList
-deactivate CTRL
+UpgradeBuildingMapper --> CTRL : upgradeBuildingListDTO : List<UpgradeBuildingDTO>
+deactivate UpgradeBuildingMapper
 
-UI --> PLAYER : shows valid upgrade buildings for the station
+CTRL --> UI : upgradeBuildingListDTO
+deactivate CTRL
+UI -> PLAYER : shows valid upgrade buildings for the station
 deactivate UI
 
 PLAYER -> UI : selects building to upgrade station

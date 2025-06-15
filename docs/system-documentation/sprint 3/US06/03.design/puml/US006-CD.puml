@@ -9,27 +9,67 @@ class UpgradeStationUI {
 
 class UpgradeStationController {
     + UpgradeStationController()
-    + getStationsAvailableForUpgrade() : List<Station>
-    + getAvailableUpgradeBuildings(station : Station) : List<UpgradeBuilding>
+    + getStationsAvailableForUpgrade() : List<StationDTO>
+    + getAvailableUpgradeBuildings(station : Station) : List<UpgradeBuildingDTO>
     + getUpgradeBuildingByID(upgradeBuildingID : String) : UpgradeBuilding
     + applyUpgrade(station : Station, upgradeBuilding : UpgradeBuilding)
+    - getCurrentDateFromSession() : Date
 }
 
-class Repositories {
+interface IRepositories {
+    + getStationRepository() : IStationRepository
+    + getUpgradeBuildingRepository() : IUpgradeBuildingRepository
+}
+class Repositories implements IRepositories {
     - Repositories()
-    + {static} getInstance()
-    + getStationRepository()
-    + getUpgradeBuildingRepository()
+    + {static} getInstance() : Repositories
+    + getStationRepository() : IStationRepository
+    + getUpgradeBuildingRepository() : IUpgradeBuildingRepository
 }
 
-class StationRepository {
+interface IStationRepository {
+    + getStationsAvailableForUpgrade() : List<Station>
+    + getStationByID(stationID : String) : Station
+}
+class StationRepository implements IStationRepository {
     + getStationsAvailableForUpgrade() : List<Station>
     + getStationByID(stationID : String) : Station
 }
 
-class UpgradeBuildingRepository {
+interface IUpgradeBuildingRepository {
     + getAvailableUpgradeBuildings(station : Station, installedUpgradesList : List<UpgradeBuilding>, currentDate : Date) : List<UpgradeBuilding>
     + getUpgradeBuildingByID(upgradeBuildingID : String) : UpgradeBuilding
+}
+class UpgradeBuildingRepository implements IUpgradeBuildingRepository {
+    + getAvailableUpgradeBuildings(station : Station, installedUpgradesList : List<UpgradeBuilding>, currentDate : Date) : List<UpgradeBuilding>
+    + getUpgradeBuildingByID(upgradeBuildingID : String) : UpgradeBuilding
+}
+
+interface IStationMapper {
+    + toDTO(stationList : List<Station>) : List<StationDTO>
+    + toDTO(station : Station) : StationDTO
+}
+class StationMapper implements IStationMapper {
+    + toDTO(stationList : List<Station>) : List<StationDTO>
+    + toDTO(station : Station) : StationDTO
+}
+
+interface IUpgradeBuildingMapper {
+    + toDTO(upgradeBuildingList : List<UpgradeBuilding>) : List<UpgradeBuildingDTO>
+    + toDTO(upgradeBuilding : UpgradeBuilding) : UpgradeBuildingDTO
+}
+class UpgradeBuildingMapper implements IUpgradeBuildingMapper {
+    + toDTO(upgradeBuildingList : List<UpgradeBuilding>) : List<UpgradeBuildingDTO>
+    + toDTO(upgradeBuilding : UpgradeBuilding) : UpgradeBuildingDTO
+}
+
+class ApplicationSession {
+    - ApplicationSession()
+    + {static} getInstance() : ApplicationSession
+    + getCurrentSession() : CurrentSession
+}
+class CurrentSession {
+    + getCurrentScenario() : Scenario
 }
 
 class Station {
@@ -46,23 +86,39 @@ class Scenario {
     + getCurrentDate() : Date
 }
 
-class ApplicationSession {
-    - ApplicationSession()
-    + {static} getInstance()
-    + getCurrentSession()
+class StationDTO {
+}
+class UpgradeBuildingDTO {
 }
 
 UpgradeStationUI ..> UpgradeStationController
-UpgradeStationController .> Repositories
-Repositories -> "1" Repositories : instance
-Repositories --> "1" StationRepository : stationRepository
-Repositories --> "1" UpgradeBuildingRepository : upgradeBuildingRepository
-UpgradeStationController ..> StationRepository
-UpgradeStationController ..> UpgradeBuildingRepository
-UpgradeStationController ..> Scenario
+UpgradeStationController ..> IRepositories
+Repositories ..|> IRepositories
+Repositories --> IStationRepository
+Repositories --> IUpgradeBuildingRepository
+StationRepository ..|> IStationRepository
+UpgradeBuildingRepository ..|> IUpgradeBuildingRepository
+UpgradeStationController ..> IStationRepository
+UpgradeStationController ..> IUpgradeBuildingRepository
 UpgradeStationController ..> ApplicationSession
+UpgradeStationController ..> IStationMapper
+UpgradeStationController ..> IUpgradeBuildingMapper
+ApplicationSession --> CurrentSession
+UpgradeStationController ..> Station
+UpgradeStationController ..> UpgradeBuilding
+UpgradeStationController ..> StationDTO
+UpgradeStationController ..> UpgradeBuildingDTO
+UpgradeStationController ..> Scenario
+IStationMapper <|.. StationMapper
+IUpgradeBuildingMapper <|.. UpgradeBuildingMapper
+StationMapper ..> Station
+StationMapper ..> StationDTO
+UpgradeBuildingMapper ..> UpgradeBuilding
+UpgradeBuildingMapper ..> UpgradeBuildingDTO
 StationRepository --> "*" Station : stations
 UpgradeBuildingRepository --> "*" UpgradeBuilding : upgradeBuildings
-ApplicationSession --> "1" ApplicationSession : instance
+
+Repositories -> "1" Repositories : instance
+ApplicationSession -> "1" ApplicationSession : instance
 
 @enduml
