@@ -10,65 +10,73 @@ class CreateMapUI {
 
 class CreateMapController {
     + CreateMapController()
-    + createMap(name: String, width: int, height: int): void
-    + verifyName(mapName: String): boolean
+    + createMap(mapDTO : MapDTO) : void
+    - verifyName(name : String) : boolean
 }
 
-class ApplicationSession {
-    -ApplicationSession()
-    + {static} getInstance()
-    + getCurrentSession()
+interface IRepositories {
+    + getMapRepository() : IMapRepository
 }
 
-class UserSession {
-    + getUserEmail()
-}
-
-class Repositories {
+class Repositories implements IRepositories {
     - Repositories()
-    + {static} getInstance()
-    + getMapRepository(): MapRepository
+    + {static} getInstance() : Repositories
+    + getMapRepository() : IMapRepository
 }
 
-class MapRepository {
-    + getMapList(): List<Map>
-    + getMapByName(name: String): Map
-    + isMapNameTaken(name: String): boolean
+interface IMapRepository {
+    + isMapNameTaken(name : String) : boolean
+    + save(map : Map) : void
+}
+
+class MapRepository implements IMapRepository {
+    + isMapNameTaken(name : String) : boolean
+    + save(map : Map) : void
+}
+
+interface IMapMapper {
+    + toDomain(dto : MapDTO) : Map
+}
+
+class MapMapper implements IMapMapper {
+    + toDomain(dto : MapDTO) : Map
+}
+
+class MapDTO {
+    - name : String
+    - width : int
+    - height : int
+    - scale : int
+    + getName() : String
+    + getWidth() : int
+    + getHeight() : int
+    + getScale() : int
 }
 
 class Map {
-    - name: String
-    - dimensions: Dimensions
-    - elements: List<Element>
-    - scenarios: List<Scenario>
-
-    + Map(name: String, width: int, height: int,elements: List<Element>: , scenarios : List<Scenario> )
-    + addElement(e: Element)
-    + getName(): String
-    + getScenarioList()
-    + getElementList()
+    - name : String
+    - dimensions : Dimensions
+    - scale : int
+    - elements : List<Element>
+    - scenarios : List<Scenario>
+    + Map(name : String, dimensions : Dimensions, scale : int)
+    + addElement(e : Element) : void
+    + getName() : String
 }
 
-class Dimensions {
-    - width: int
-    - height: int
-    + getWidth(): int
-    + getHeight(): int
-}
 
-CreateMapUI .> CreateMapController
-CreateMapController ..> ApplicationSession
-CreateMapController ..> UserSession
-CreateMapController .> Repositories
-CreateMapController ..> MapRepository
+
+CreateMapUI ..> CreateMapController
+CreateMapController ..> IRepositories
+Repositories ..|> IRepositories
+Repositories --> IMapRepository
+MapRepository ..|> IMapRepository
+CreateMapController ..> IMapRepository
+CreateMapController ..> IMapMapper
+CreateMapController ..> MapDTO
 CreateMapController ..> Map
+IMapMapper <|.. MapMapper
+MapMapper ..> MapDTO
+MapMapper ..> Map
 
-ApplicationSession -> "1" ApplicationSession : instance
-ApplicationSession ..> UserSession
-
-Repositories -> "1" Repositories : instance
-Repositories --> "1" MapRepository : mapRepository
-
-Map --> Dimensions
-MapRepository --> "*" Map : maps
 @enduml

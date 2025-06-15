@@ -9,115 +9,181 @@ participant ":CreateScenarioController" as CTRL
 participant "Repositories" as REPOS
 participant "repositories\n:Repositories" as REPOS_SINGLETON
 participant "MapRepository\n:MapRepository" as MAP_REPO
-participant "map\n:Map" as MAP
-participant "scenario\n:Scenario" as SCENARIO
+participant "MapMapper" as MAP_MAPPER
+participant "mapDTOList\n:MapDTOList" as DTO_LIST
+participant "objDTO.MapDTO" as DTO
+participant "ApplicationSession" as APP_SESSION
+participant "appSession\n:ApplicationSession" as APP_SESSION_SINGLETON
+participant "currentSession\n:UserSession" as CURRENT_SESSION
+
 
 activate EDITOR
-    EDITOR -> UI : asks to create a scenario
-    activate UI
-        UI --> CTRL : create()
+EDITOR -> UI : asks to create a scenario
+activate UI
+UI --> CTRL : create()
 
-        UI -> CTRL : getAvailableMaps()
-        activate CTRL
-            CTRL -> REPOS : getInstance()
-            activate REPOS
-                REPOS --> CTRL : repositories
-            deactivate REPOS
+activate CTRL
+CTRL -> APP_SESSION: getInstance()
+activate APP_SESSION
+APP_SESSION --> CTRL: appSession
+deactivate APP_SESSION
 
-            CTRL -> REPOS_SINGLETON : getMapRepository()
-            activate REPOS_SINGLETON
-                REPOS_SINGLETON --> CTRL : mapRepository
-            deactivate REPOS_SINGLETON
+CTRL -> APP_SESSION_SINGLETON: getCurrentSession()
+activate APP_SESSION_SINGLETON
+APP_SESSION_SINGLETON --> CTRL: currentSession
+deactivate APP_SESSION_SINGLETON
 
-            CTRL -> MAP_REPO : getMapList()
-            activate MAP_REPO
-                MAP_REPO --> CTRL : mapList
-            deactivate MAP_REPO
+CTRL -> CURRENT_SESSION: getEditorEmail()
+activate CURRENT_SESSION
+CURRENT_SESSION --> CTRL: email
+deactivate CURRENT_SESSION
+deactivate CTRL
 
-            CTRL --> UI : mapList
-        deactivate CTRL
-        UI -> EDITOR : shows map list and asks to select one
-    deactivate UI
+UI -> CTRL : getAvailableMaps()
+activate CTRL
+CTRL -> REPOS : getInstance()
+activate REPOS
+REPOS --> CTRL : repositories
+deactivate REPOS
 
-    EDITOR -> UI : selects a map
-    activate UI
-        UI -> CTRL : getMapDetails(mapName)
-        activate CTRL
-            CTRL -> MAP_REPO : getMapByName(mapName)
-            activate MAP_REPO
-                MAP_REPO --> CTRL : map
-            deactivate MAP_REPO
-            CTRL --> UI : mapDetails
-        deactivate CTRL
-        UI -> EDITOR : shows map details and asks for scenario name
-    deactivate UI
+CTRL -> REPOS_SINGLETON : getMapRepository()
+activate REPOS_SINGLETON
+REPOS_SINGLETON --> CTRL : MAP_REPO
+deactivate REPOS_SINGLETON
 
-    EDITOR -> UI : enters scenario name
-    activate UI
-        UI -> CTRL : validateScenarioName(mapName, scenarioName)
-        activate CTRL
-            CTRL -> MAP_REPO : getMapByName(mapName)
-            activate MAP_REPO
-                MAP_REPO --> CTRL : map
-            deactivate MAP_REPO
-            CTRL -> MAP : getScenarioList()
-            activate MAP
-                MAP --> CTRL : scenarioList
-            deactivate MAP
-            CTRL -> CTRL : check if scenarioName exists
-            alt name exists
-                CTRL -> UI : show error message
+CTRL -> MAP_REPO : getMapList()
+activate MAP_REPO
+MAP_REPO --> CTRL : listOfMaps
+deactivate MAP_REPO
 
-            else
-                CTRL -> UI : name valid
-            end
-        deactivate CTRL
+CTRL -> MAP_MAPPER : toDTOList(listOfMaps)
+activate MAP_MAPPER
+MAP_MAPPER --> DTO_LIST : create()
 
-        UI -> EDITOR : asks for time period
-    deactivate UI
+loop for each map in listOfMaps
+    MAP_MAPPER -> MAP_REPO : map = get(i)
+    MAP_MAPPER -> MAP_MAPPER : mapDTO = toDTO(map)
+    activate MAP_MAPPER
+    MAP_MAPPER -> DTO : create(...)
+    deactivate MAP_MAPPER
+    MAP_MAPPER --> DTO_LIST : add(mapDTO)
+end loop
 
-    EDITOR -> UI : sets time period
-    activate UI
-        UI -> EDITOR : asks to select technological restrictions
-    deactivate UI
+MAP_MAPPER --> CTRL : mapDTO_LIST
+deactivate MAP_MAPPER
 
-    EDITOR -> UI : selects technological restrictions
-    activate UI
-        UI -> EDITOR : asks to define port behaviors
-    deactivate UI
+CTRL --> UI : mapDTO_LIST
+deactivate CTRL
+UI -> EDITOR : shows map list and asks to select one
+deactivate UI
 
-    EDITOR -> UI : defines port behaviors
-    activate UI
-        UI -> EDITOR : asks to select locomotion types
-    deactivate UI
+EDITOR -> UI : selects a map
+activate UI
+UI --> EDITOR : requests scenario name
+deactivate UI
 
-    EDITOR -> UI : selects locomotion types
-    activate UI
-        UI -> EDITOR : asks to apply historical restrictions
-    deactivate UI
+EDITOR -> UI : enters scenario name
+activate UI
+UI -> CTRL : validateScenarioName(mapName, scenarioName)
+activate CTRL
 
-    EDITOR -> UI : applies historical restrictions
-    activate UI
-        UI -> EDITOR : asks to define industry generation factors
-    deactivate UI
+CTRL -> MAP_MAPPER : fromDTO(selectedMapDTO)
+activate MAP_MAPPER
+MAP_MAPPER --> CTRL : Map
+deactivate MAP_MAPPER
 
-    EDITOR -> UI : defines industry generation factors
-    activate UI
-        UI -> EDITOR : shows final summary and asks for confirmation
-    deactivate UI
+CTRL -> MAP : checkIsPresent(scenarioName)
+activate MAP
+MAP --> CTRL : true/false
+deactivate MAP
 
-    EDITOR -> UI : confirms and saves scenario
-    activate UI
-        UI -> CTRL : createScenario(allData)
-        activate CTRL
-            CTRL -> MAP : addScenario(scenario)
-            activate MAP
-                MAP --> CTRL : success
-            deactivate MAP
-            CTRL --> UI : scenarioCreated
-        deactivate CTRL
-        UI -> EDITOR : confirms scenario creation success
-    deactivate UI
+alt name exists
+    CTRL -> EDITOR : show error
+else
+    CTRL -> UI : name valid
+end
+deactivate CTRL
 
+UI --> EDITOR: define time restrictions
+deactivate UI
+
+EDITOR -> UI: defines time restrictions
+activate UI
+UI -> EDITOR : define port behaviors
+deactivate UI
+
+EDITOR -> UI : defines port behaviors
+activate UI
+UI -> EDITOR : define locomotion type
+deactivate UI
+
+EDITOR -> UI : selects locomotion type
+activate UI
+UI -> EDITOR : define generation modifiers
+deactivate UI
+
+EDITOR -> UI : defines generation modifiers
+activate UI
+UI -> EDITOR : ask to apply historical restrictions
+deactivate UI
+
+EDITOR -> UI : applies historical restrictions
+activate UI
+UI -> EDITOR : show summary & ask confirmation
+deactivate UI
+
+EDITOR -> UI : confirms and saves
+activate UI
+UI -> CTRL : createScenario(ScenarioDTO)
+activate CTRL
+
+CTRL -> MAP : scenario = createScenario(ScenarioDTO)
+activate MAP
+MAP --> MAP_MAPPER : scenario = toModel(ScenarioDTO)
+deactivate MAP
+activate MAP_MAPPER
+
+MAP_MAPPER --> DTO : scenarioName = getscenarioName()
+activate DTO
+DTO --> MAP_MAPPER : scenarioName
+deactivate DTO
+
+MAP_MAPPER --> DTO : timeRestrictions = gettimeRestrictions()
+activate DTO
+DTO --> MAP_MAPPER : timeRestrictions
+deactivate DTO
+
+MAP_MAPPER --> DTO : portBehaviors = getportBehaviors()
+activate DTO
+DTO --> MAP_MAPPER : portBehaviors
+deactivate DTO
+
+MAP_MAPPER --> DTO : locomotionType = getlocomotionType()
+activate DTO
+DTO --> MAP_MAPPER : locomotionType
+deactivate DTO
+
+MAP_MAPPER --> DTO : generationModifiers = getgenerationModifiers()
+activate DTO
+DTO --> MAP_MAPPER : generationModifiers
+deactivate DTO
+
+MAP_MAPPER --> DTO : historicalRestrictions = gethistoricalRestrictions()
+activate DTO
+DTO --> MAP_MAPPER : historicalRestrictions
+deactivate DTO
+
+MAP_MAPPER --> SCENARIO ** : create(scenarioName, timeRestrictions, portBehaviors, locomotionType, generationModifiers, historicalRestrictions)
+deactivate MAP_MAPPER
+activate SCENARIO
+
+SCENARIO --> CTRL : scenarioCreated
+deactivate
+
+CTRL --> UI : scenarioCreated
+deactivate CTRL
+
+UI -> EDITOR : display success
+deactivate UI
 deactivate EDITOR
 @enduml

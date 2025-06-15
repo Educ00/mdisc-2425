@@ -1,74 +1,72 @@
 @startuml
 skinparam packageStyle rectangle
 skinparam shadowing false
-
 autonumber
 
-actor "Editor" as Editor
+actor "Editor" as EDITOR
 participant ":CreateMapUI" as UI
 participant ":CreateMapController" as CTRL
 participant "Repositories" as REPOS
-participant "repositories\n:Repositories" as REPOS_SINGLETON
-participant "MapRepository\n:MapRepository" as MAP_REPO
-participant "map\n:Map" as MAP
-activate Editor
+participant "repositories\n:IRepositories" as IREPOS
+participant "MapRepository\n:IMapRepository" as IMAP_REPO
+participant "MapMapper\n:IMapMapper" as MAP_MAPPER
+participant "MapDTO\n:MapDTO" as DTO
+participant "Map\n:Map" as MAP
 
-Editor -> UI : asks to create a map
+activate EDITOR
+EDITOR -> UI : asks to create a map
 activate UI
 
-UI --> Editor : requests map name and dimensions
+UI --> EDITOR : requests name, width, height, scale
 deactivate UI
 
-Editor -> UI : provides map name, width, height
+EDITOR -> UI : provides map details
 activate UI
-UI --> CTRL** : create()
-UI -> CTRL : verifyName(mapName)
-activate CTRL
-CTRL -> REPOS : getInstance()
 
+UI -> DTO : create(mapName, width, height, scale)
+activate DTO
+DTO --> UI : mapDTO
+deactivate DTO
+
+UI -> CTRL : createMap(mapDTO)
+activate CTRL
+
+CTRL -> REPOS : getInstance()
 activate REPOS
 REPOS --> CTRL : repositories
 deactivate REPOS
 
-CTRL -> REPOS_SINGLETON : getMapRepository()
-activate REPOS_SINGLETON
-REPOS_SINGLETON --> CTRL : mapRepository
-deactivate REPOS_SINGLETON
+CTRL -> IREPOS : getMapRepository()
+activate IREPOS
+IREPOS --> CTRL : mapRepository (IMapRepository)
+deactivate IREPOS
 
-CTRL -> MAP_REPO : isNameTaken(mapName)
-activate MAP_REPO
-MAP_REPO --> CTRL : true/false
-deactivate MAP_REPO
+CTRL -> IMAP_REPO : isMapNameTaken(mapDTO.name)
+activate IMAP_REPO
+IMAP_REPO --> CTRL : true/false
+deactivate IMAP_REPO
 
-CTRL -> CTRL : isNameValid(mapName)
-  alt name invalid or already exists
-                        CTRL -> UI : show error message
-                    else
-                        CTRL -> UI : name is valid
-                    end
-deactivate CTRL
-UI --> Editor : shows map details and requests confirmation
-deactivate UI
+alt name already exists
+    CTRL -> UI : show error message
+    deactivate CTRL
+    deactivate UI
+    deactivate EDITOR
+else
+    CTRL -> MAP_MAPPER : toDomain(mapDTO)
+    activate MAP_MAPPER
+    MAP_MAPPER --> CTRL : Map
+    deactivate MAP_MAPPER
 
-Editor -> UI : confirms map creation
-activate UI
+    CTRL -> IMAP_REPO : save(Map)
+    activate IMAP_REPO
+    IMAP_REPO --> CTRL : success
+    deactivate IMAP_REPO
 
-UI -> CTRL : createMap(mapName, width, height)
-activate CTRL
-CTRL -> MAP** : create()
+    CTRL --> UI : success
+    deactivate CTRL
 
-CTRL -> MAP : addMap(map)
-activate MAP
-MAP --> CTRL : map
-deactivate MAP
-
-
-
-CTRL --> UI : map
-deactivate CTRL
-
-UI --> Editor : displays map details and operation success
-deactivate UI
-
-deactivate Editor
+    UI -> EDITOR : map created successfully
+    deactivate UI
+    deactivate EDITOR
+end
 @enduml

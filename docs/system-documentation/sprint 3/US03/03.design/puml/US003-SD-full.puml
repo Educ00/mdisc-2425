@@ -1,182 +1,175 @@
 @startuml
-'skinparam monochrome true
 skinparam packageStyle rectangle
 skinparam shadowing false
-
 autonumber
 
-'hide footbox
-actor "Editor" as Editor
+actor "Editor" as EDITOR
 participant ":AddCityUI" as UI
 participant ":AddCityController" as CTRL
 participant "Repositories" as REPOS
 participant "repositories\n:Repositories" as REPOS_SINGLETON
 participant "MapRepository\n:MapRepository" as MAP_REPO
-participant "map\n:Map" as MAP
-participant "city\n:City" as CITY
+participant "MapMapper" as MAP_MAPPER
+participant "mapDTOList\n:MapDTOList" as DTO_LIST
+participant "objDTO.MapDTO" as MAP_DTO
+participant "ApplicationSession" as APP_SESSION
+participant "appSession\n:ApplicationSession" as APP_SESSION_SINGLETON
+participant "currentSession\n:UserSession" as CURRENT_SESSION
 
-activate Editor
 
-    Editor -> UI : asks to create a new city
-    activate UI
+activate EDITOR
+EDITOR -> UI : asks to add a new city
+activate UI
+UI --> CTRL : create()
+activate CTRL
 
-UI --> CTRL** : create
 
-UI -> CTRL : getMapList()
-    activate CTRL
+CTRL -> APP_SESSION: getInstance()
+activate APP_SESSION
+APP_SESSION --> CTRL: appSession
+deactivate APP_SESSION
+
+CTRL -> APP_SESSION_SINGLETON: getCurrentSession()
+activate APP_SESSION_SINGLETON
+APP_SESSION_SINGLETON --> CTRL: currentSession
+deactivate APP_SESSION_SINGLETON
+
+CTRL -> CURRENT_SESSION: getEditorEmail()
+activate CURRENT_SESSION
+CURRENT_SESSION --> CTRL: email
+deactivate CURRENT_SESSION
+
+
 CTRL -> REPOS : getInstance()
 activate REPOS
-
-REPOS --> CTRL : Repositories
+REPOS --> CTRL : repositories
 deactivate REPOS
 
 CTRL -> REPOS_SINGLETON : getMapRepository()
 activate REPOS_SINGLETON
-
-REPOS_SINGLETON --> CTRL : MapRepository
+REPOS_SINGLETON --> CTRL : MAP_REPO
 deactivate REPOS_SINGLETON
+
 CTRL -> MAP_REPO : getMapList()
 activate MAP_REPO
-
-    MAP_REPO --> CTRL : maps
+MAP_REPO --> CTRL : listOfMaps
 deactivate MAP_REPO
 
-    CTRL --> UI : maps
+CTRL -> MAP_MAPPER : toDTOList(listOfMaps)
+activate MAP_MAPPER
+MAP_MAPPER --> DTO_LIST : create()
+
+loop for each map in listOfMaps
+    MAP_MAPPER -> MAP_REPO : map = get(i)
+    MAP_MAPPER -> MAP_MAPPER : mapDTO = toDTO(map)
+    activate MAP_MAPPER
+    MAP_MAPPER -> MAP_DTO : create(...)
+    deactivate MAP_MAPPER
+    MAP_MAPPER --> DTO_LIST : add(mapDTO)
+end loop
+
+MAP_MAPPER --> CTRL : mapDTO_LIST
+deactivate MAP_MAPPER
+
+CTRL --> UI : mapDTO_LIST
 deactivate CTRL
-        UI --> Editor : shows map list and requests to select one
-    deactivate UI
 
-        Editor -> UI : selects map
-        activate UI
+UI -> EDITOR : show map list and ask selection
+deactivate UI
 
-        UI -> CTRL : getMapByName(mapName)
+
+EDITOR -> UI : selects map
+activate UI
+UI --> EDITOR : ask for city name
+deactivate UI
+
+EDITOR -> UI : enters city name
+activate UI
+UI -> CTRL : validateCityName(mapDTO, cityName)
 activate CTRL
 
-CTRL -> REPOS : getInstance()
-activate REPOS
+CTRL -> MAP_MAPPER : fromDTO(mapDTO)
+activate MAP_MAPPER
+MAP_MAPPER --> CTRL : map
+deactivate MAP_MAPPER
 
-REPOS --> CTRL : Repositories
-deactivate REPOS
-
-CTRL -> REPOS_SINGLETON : getMapRepository()
-activate REPOS_SINGLETON
-
-REPOS_SINGLETON --> CTRL : MapRepository
-deactivate REPOS_SINGLETON
-CTRL -> MAP_REPO : getMapByName(mapName)
-activate MAP_REPO
-MAP_REPO --> CTRL : map
-deactivate MAP_REPO
-CTRL --> UI : map
-deactivate CTRL
-        UI --> Editor : requests to type city name
-    deactivate UI
-
-    Editor -> UI : types city name
-    activate UI
-
-UI -> CTRL : verifyCityName(map, cityName)
-activate CTRL
-
-CTRL -> MAP : verifyCityName(cityName)
+CTRL -> MAP : cityExists(cityName)
 activate MAP
-MAP -> MAP : cityExists()
 MAP --> CTRL : exists
 deactivate MAP
-CTRL --> UI : exists
 
+alt name exists
+    CTRL --> UI : show error
+else
+    CTRL --> UI : name valid
+end
 deactivate CTRL
 
-        UI --> Editor : requests city location (X,Y coordinates)
-    deactivate UI
+UI -> EDITOR : ask for city location
+deactivate UI
 
-    deactivate UI
-    Editor -> UI : types city location (X,Y coordinates)
-    activate UI
-
-    UI  -> CTRL : checkOverbuilding(map, location)
-    activate CTRL
-    ' Verifica se a posição da cidade é válida
-    CTRL -> MAP : checkOverbuilding(map, location)
-    activate MAP
-
-    MAP --> CTRL : isValidLocation
-    deactivate MAP
-
-    CTRL --> UI : isValidLocation
-
-        deactivate CTRL
-
-        UI --> Editor : asks if user wants to assign\n the house blocks manually
-    deactivate UI
-
-    Editor -> UI : types number of house blocks
-group if [answer is yes]
-    activate UI
-
-
-    loop for each house block
-    UI --> Editor : requests location for house block
-    deactivate UI
-        Editor -> UI : types location (X,Y)
-        activate UI
-
-        UI -> CTRL : checkOverbuilding(map, location)
-        activate CTRL
-
-        CTRL -> MAP : checkOverbuilding(map, location)
-        activate MAP
-
-        MAP --> CTRL : isValidLocation
-        deactivate MAP
- CTRL --> UI : isValidLocation
-        deactivate CTRL
-
-
-    end loop
-'end loop
-
-else if [answer is no]
-UI -> CTRL : assignHouseBlocksAutomatically(map, cityName, numBlocks)
+EDITOR -> UI : enters city coordinates
+activate UI
+UI -> CTRL : checkOverbuilding(mapDTO, location)
 activate CTRL
-
-CTRL -> CTRL : generateLocationsWithNormalDistribution(cityLocation, numBlocks)
-CTRL -> MAP : checkOverbuilding(map, location)
+CTRL -> MAP : isValidLocation(location)
 activate MAP
-
-MAP --> CTRL : isValidLocation
+MAP --> CTRL : valid
 deactivate MAP
-
-CTRL --> UI : locations
+CTRL --> UI : valid
 deactivate CTRL
 
-end if
-UI --> Editor : shows the city details and asks for confirmation
-    deactivate UI
+UI -> EDITOR : ask about manual block assignment
+deactivate UI
 
-    Editor -> UI : gives confirmation
-    activate UI
 
-UI -> CTRL : createCity(map, cityName, location, houseBlocks)
+alt manual
+    loop for each block
+        UI -> EDITOR : ask block position
+        EDITOR -> UI : send position
+        UI -> CTRL : validate location
+        activate CTRL
+        CTRL -> MAP : isValidLocation(location)
+        activate MAP
+        MAP --> CTRL : valid
+        deactivate MAP
+        CTRL --> UI : valid
+        deactivate CTRL
+    end loop
+else automatic
+    UI -> CTRL : assignHouseBlocksAutomatically(map, location, nBlocks)
+    activate CTRL
+    CTRL -> CTRL : generate locations
+    CTRL -> MAP : validate all locations
+    activate MAP
+    MAP --> CTRL : valid list
+    deactivate MAP
+    CTRL --> UI : houseBlocks
+    deactivate CTRL
+end
+
+UI -> EDITOR : show summary and ask confirmation
+deactivate UI
+
+EDITOR -> UI : confirms
+activate UI
+UI -> CTRL : createCity(mapDTO, cityName, location, houseBlocks)
 activate CTRL
 
-CTRL -> MAP : createCity(cityName, location, houseBlocks)
+CTRL -> MAP_MAPPER : fromDTO(mapDTO)
+activate MAP_MAPPER
+MAP_MAPPER --> CTRL : map
+deactivate MAP_MAPPER
+
+CTRL -> MAP : city = createCity(cityName, location, houseBlocks)
 activate MAP
-
-MAP --> CITY** : create
-MAP -> CITY : City(cityName, location, houseBlocks)
-activate CITY
-
-CITY --> MAP : city
-deactivate CITY
-
-MAP -> MAP : addElement(city)
 MAP --> CTRL : city
 deactivate MAP
 
-CTRL --> UI : city
+CTRL --> UI : city created
 deactivate CTRL
 
-        UI --> Editor : displays city details and operation success
-    deactivate UI
+UI -> EDITOR : success
+deactivate UI
+deactivate EDITOR
 @enduml

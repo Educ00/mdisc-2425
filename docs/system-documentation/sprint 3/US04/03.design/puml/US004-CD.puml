@@ -4,159 +4,139 @@ skinparam shadowing false
 skinparam linetype polyline
 skinparam classAttributeIconSize 0
 
-class CreateScenarioUI {
-    - controller: CreateScenarioController
-    + run()
-}
+
+  class MapDTO {
+    - name: String
+    - width: Integer
+    - length: Integer
+  }
+
+  class ScenarioDTO {
+    - mapDTO: MapDTO
+    - scenarioName: String
+    - historicalRestrictions: List<HistoricalRestriction>
+    - timeRestrictions: List<TimeRestriction>
+    - portBehaviors: List<PortBehavior>
+    - locomotionType: String
+    - generationModifiers: List<Modifier>
+  }
+
+
+class CreateScenarioUI
 
 class CreateScenarioController {
-    + CreateScenarioController()
-    + getAvailableMaps(): List<Map>
-    + createScenario(mapName: String,
-                    name: String,
-                    startYear: int,
-                    endYear: int,
-                    locomotives: List<String>,
-                    industries: List<String>,
-                    imports: List<String>,
-                    exports: List<String>,
-                    transforms: List<String>,
-                    types: List<String>,
-                    events: List<String>,
-                    factors: Map<String, Double>): Scenario
+  + CreateScenarioController()
+  + getAvailableMaps() : List<MapDTO>
+  + getMapDetails(mapName : String) : MapDTO
+  + validateScenarioName(mapDTO : MapDTO, scenarioName : String) : boolean
+  + createScenario(scenarioDTO : ScenarioDTO)
+  - getEditorFromSession() : Editor
+}
+
+class ApplicationSession {
+  - ApplicationSession()
+  + {static} getInstance()
+  + getCurrentSession()
+}
+
+class UserSession {
+  + getEditorEmail()
 }
 
 class Repositories {
-    - Repositories()
-    + getInstance(): Repositories
-    + getMapRepository(): MapRepository
+  - Repositories()
+  + {static} getInstance()
+  + getMapRepository() : IMapRepository
+  + getScenarioRepository() : IScenarioRepository
+}
+
+interface IRepositories{
++ getMapRepository() : IMapRepository
+  + getScenarioRepository() : IScenarioRepository
+}
+
+interface IMapRepository {
+  + getMapList() : List<Map>
+  + getMapByName(name : String) : Map
+}
+
+interface IScenarioRepository {
+  + getScenarioList() : List<Scenario>
+  + checkIsPresent(scenarioName : String, list : List<Scenario>) : boolean
 }
 
 class MapRepository {
-    + getMapList(): List<Map>
-    + getMapByName(name: String): Map
+  + getMapList() : List<Map>
+  + getMapByName(name : String) : Map
+}
+
+class ScenarioRepository {
+  + getScenarioList() : List<Scenario>
+  + checkIsPresent(scenarioName : String, list : List<Scenario>) : boolean
 }
 
 class Map {
-    - name: String
-    - scenarios: List<Scenario>
-    + getScenarioList(): List<Scenario>
-    + getName(): String
-    + addScenario(scenario: Scenario): void
+  - name : String
+  - width : Integer
+  - length : Integer
+  + addScenario(scenario : Scenario) : boolean
 }
 
 class Scenario {
-    - budget: int
-    - timeRestrictions: int
-    - technologicalRestrictions: int
-    - historicalRestrictions: int
-    - stations: List<Station>
-    - trains: List<Train>
-    - railwayLines: List<RailwayLine>
-
-    + getTrainList(): List<Train>
-    + getRailwayLines(): List<RailwayLine>
-    + getTrainByName(name: String): Train
-    + getBudget(): int
-    + getTimeRestriction(): int
-    + getTechnologicalRestrictions(): int
-    + getHistoricalRestrictions(): int
-    + getStationList(): List<Station>
+  - name : String
+  - startDate : Date
+  - endDate : Date
+  - prodFrequency : Float
+  - timeRestrictions : List<TimeRestriction>
+  - portBehaviors : List<PortBehavior>
+  - locomotionType : String
+  - generationModifiers : List<Modifier>
+  - historicalRestrictions : List<HistoricalRestriction>
 }
 
-class Station {
-    - type : StationTypes
-    - performance : double
-    - status : String
-    - price : double
-    - center : String
-    - buildings : List<Building>
-
-    + getBuildings(): List<Building>
-    + getType(): String
-    + getPerformance(): double
-    + getStatus(): String
-    + getPrice(): double
-    + getCenter(): String
+class HistoricalRestriction {
+  - event : String
 }
 
-class RailwayLine {
-    - lineType : String
-    - length : double
-    - startStation: Station
-    - finalStation: Station
-    - isElectrified: boolean
-    - lineStations: List<Station>
-
-    + getLineType() : String
-    + getLength() : double
-    + getStartStation(): Station
-    + getFinalStation(): Station
-    + isElectrified(): boolean
-    + getLineStations(): List<Station>
+interface IMapMapper {
+  + toDTO(map : Map) : MapDTO
+  + fromDTO(mapDTO : MapDTO) : Map
 }
 
-class Train {
-    - locomotive: Locomotive
-    - cargos: List<Cargo>
-
-    + getLocomotive(): Locomotive
-    + getCargoList(): List<Cargo>
+class MapMapper {
+  + toDTO(map : Map) : MapDTO
+  + fromDTO(mapDTO : MapDTO) : Map
 }
 
-class Locomotive {
-    - name: String
-    - power: float
-    - acceleration: float
-    - topSpeed: float
-    - startYear: int
-    - type: String
-    - cost: float
-    - fuel cost: float
-    - maintenance per year: float
-
-    + getName(): String
-    + getPower(): float
-    + getAcceleration(): float
-    + getTopSpeed(): float
-    + getStartYear(): int
-    + getType(): String
-    + getCost(): float
-    + getFuelCost(): float
-    + getMaintenancePerYear(): float
-}
-
-class Building {
-    - buildingType: String
-    - startYear: int
-    - bonus: double
-    - price: double
-
-    + getBuildingType(): String
-    + getStartYear(): int
-    + getBonus(): double
-    + getPrice(): double
-}
-
-class Cargo {
-    - type: String
-    - value: int
-    + getCargo(): String
-    + getValue(): int
-}
-
+' RELATIONS
 CreateScenarioUI .> CreateScenarioController
-CreateScenarioController ..> Repositories
-CreateScenarioController ..> MapRepository
+
+CreateScenarioController ..> ApplicationSession
+CreateScenarioController ..> UserSession
+CreateScenarioController ..> MapDTO
+CreateScenarioController ..> ScenarioDTO
 CreateScenarioController ..> Map
 CreateScenarioController ..> Scenario
-Scenario --> Station
-Scenario --> Train
-Scenario --> RailwayLine
-Train --> Locomotive
-Train --> Cargo
-Station --> Building
-Repositories --> MapRepository
-MapRepository --> Map
-Map --> Scenario
+CreateScenarioController .> Repositories
+CreateScenarioController ..> IMapMapper
+CreateScenarioController ..> IMapRepository
+CreateScenarioController ..> IScenarioRepository
+
+Repositories --> "1" IMapRepository
+Repositories --> "1" IScenarioRepository
+MapRepository ..|> IMapRepository
+ScenarioRepository ..|> IScenarioRepository
+
+ApplicationSession ..> UserSession
+
+MapRepository --> "*" Map : maps
+ScenarioRepository --> "*" Scenario : scenarios
+Scenario --> "*" HistoricalRestriction : restrictions
+ScenarioDTO --> MapDTO
+ScenarioDTO --> "*" HistoricalRestriction
+Map --> "*" Scenario : scenarios
+
+IMapMapper <|.. MapMapper
+Repositories ..|> IRepositories
+
 @enduml
