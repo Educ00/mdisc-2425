@@ -1,31 +1,36 @@
 @startuml
-skinparam monochrome true
-skinparam packageStyle rectangle
-skinparam shadowing false
+    skinparam monochrome true
+    skinparam packageStyle rectangle
+    skinparam shadowing false
 
-autonumber
+    autonumber
 
-actor "Player" as PLAYER
-participant ":ListStationUI" as UI
-participant ":ListStationController" as CTRL
-participant "Repositories" as REPOS
-participant "repositories\n:Repositories" as REPOS_SINGLETON
-participant "stationRepository\n:StationRepository" as STATION_REPO
-participant "station\n:Station" as STATION
+    actor "Player" as PLAYER
+    participant ":ListStationUI" as UI
+    participant ":ListStationController" as CTRL
+    participant "Repositories" as REPOS
+    participant "repositories\n:Repositories" as REPOS_SINGLETON
+    participant "stationRepository\n:StationRepository" as STATION_REPO
+    participant "stationMapper\n:StationMapper" as StationMapper
+    participant ":List<Station>" as ListStation
+    participant "stationList \n:List<Station>" as stationList
+    participant "stationListDTO \n:List<StationDTO>" as StationListDto
+    participant "stationDTO\n:StationDTO" as StationDto
+    participant "stationDetailsDTO\n:StationDetailsDTO" as StationDetailsDto
+    participant "station\n:Station" as STATION
 
-activate PLAYER
+    activate PLAYER
 
     PLAYER -> UI : requests to list all stations
     activate UI
 
-           UI --> CTRL** : create()
+        UI --> CTRL** : create()
 
         UI -> CTRL : getAllStations()
         activate CTRL
 
             CTRL -> REPOS : getInstance()
             activate REPOS
-
                 REPOS --> CTRL : repositories
             deactivate REPOS
 
@@ -36,10 +41,39 @@ activate PLAYER
 
             CTRL -> STATION_REPO : getAllStations()
             activate STATION_REPO
-                STATION_REPO --> CTRL : stationList
+                STATION_REPO -> stationList ** : create()
+                loop for each Station
+                    STATION_REPO -> ListStation++ : get(i)
+                    ListStation --> STATION_REPO-- : station
+                    STATION_REPO -> stationList++ : add(station)
+                    stationList --> STATION_REPO-- : true
+                end
+                STATION_REPO --> CTRL : stationList : List<Station>
             deactivate STATION_REPO
 
-            CTRL --> UI : stationList
+            CTRL -> StationMapper : toDTO(stationList)
+            activate StationMapper
+                StationMapper -> StationListDto ** : create()
+                loop for each station in stationList
+                    StationMapper -> ListStation : station = get(i)
+                    activate ListStation
+                    ListStation --> StationMapper : station
+                    deactivate ListStation
+                    StationMapper -> StationMapper : stationDTO = toDTO(station)
+                    activate StationMapper
+                    StationMapper -> StationDto** : createStationDTO(station)
+                    StationMapper -> StationListDto : add(stationDTO)
+                    activate StationListDto
+                    StationListDto --> StationMapper : true
+                    deactivate StationListDto
+                end
+                StationMapper --> StationMapper : stationListDTO
+                deactivate StationMapper
+
+            StationMapper --> CTRL : stationListDTO : List<StationDTO>
+            deactivate StationMapper
+
+            CTRL --> UI : stationListDTO
         deactivate CTRL
 
         UI --> PLAYER : displays all stations
@@ -48,21 +82,30 @@ activate PLAYER
     PLAYER -> UI : selects a station
     activate UI
 
-        UI -> CTRL : getStationDetails(station)
+        UI -> CTRL : getStationDetails(stationID)
         activate CTRL
+
+            CTRL -> STATION_REPO : getStationByID(stationID)
+            activate STATION_REPO
+                STATION_REPO --> CTRL : station
+            deactivate STATION_REPO
 
             CTRL -> STATION : getStationDetails(station)
             activate STATION
-
-                STATION --> CTRL : stationDetails
+            STATION --> CTRL: stationDetails
             deactivate STATION
 
-            CTRL --> UI : stationDetails
+            CTRL -> StationMapper : toDetailsDTO(stationDetails)
+            activate StationMapper
+                StationMapper -> StationDetailsDto** : createStationDetailsDTO(stationDetails)
+                StationMapper --> CTRL : stationDetailsDTO
+            deactivate StationMapper
+
+            CTRL --> UI : stationDetailsDTO
         deactivate CTRL
 
-        UI --> PLAYER : displays station details (name, type, economic radius, performance, supply/demand)
+        UI --> PLAYER : displays station details (name, type, upgradeBuildings, economic radius, performance, supply/demand)
     deactivate UI
 
-deactivate PLAYER
-
-@enduml
+    deactivate PLAYER
+    @enduml

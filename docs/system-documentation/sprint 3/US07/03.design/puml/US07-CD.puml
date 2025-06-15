@@ -1,49 +1,83 @@
 @startuml
-        skinparam packageStyle rectangle
-        skinparam shadowing false
-        skinparam linetype polyline
-        skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam linetype polyline
+skinparam classAttributeIconSize 0
 
-        class Player {
-            - budget : double
-        }
+class ListStationUI {
+}
 
-        class ListStationUI {
-        }
+class ListStationController {
+    + getAllStations() : List<StationDTO>
+    + getStationDetails(stationID : String) : StationDetailsDTO
+}
 
-        class ListStationController {
-            + getAllStations() : List<Station>
-            + getStationDetails(station : Station) : {name, type, economicRadius, performance, supply, demand}
-        }
+interface IRepositories {
+    + getStationRepository() : IStationRepository
+}
+class Repositories implements IRepositories {
+    - Repositories()
+    + {static} getInstance() : Repositories
+    + getStationRepository() : IStationRepository
+}
 
-        class StationRepository {
-            + getAllStations() : List<Station>
-        }
+interface IStationRepository {
+    + getAllStations() : List<Station>
+    + getStationByID(stationID : String) : Station
+}
+class StationRepository implements IStationRepository {
+    + getAllStations() : List<Station>
+    + getStationByID(stationID : String) : Station
+}
 
-        class Station {
-            - name : String
-            - type : String
-            - economicRadius : double
-            - performance : double
-            - cost : double
-            - supply : double
-            - demand : double
-            + getStationDetails(station : Station) : {name, type, economicRadius, performance, supply, demand}
-        }
+interface IStationMapper {
+    + toDTO(stationList : List<Station>) : List<StationDTO>
+    + toDTO(station : Station) : StationDTO
+    + toDetailsDTO(station : Station) : StationDetailsDTO
+}
+class StationMapper implements IStationMapper {
+    + toDTO(stationList : List<Station>) : List<StationDTO>
+    + toDTO(station : Station) : StationDTO
+    + toDetailsDTO(station : Station) : StationDetailsDTO
+}
 
-        class Repositories {
-            - Repositories()
-            + {static} getInstance() : Repositories
-            + getStationRepository() : StationRepository
-        }
+class Station {
+    - name : String
+    - type : String
+    - economicRadius : double
+    - performance : double
+    - cost : double
+    - supply : double
+    - demand : double
+    + getStationDetails() : StationDetails
+}
 
+class StationDTO {
+}
 
-        Player --> "*" Station : lists
-        Repositories -> "1" Repositories : instance
-        ListStationUI .> ListStationController
-        ListStationController .> Repositories
-        ListStationController .> StationRepository
-        Repositories --> "1" StationRepository : stationRepository
-        StationRepository --> "*" Station : stations
+class StationDetailsDTO {
+    + name : String
+    + type : String
+    + economicRadius : double
+    + performance : double
+    + supply : double
+    + demand : double
+}
 
-        @enduml
+ListStationUI ..> ListStationController
+ListStationController ..> IRepositories
+Repositories ..|> IRepositories
+Repositories --> IStationRepository
+StationRepository ..|> IStationRepository
+ListStationController ..> IStationRepository
+ListStationController ..> IStationMapper
+IStationMapper <|.. StationMapper
+StationMapper ..> Station
+StationMapper ..> StationDTO
+StationMapper ..> StationDetailsDTO
+IStationRepository <|.. StationRepository
+StationRepository --> "*" Station : stations
+
+Repositories -> "1" Repositories : instance
+
+@enduml
