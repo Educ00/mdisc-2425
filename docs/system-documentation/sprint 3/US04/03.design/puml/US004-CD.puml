@@ -4,7 +4,7 @@ skinparam shadowing false
 skinparam linetype polyline
 skinparam classAttributeIconSize 0
 
-
+package objDTO {
   class MapDTO {
     - name: String
     - width: Integer
@@ -20,7 +20,7 @@ skinparam classAttributeIconSize 0
     - locomotionType: String
     - generationModifiers: List<Modifier>
   }
-
+}
 
 class CreateScenarioUI
 
