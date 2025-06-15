@@ -1,71 +1,136 @@
 @startuml
-skinparam packageStyle rectangle
-skinparam shadowing false
-skinparam linetype polyline
-skinparam classAttributeIconSize 0
+        skinparam packageStyle rectangle
+        skinparam shadowing false
+        skinparam linetype polyline
+        skinparam classAttributeIconSize 0
 
-class BuildStationUI {
-}
+        class BuildStationUI {
+        }
 
-class BuildStationController {
-    + BuildStationController()
-    + getAvailableStationTypes() : List<StationType>
-    + getStationTypeByID(stationTypeID : String) : StationType
-    + proposeStationName(location : Object, stationType : StationType) : String
-    - getCurrentMapFromSession() : Map
-    - getProposedStationName(nearestCity : String, stationType : StationType) : String
-    + buildStation(stationType : StationType, location : Object, center : Object, name : String)
-}
+        class BuildStationController {
+            + BuildStationController()
+            + getStationTypes() : List<StationTypeDTO>
+            + getStationTypeByID(stationTypeID : String) : StationType
+            + proposeStationName(location : Object, stationType : StationType) : String
+            + buildStation(stationDTO : StationDTO) : boolean
+            - getCurrentMapFromSession() : Map
+            - getProposedStationName(nearestCity : String, stationType : StationType) : String
+            - checkForOverbuilding(location : Object, stationType : StationType) : boolean
+            - checkIfPlayerHasBudgetForStationFromSession(stationType : StationType) : boolean
+        }
 
-class Repositories {
-    - Repositories()
-    + {static} getInstance()
-    + getStationRepository()
-    + getMapRepository()
-}
+        interface IRepositories {
+            + getStationTypeRepository() : IStationTypeRepository
+            + getMapRepository() : IMapRepository
+        }
+        class Repositories implements IRepositories {
+            - Repositories()
+            + {static} getInstance() : Repositories
+            + getStationTypeRepository() : IStationTypeRepository
+            + getMapRepository() : IMapRepository
+        }
 
-class StationRepository {
-    + getAvailableStationTypes() : List<StationType>
-    + getStationTypeByID(stationTypeID : String) : StationType
-    + calculateGeometricCenter(stationType : StationType) : Object
-    + getProposedStationName(nearestCity : String, stationType : StationType) : String
-    + buildStation(stationType : StationType, location : Object, center : Object, name : String) : Station
-    + addStation(station : Station)
-}
+        interface IStationTypeRepository {
+            + getAvailableStationTypes() : List<StationType>
+            + getStationTypeByID(stationTypeID : String) : StationType
+        }
+        class StationTypeRepository implements IStationTypeRepository {
+            + getAvailableStationTypes() : List<StationType>
+            + getStationTypeByID(stationTypeID : String) : StationType
+        }
 
-class MapRepository {
-    + getCurrentMap() : Map
-}
+        interface IMapRepository {
+            + getCurrentMap() : Map
+        }
+        class MapRepository implements IMapRepository {
+            + getCurrentMap() : Map
+        }
 
-class Map {
-    + getNearestCityFromLocation(location : Object) : String
-}
+        class ApplicationSession {
+            - ApplicationSession()
+            + {static} getInstance() : ApplicationSession
+            + getCurrentSession() : PlayerSession
+        }
+        class PlayerSession {
+            + getPlayerBudget() : int
+        }
 
-class Station {
-    - name : String
-    - type : StationType
-    - location : Object
-    - center : Object
-    + Station(type, location, center, name)
-}
+        class StationType {
+            + calculateGeometricCenter() : Object
+            + getStationTypeCost() : int
+            + checkIfPlayerHasBudgetForStation(budget : int, cost : int) : boolean
+        }
 
-class ApplicationSession {
-    - ApplicationSession()
-    + {static} getInstance()
-    + getCurrentSession()
-}
+        class Map {
+            + getNearestCityFromLocation(location : Object) : String
+            + getProposedStationName(nearestCity : String, stationType : StationType) : String
+            + checkForOverbuilding(location : Object, stationType : StationType) : boolean
+            + buildStation(stationDTO : StationDTO) : Station
+            + addStation(station : Station) : boolean
+        }
 
-BuildStationUI ..> BuildStationController
-BuildStationController .> Repositories
-Repositories -> "1" Repositories : instance
-Repositories --> "1" StationRepository : stationRepository
-Repositories --> "1" MapRepository : mapRepository
-BuildStationController ..> StationRepository
-BuildStationController ..> MapRepository
-BuildStationController ..> Map
-BuildStationController ..> ApplicationSession
-StationRepository --> "*" Station : stations
-MapRepository --> "*" Map : maps
-ApplicationSession -> "1" ApplicationSession : instance
+        class Station {
+            - name : String
+            - type : StationType
+            - location : Object
+            - center : Object
+            + Station(type, location, center, name)
+        }
 
-@enduml
+        interface IStationTypeMapper {
+            + toDTO(stationTypeList : List<StationType>) : List<StationTypeDTO>
+            + toDTO(stationType : StationType) : StationTypeDTO
+        }
+        class StationTypeMapper implements IStationTypeMapper {
+            + toDTO(stationTypeList : List<StationType>) : List<StationTypeDTO>
+            + toDTO(stationType : StationType) : StationTypeDTO
+        }
+
+        interface IMapMapper {
+            + toModel(stationDTO : StationDTO) : Station
+        }
+        class MapMapper implements IMapMapper {
+            + toModel(stationDTO : StationDTO) : Station
+        }
+
+        class StationTypeDTO {
+        }
+
+        class StationDTO {
+            + getStationType() : StationType
+            + getLocation() : Object
+            + getCenter() : Object
+            + getName() : String
+        }
+
+        BuildStationUI ..> BuildStationController
+        BuildStationController ..> IRepositories
+        Repositories ..|> IRepositories
+        Repositories --> IStationTypeRepository
+        Repositories --> IMapRepository
+        StationTypeRepository ..|> IStationTypeRepository
+        MapRepository ..|> IMapRepository
+        BuildStationController ..> IStationTypeRepository
+        BuildStationController ..> IMapRepository
+        BuildStationController ..> ApplicationSession
+        BuildStationController ..> IStationTypeMapper
+        BuildStationController ..> IMapMapper
+        ApplicationSession --> PlayerSession
+        BuildStationController ..> StationType
+        BuildStationController ..> StationDTO
+        BuildStationController ..> StationTypeDTO
+        BuildStationController ..> Map
+        BuildStationController ..> Station
+        IStationTypeMapper <|.. StationTypeMapper
+        IMapMapper <|.. MapMapper
+        MapMapper ..> StationDTO
+        MapMapper ..> Station
+        StationTypeMapper ..> StationType
+        StationTypeMapper ..> StationTypeDTO
+        Map ..> Station
+        Map ..> StationDTO
+
+        Repositories -> "1" Repositories : instance
+        ApplicationSession -> "1" ApplicationSession : instance
+
+        @enduml

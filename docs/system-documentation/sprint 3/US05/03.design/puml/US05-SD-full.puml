@@ -10,41 +10,73 @@ participant ":BuildStationUI" as UI
 participant ":BuildStationController" as CTRL
 participant "Repositories" as REPOS
 participant "repositories\n:Repositories" as REPOS_SINGLETON
-participant "stationRepository\n:StationRepository" as STATION_REPO
+participant "stationTypeRepository\n:StationTypeRepository" as STATION_REPO
 participant "mapRepository\n:MapRepository" as MAP_REPO
 participant "ApplicationSession" as APP_SESSION
 participant "appSession\n:ApplicationSession" as APP_SESSION_SINGLETON
+participant "currentSession\n:PlayerSession" as CURRENT_SESSION
+participant "stationTypeMapper \n:StationTypeMapper" as StationTypeMapper
+participant ":List<StationType>" as ListStationType
+participant "stationTypeList \n:List<StationType>" as stationTypeList
+participant "stationTypeListDTO \n:List<StationTypeListDTO>" as StationTypeListDto
+participant "stationTypeDTO \n:StationTypeDTO" as StationTypeDto
+participant "stationType \n:StationType" as StationType
 participant "map\n:Map" as MAP
+participant "mapMapper \n:MapMapper" as MapMapper
 participant "station\n:Station" as STATION
+participant "stationDTO\n:StationDTO" as StationDto
 
 activate PLAYER_ACTOR
-
 PLAYER_ACTOR -> UI : requests to build a station
 activate UI
-
 UI --> CTRL ** : create()
-
-UI -> CTRL : getAvailableStationTypes()
-
+UI -> CTRL : getStationTypes()
 activate CTRL
 CTRL -> REPOS : getInstance()
 activate REPOS
 REPOS --> CTRL : repositories
 deactivate REPOS
-
-CTRL -> REPOS_SINGLETON : getStationRepository()
+CTRL -> REPOS_SINGLETON : getStationTypeRepository()
 activate REPOS_SINGLETON
-REPOS_SINGLETON --> CTRL : stationRepository
+REPOS_SINGLETON --> CTRL : stationTypeRepository
 deactivate REPOS_SINGLETON
-
 CTRL -> STATION_REPO : getAvailableStationTypes()
 activate STATION_REPO
-STATION_REPO --> CTRL : stationTypes (devo meter aqui que e uma lista? e.g stationTypes: List<StationType>)
+STATION_REPO -> stationTypeList ** : create()
+ loop for each StationType
+        STATION_REPO -> ListStationType++ : get(i)
+        ListStationType --> STATION_REPO--: stationType
+        STATION_REPO -> stationTypeList++ : add(stationType)
+        stationTypeList --> STATION_REPO-- : true
+    end
+
+STATION_REPO --> CTRL : stationTypeList : List<StationType>
 deactivate STATION_REPO
 
-CTRL --> UI : stationTypes
-deactivate CTRL
+CTRL -> StationTypeMapper : toDTO(stationTypeList)
+activate StationTypeMapper
+StationTypeMapper -> StationTypeListDto ** : create()
+loop for each stationType in stationTypeList
+    StationTypeMapper -> ListStationType : stationType = get(i)
+    activate ListStationType
+    ListStationType --> StationTypeMapper : stationType
+    deactivate ListStationType
+    StationTypeMapper -> StationTypeMapper : stationTypeDTO = toDTO(stationType)
+    activate StationTypeMapper
+    StationTypeMapper -> StationTypeDto** : createStationTypeDTO(stationType)
+    StationTypeMapper -> StationTypeListDto : add(stationTypeDTO)
+    activate StationTypeListDto
+    StationTypeListDto --> StationTypeMapper : true
+    deactivate StationTypeListDto
+end
+    StationTypeMapper --> StationTypeMapper : stationTypeListDTO
+    deactivate StationTypeMapper
 
+StationTypeMapper --> CTRL : stationTypeListDTO : List<StationTypeDTO>
+deactivate StationTypeMapper
+
+CTRL --> UI : stationTypeListDTO
+deactivate CTRL
 UI -> PLAYER_ACTOR : shows available station types
 deactivate UI
 
@@ -55,15 +87,14 @@ UI -> CTRL : getStationTypeByID(stationTypeID)
 activate CTRL
 CTRL -> STATION_REPO : getStationTypeByID(stationTypeID)
 activate STATION_REPO
-STATION_REPO --> CTRL : stationType (devo meter aqui que e um StationType?)
+STATION_REPO --> CTRL : stationType : StationType
 deactivate STATION_REPO
 
-'Ver se o bloco opt esta correto aqui e se faz sentido ser o StationRepo que faz isso
 opt station type is NOT "Station"
-    CTRL -> STATION_REPO : calculateGeometricCenter(stationType)
-    activate STATION_REPO
-    STATION_REPO --> CTRL : geometricCenter
-    deactivate STATION_REPO
+    CTRL -> StationType : calculateGeometricCenter()
+    activate StationType
+    StationType --> CTRL : geometricCenter
+    deactivate StationType
 end
 
 CTRL --> UI : stationType
@@ -91,7 +122,7 @@ activate CTRL
             activate CTRL
                 CTRL -> APP_SESSION: getInstance()
                 activate APP_SESSION
-                    APP_SESSION -> CTRL: appSession
+                    APP_SESSION --> CTRL: appSession
                 deactivate APP_SESSION
 
                 CTRL -> APP_SESSION_SINGLETON: getCurrentSession()
@@ -118,29 +149,24 @@ deactivate MAP_REPO
 CTRL --> CTRL : map
 deactivate CTRL
 
+CTRL -> MAP : checkForOverbuilding(location, stationType)
+activate MAP
+MAP --> CTRL : false
+deactivate MAP
 
 |||
-'Ver se os parametros estao corretos
+
 CTRL -> CTRL : getProposedStationName(location, stationType)
 activate CTRL
-CTRL -> REPOS : getInstance()
-activate REPOS
-REPOS --> CTRL : repositories
-deactivate REPOS
-
-CTRL -> REPOS_SINGLETON : getStationRepository()
-activate REPOS_SINGLETON
-REPOS_SINGLETON --> CTRL : stationRepository
-deactivate REPOS_SINGLETON
     CTRL -> MAP : getNearestCityFromLocation(location)
     activate MAP
-            MAP -> CTRL : nearestCity
+            MAP --> CTRL : nearestCity
         deactivate MAP
 
-CTRL -> STATION_REPO : getProposedStationName(nearestCity, stationType)
-activate STATION_REPO
-STATION_REPO --> CTRL : proposedName
-deactivate STATION_REPO
+CTRL -> MAP : getProposedStationName(nearestCity, stationType)
+activate MAP
+MAP --> CTRL : proposedName
+deactivate MAP
 CTRL --> CTRL : proposedName
 deactivate CTRL
 CTRL --> UI : proposedName
@@ -148,8 +174,6 @@ deactivate CTRL
 UI --> PLAYER_ACTOR : proposes station name
 
 deactivate UI
-
-'Ver se os fluxos de vida da UI dentro do alt estao corretos
 
 alt accepts proposed name
     PLAYER_ACTOR -> UI : confirms station name
@@ -162,29 +186,73 @@ else rejects proposed name
 end
 
 UI --> PLAYER_ACTOR : shows all station data (stationType, location, center, name) and requests final confirmation
+deactivate UI
 PLAYER_ACTOR -> UI : confirms all data
+activate UI
 
-UI -> CTRL : buildStation(stationType, location, center, name)
+UI -> CTRL : buildStation(stationDTO)
 activate CTRL
-
 |||
-CTRL -> STATION_REPO : buildStation(stationType, location, center, name)
-activate STATION_REPO
-
-STATION_REPO -> STATION** : create(stationType, location, center, name)
-STATION_REPO --> STATION_REPO : addStation(station)
-activate STATION_REPO
-STATION_REPO --> STATION_REPO : true
-deactivate STATION_REPO
-
-STATION_REPO --> CTRL : station
-deactivate STATION_REPO
-
-CTRL --> UI : station
+CTRL -> CTRL : checkIfPlayerHasBudgetForStationFromSession()
+activate CTRL
+CTRL -> APP_SESSION : getInstance()
+activate APP_SESSION
+APP_SESSION -> CTRL : appSession
+deactivate APP_SESSION
+CTRL -> APP_SESSION_SINGLETON : getCurrentSession()
+activate APP_SESSION_SINGLETON
+APP_SESSION_SINGLETON --> CTRL : currentSession
+deactivate APP_SESSION_SINGLETON
+CTRL -> CURRENT_SESSION: getPlayerBudget()
+activate CURRENT_SESSION
+CURRENT_SESSION --> CTRL: budget
+deactivate CURRENT_SESSION
+CTRL -> StationType : getStationTypeCost()
+activate StationType
+StationType --> CTRL : cost
+deactivate StationType
+CTRL -> StationType : checkIfPlayerHasBudgetForStation(budget, cost)
+activate StationType
+StationType --> CTRL : true
+deactivate StationType
+CTRL --> CTRL : true
 deactivate CTRL
 
+
+
+
+CTRL -> MAP : station = buildStation(stationDTO)
+activate MAP
+MAP -> MapMapper : station = toModel(stationDTO)
+activate MapMapper
+MapMapper -> StationDto : getStationType()
+activate StationDto
+StationDto --> MapMapper : stationType
+deactivate StationDto
+MapMapper -> StationDto : getLocation()
+activate StationDto
+StationDto --> MapMapper : location
+deactivate StationDto
+MapMapper -> StationDto : getCenter()
+activate StationDto
+StationDto --> MapMapper : center
+deactivate StationDto
+MapMapper -> StationDto : getName()
+activate StationDto
+StationDto --> MapMapper : name
+deactivate StationDto
+
+MapMapper --> STATION** : createStation(stationType, location, center, name)
+MapMapper --> MAP : station
+deactivate MapMapper
+MAP -> MAP : addStation(station)
+activate MAP
+MAP --> MAP : true
+deactivate MAP
+MAP --> CTRL : success
+deactivate MAP
+CTRL --> UI : success
+deactivate CTRL
 UI -> PLAYER_ACTOR : displays operation success
 deactivate UI
-
-deactivate PLAYER_ACTOR
 @enduml
