@@ -12,6 +12,7 @@ title Domain Model - Railway Simulation
 class Map {
 size
 name
+scale
 }
 
 class City {
@@ -44,6 +45,7 @@ class TimeRestriction{
 class TechnologicalRestriction{
     availableLocomotives
     availableIndustries
+    portBehaviours
 }
 
 class HistoricalRestriction{
@@ -60,7 +62,6 @@ class RailwayNetwork{
 
 class Station{
 name
-type
 economic radius
 performance
 cost
@@ -68,7 +69,15 @@ supply
 demand
 }
 
+class StationType{
+type
+}
+
 class Train{
+}
+
+class PointsOfRoute{
+cargoMode
 }
 
 class Route{
@@ -145,6 +154,7 @@ Simulator "1" ---- "1..*" Cargo : generates >
 RailwayNetwork "1" ---- "1..*" Station : is composed of >
 Station "1" ---- "1..*" City : serves >
 Station "1" ---- "0..*" Industry : serves >
+Station "1" ---- "1" StationType : has >
 RailwayNetwork "1" ---- "1..*" RailwayLine : is composed of >
 RailwayNetwork "1" ---- "1..*" Train : is composed of >
 Train "1" ---- "1..*" Cargo : transports >
@@ -179,5 +189,8 @@ City "1" -- "0..*" Cargo : generates >
 City "1" -- "0..*" Cargo : consumes >
 City "1" -- "0..*" Cargo : transforms >
 
+
+Cargo "0..*" -- "1" PointsOfRoute : is picked up at >
+PointsOfRoute "1" -- "1" Station : is defined by >
 
 @enduml
